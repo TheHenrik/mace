@@ -6,8 +6,8 @@ This package is created for the Akamodell Stuttgart by [Tjalf Stadel](https://gi
 
 ## How to use
 
-Read the non existant docmentation or write Gregor Zwickl for help. 
+Read the non-existent documentation or write Gregor Zwickl for help. 
 
-## Licence addon
+## License ad on
 
-If this programm is used to build a plane for ACC, you are required to gift the Akamodell Stuttgart a crate of beer or other liquor.
+If this program is used to build a plane for ACC, you are required to gift the Akamodell Stuttgart a crate of beer or other liquor.
