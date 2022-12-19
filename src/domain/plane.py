@@ -1,6 +1,6 @@
 from typing import List
 from dataclasses import dataclass
-
+from ..mass import MassTable
 
 @dataclass
 class RumpfProfil():
@@ -21,13 +21,39 @@ class Klappe():
     tiefe_rechts: int = None        # [m]
 
 
+@dataclass 
+class Profil():
+    x: List(int) = None
+    y: List(int) = None
+
+
+@dataclass
+class Coordinate():
+    x: int = None
+    y: int = None
+    z: int = None
+
+    def __add__(self, next):
+        pass
+
+    def __sub__(self, next):
+        pass
+    
+    def __iter__(self):
+        pass
+
+    def getDistance(self, next):
+        pass
+
 @dataclass()
 class Fluegelsegment():
     klappe: Klappe = None
-    breite_links: int = None        # [m]
-    breite_rechts: int = None       # [m]
-    delta_rechts: int = None        # [m]
+    tiefe_links: int = None        # [m]
+    tiefe_rechts: int = None       # [m]
+    c_links: Coordinate = None
+    c_rechts: Coordinate = None
     länge: int = None               # [m]
+    profil: Profil = None
 
 
 @dataclass()
@@ -42,9 +68,11 @@ class Fluegel():
 
 @dataclass()
 class Flugzeug():
+    name: str = None
     leitwerk: Leitwerk = None
     fluegel: Fluegel = None
     rumpf: Rumpf = None
+    mass: MassTable = None
 
 
 class FlugzeugBuilder():
@@ -98,7 +126,3 @@ class FluegelBuilder():
 
     def get(self):
         return self.fluegel
-
-
-
-
