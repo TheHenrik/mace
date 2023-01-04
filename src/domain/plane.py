@@ -1,59 +1,35 @@
 from typing import List
 from dataclasses import dataclass
-from ..mass import MassTable
+from mass import MassTable
+from vector import Vector
 
 @dataclass
 class RumpfProfil():
-    höhe: int = None                # [m]
-    breite: int = None              # [m]
-    position: int = None            # [ ]
+    höhe: int = None
+    breite: int = None
+    position: int = None
 
 
 @dataclass
 class Rumpf():
-    laenge: int = None              # [m]
+    laenge: int = None
     profile: RumpfProfil = None
 
 
 @dataclass()
 class Klappe():
-    tiefe_links: int = None         # [m]
-    tiefe_rechts: int = None        # [m]
+    tiefe_links: int = None
+    tiefe_rechts: int = None
 
-
-@dataclass 
-class Profil():
-    x: List(int) = None
-    y: List(int) = None
-
-
-@dataclass
-class Coordinate():
-    x: int = None
-    y: int = None
-    z: int = None
-
-    def __add__(self, next):
-        pass
-
-    def __sub__(self, next):
-        pass
-    
-    def __iter__(self):
-        pass
-
-    def getDistance(self, next):
-        pass
 
 @dataclass()
 class Fluegelsegment():
     klappe: Klappe = None
-    tiefe_links: int = None        # [m]
-    tiefe_rechts: int = None       # [m]
-    c_links: Coordinate = None
-    c_rechts: Coordinate = None
-    länge: int = None               # [m]
-    profil: Profil = None
+    tiefe_links: int = None
+    tiefe_rechts: int = None
+    c_links: Vector = None
+    c_rechts: Vector = None
+    profil: str = None
 
 
 @dataclass()

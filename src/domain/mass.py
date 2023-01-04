@@ -4,6 +4,7 @@ from typing import List
 
 class MassTable():
     totalMass: int = None
+    masses: dict = None
 
 
     def output_to_cmd():
