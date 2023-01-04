@@ -1,33 +1,35 @@
 from typing import List
 from dataclasses import dataclass
-
+from mass import MassTable
+from vector import Vector
 
 @dataclass
 class RumpfProfil():
-    höhe: int = None                # [m]
-    breite: int = None              # [m]
-    position: int = None            # [ ]
+    höhe: int = None
+    breite: int = None
+    position: int = None
 
 
 @dataclass
 class Rumpf():
-    laenge: int = None              # [m]
+    laenge: int = None
     profile: RumpfProfil = None
 
 
 @dataclass()
 class Klappe():
-    tiefe_links: int = None         # [m]
-    tiefe_rechts: int = None        # [m]
+    tiefe_links: int = None
+    tiefe_rechts: int = None
 
 
 @dataclass()
 class Fluegelsegment():
     klappe: Klappe = None
-    breite_links: int = None        # [m]
-    breite_rechts: int = None       # [m]
-    delta_rechts: int = None        # [m]
-    länge: int = None               # [m]
+    tiefe_links: int = None
+    tiefe_rechts: int = None
+    c_links: Vector = None
+    c_rechts: Vector = None
+    profil: str = None
 
 
 @dataclass()
@@ -42,9 +44,11 @@ class Fluegel():
 
 @dataclass()
 class Flugzeug():
+    name: str = None
     leitwerk: Leitwerk = None
     fluegel: Fluegel = None
     rumpf: Rumpf = None
+    mass: MassTable = None
 
 
 class FlugzeugBuilder():

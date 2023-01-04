@@ -3,5 +3,11 @@ from ..domain.plane import *
 
 
 def estimate_weight(flugzeug:Flugzeug, parameters = params):
-    weight = 0
-    return weight
+    for segment in flugzeug.fluegel.fluegelsegment:
+        flugzeug.mass.totalMass += getWeightSegment(segment,parameters)  
+    
+    return flugzeug
+
+
+def getWeightSegment(segment,parameter):
+    return volume*parameter.styro + area*parameter.kohle
