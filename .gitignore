@@ -161,3 +161,7 @@ cython_debug/
 
 #VS Code stuff
 .vscode/
+
+#Airfoils
+data/Airfoils/*.dat
+!data/Airfoils/n0012.dat
