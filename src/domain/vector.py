@@ -3,19 +3,19 @@ import numpy as np
 
 class Vector:
     def __init__(self, x, y, z) -> None:
-        self.x = x
-        self.y = y
-        self.z = z
+        self.x = float(x)
+        self.y = float(y)
+        self.z = float(z)
 
     def __repr__(self) -> str:
         return f'({self.x}, {self.y}, {self.z})'
 
-    def __eq__(self, next: 'Vector'|int) -> bool:
+    def __eq__(self, next: 'Vector|int') -> bool:
         if self.x == next.x and self.y == next.y and self.z == next.z:
             return True
         return False
 
-    def __add__(self, next: 'Vector'|float) -> 'Vector':
+    def __add__(self, next: 'Vector|float') -> 'Vector':
         if type(next) is type(self):
             x = self.x + next.x
             y = self.y + next.y
@@ -26,7 +26,7 @@ class Vector:
             z = self.z + next
         return Vector(x,y,z) 
         
-    def __sub__(self, next: 'Vector'|float) -> 'Vector':
+    def __sub__(self, next: 'Vector|float') -> 'Vector':
         if type(next) is type(self):
             x = self.x - next.x
             y = self.y - next.y 
@@ -37,7 +37,7 @@ class Vector:
             z = self.z - next
         return Vector(x,y,z)
 
-    def __mul__(self, next: 'Vector'|float) -> 'Vector':
+    def __mul__(self, next: 'Vector|float') -> 'Vector':
         if type(next) is type(self):
             x = self.x * next.x
             y = self.y * next.y 
@@ -48,7 +48,7 @@ class Vector:
             z = self.z * next
         return Vector(x,y,z)
 
-    def __truediv__(self, next: 'Vector'|float) -> 'Vector':
+    def __truediv__(self, next: 'Vector|float') -> 'Vector':
         if type(next) is type(self):
             x = self.x / next.x
             y = self.y / next.y 
@@ -59,7 +59,7 @@ class Vector:
             z = self.z / next
         return Vector(x,y,z)
 
-    def __floordiv__(self, next: 'Vector'|float) -> 'Vector':
+    def __floordiv__(self, next: 'Vector|float') -> 'Vector':
         if type(next) is type(self):
             x = self.x // next.x
             y = self.y // next.y 
@@ -70,7 +70,7 @@ class Vector:
             z = self.z // next
         return Vector(x,y,z)
 
-    def __iadd__(self, next: 'Vector'|float):
+    def __iadd__(self, next: 'Vector|float') -> None:
         if type(next) is type(self):
             self.x += next.x
             self.y += next.y 
@@ -78,10 +78,9 @@ class Vector:
         else:
             self.x += next
             self.y += next
-            self.z += next
-        return self 
+            self.z += next 
         
-    def __isub__(self, next: 'Vector'|float):
+    def __isub__(self, next: 'Vector|float') -> None:
         if type(next) is type(self):
             self.x -= next.x
             self.y -= next.y 
@@ -90,9 +89,8 @@ class Vector:
             self.x -= next
             self.y -= next
             self.z -= next
-        return self
 
-    def __imul__(self, next: 'Vector'|float):
+    def __imul__(self, next: 'Vector|float') -> None:
         if type(next) is type(self):
             self.x *= next.x
             self.y *= next.y 
@@ -101,9 +99,8 @@ class Vector:
             self.x *= next
             self.y *= next
             self.z *= next
-        return self 
 
-    def __itruediv__(self, next: 'Vector'|float):
+    def __itruediv__(self, next: 'Vector|float') -> None:
         if type(next) is type(self):
             self.x /= next.x
             self.y /= next.y 
@@ -112,9 +109,8 @@ class Vector:
             self.x /= next
             self.y /= next
             self.z /= next
-        return self 
 
-    def __ifloordiv__(self, next: 'Vector'|float):
+    def __ifloordiv__(self, next: 'Vector|float') -> None:
         if type(next) is type(self):
             self.x //= next.x
             self.y //= next.y 
@@ -123,7 +119,6 @@ class Vector:
             self.x //= next
             self.y //= next
             self.z //= next
-        return self 
 
     def __abs__(self) -> float:
         return np.sqrt(self.x**2+self.y**2+self.z**2)
