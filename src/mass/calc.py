@@ -1,8 +1,9 @@
-from ..domain.default_params import params
-from ..domain.plane import *
+from ..domain.default_params import Params
+from  ..domain.vector import Vectorcalc
 
 
-def estimate_weight(flugzeug:Flugzeug, parameters = params):
+
+def estimate_weight(flugzeug, parameters = Params):
     for segment in flugzeug.fluegel.fluegelsegment:
         flugzeug.mass.totalMass += getWeightSegment(segment,parameters)  
     

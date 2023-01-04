@@ -1,6 +1,5 @@
 from typing import List
 from dataclasses import dataclass
-from mass import MassTable
 from vector import Vector
 
 @dataclass
@@ -24,17 +23,27 @@ class Klappe():
 
 @dataclass()
 class Fluegelsegment():
-    klappe: Klappe = None
-    tiefe_links: int = None
-    tiefe_rechts: int = None
-    c_links: Vector = None
-    c_rechts: Vector = None
-    profil: str = None
+    nose_inner: Vector = None
+    nose_outer: Vector = None
+    back_inner: Vector = None
+    back_outer: Vector = None
+    profile_name: str = None
 
 
 @dataclass()
-class Leitwerk():
-    fluegel: List[Fluegelsegment] = None
+class TLeitwerk():
+    hoehenleitwerk: List[Fluegelsegment] = None
+    seitenleitwerk: List[Fluegelsegment] = None
+
+
+@dataclass()
+class VLeitwerk():
+    leitwerk: List[Fluegelsegment] = None
+
+
+@dataclass
+class Leitwerktyp():
+    typ: TLeitwerk|VLeitwerk = None
 
 
 @dataclass()
@@ -45,60 +54,17 @@ class Fluegel():
 @dataclass()
 class Flugzeug():
     name: str = None
-    leitwerk: Leitwerk = None
+    leitwerk: Leitwerktyp = None
     fluegel: Fluegel = None
     rumpf: Rumpf = None
-    mass: MassTable = None
 
 
 class FlugzeugBuilder():
-    def __init__(self):
+    def __init__(self, fluegel, leitwerk, rumpf):
         self.flugzeug = Flugzeug()
-
-    def leitwerk(self, leitwerk):
+        self.flugzeug.fluegel = fluegel
         self.flugzeug.leitwerk = leitwerk
-
-        return self
-
-    def fluegel(self, fluegel):
-        self.fluegel = fluegel
-
-        return self
-
-    def rumpf(self, rumpf):
-        self.rumpf = rumpf
-
-        return self
+        self.flugzeug.rumpf = rumpf
 
     def get(self):
         return self.flugzeug
-
-
-class LeitwerkBuilder():
-    def __init__(self):
-        self.leitwerk = Leitwerk()
-
-    def addFluegelsegment(self, fluegelsegment):
-        if self.leitwerk.fluegelsegment is None:
-            self.leitwerk.fluegelsegment = list()
-        self.leitwerk.fluegelsegment.append(fluegelsegment)
-
-        return self
-
-    def get(self):
-        return self.leitwerk
-
-
-class FluegelBuilder():
-    def __init__(self):
-        self.fluegel = Fluegel()
-
-    def addFluegelsegment(self, fluegelsegment):
-        if self.fluegel.fluegelsegment is None:
-            self.fluegel.fluegelsegment = list()
-        self.fluegel.fluegelsegment.append(fluegelsegment)
-
-        return self
-
-    def get(self):
-        return self.fluegel

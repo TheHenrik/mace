@@ -1,4 +1,4 @@
-class params():
+class Params:
     #Constants
     
     
@@ -9,3 +9,4 @@ class params():
 
     #Akamodell parameters
     styro_density = 320
+
