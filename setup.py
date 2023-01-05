@@ -1,6 +1,7 @@
 from setuptools import setup
 import os
 
+
 def fast_scandir(dirname):
     subfolders= [f.path for f in os.scandir(dirname) if f.is_dir()]
     for dirname in list(subfolders):
@@ -25,13 +26,13 @@ def get_subdir(dirname):
 setup(name='mace',
         version='0.1.0',
         author='Tjalf Stadel',
-        packages=['mace','mace.test','mace.domain'],
-        #scripts='bin/test.py',
-        #description='A package for analysing modell airplanes',
-        #long_description=open('README.md').read(),
-        #package_data={'MACE': ['data/mace_data.txt']},
-        #install_requires= [
-        #    'numpy',
-        #    'dataclasses',
-        #    ]
+        packages=get_subdir('mace'),
+        scripts=['bin/test.py'],
+        description='A package for analysing modell airplanes',
+        long_description=open('README.md').read(),
+        package_data={'MACE': ['data/mace_data.txt']},
+        install_requires= [
+            'numpy',
+            'dataclasses>=0.6',
+            ]
       )
