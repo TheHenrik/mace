@@ -22,16 +22,16 @@ def get_subdir(dirname):
     return subfolders
 
 
-setup(  name='MACE',
+setup(name='mace',
         version='0.1.0',
         author='Tjalf Stadel',
-        packages=['mace','mace.test'],
-        scripts='bin/test.py',
+        packages=['mace','mace.test','mace.domain'],
+        #scripts='bin/test.py',
         description='A package for analysing modell airplanes',
-        long_description=open('README.md').read(),
-        package_data={'MACE': ['data/mace_data.txt']},
-        install_requires= [
-            'numpy',
-            'dataclasses',
-            ]
+        #long_description=open('README.md').read(),
+        #package_data={'MACE': ['data/mace_data.txt']},
+        #install_requires= [
+        #    'numpy',
+        #    'dataclasses',
+        #    ]
       )
