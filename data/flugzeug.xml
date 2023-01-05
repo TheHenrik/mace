@@ -23,6 +23,7 @@
                 <y>0</y>
                 <z>11</z>
             </BackOuter>
+        </Fluegelsegment>
     </Fluegel>
     <Leitwerk type='TLeitwerk'>
         <Fluegelsegment id='hoehenleitwerk'>
@@ -46,6 +47,6 @@
                 <y>10</y>
                 <z>5</z>
             </BackOuter>
-    
+        </Fluegelsegment>
     </Leitwerk>
 </Flugzeug>
