@@ -27,18 +27,20 @@ class Fluegelsegment():
     nose_outer: Vector = None
     back_inner: Vector = None
     back_outer: Vector = None
-    profile_name: str = None
 
 
 @dataclass()
 class TLeitwerk():
     hoehenleitwerk: List[Fluegelsegment] = None
+    airfoilhl: str = None
     seitenleitwerk: List[Fluegelsegment] = None
+    airfoilsl: str = None
 
 
 @dataclass()
 class VLeitwerk():
     leitwerk: List[Fluegelsegment] = None
+    airfoil = None
 
 
 @dataclass
@@ -49,6 +51,7 @@ class Leitwerktyp():
 @dataclass()
 class Fluegel():
     fluegelsegment: List[Fluegelsegment] = None
+    airfoi: str = None
 
 
 @dataclass()
