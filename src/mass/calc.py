@@ -11,4 +11,5 @@ def estimate_weight(flugzeug, parameters = Params):
 
 
 def getWeightSegment(segment,parameter):
-    return volume*parameter.styro + area*parameter.kohle
+    #return volume*parameter.styro + area*parameter.kohle
+    pass

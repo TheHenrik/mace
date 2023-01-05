@@ -1,6 +1,6 @@
 from typing import List
 from dataclasses import dataclass
-from coord import Vector
+from vector import Vector
 import xml.etree.ElementTree as ET
 
 
