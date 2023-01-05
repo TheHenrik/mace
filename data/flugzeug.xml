@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<Flugzeug Name = 'Test'>
+    <Fluegel>
+        <Airfoil>n0012</Airfoil>
+    	<Fluegelsegment id='inner'>
+            <NaseInnen>
+                <x>0</x>
+                <y>0</y>
+                <z>0</z>
+            </NaseInnen>
+            <NaseAußen>
+                <x>1</x>
+                <y>0</y>
+                <z>10</z>
+            </NaseAußen>
+            <BackInner>
+                <x>10</x>
+                <y>0</y>
+                <z>0</z>
+            </BackInner>
+            <BackOuter>
+                <x>10</x>
+                <y>0</y>
+                <z>11</z>
+            </BackOuter>
+    </Fluegel>
+    <Leitwerk type='TLeitwerk'>
+        <Fluegelsegment id='hoehenleitwerk'>
+            <NaseInnen>
+                <x>0</x>
+                <y>10</y>
+                <z>-5</z>
+            </NaseInnen>
+            <NaseAußen>
+                <x>1</x>
+                <y>10</y>
+                <z>5</z>
+            </NaseAußen>
+            <BackInner>
+                <x>4</x>
+                <y>10</y>
+                <z>-5</z>
+            </BackInner>
+            <BackOuter>
+                <x>4</x>
+                <y>10</y>
+                <z>5</z>
+            </BackOuter>
+    
+    </Leitwerk>
+</Flugzeug>

@@ -1,6 +1,8 @@
 from typing import List
 from dataclasses import dataclass
-from vector import Vector
+from coord import Vector
+import xml.etree.ElementTree as ET
+
 
 @dataclass
 class RumpfProfil():
@@ -62,12 +64,18 @@ class Flugzeug():
     rumpf: Rumpf = None
 
 
-class FlugzeugBuilder():
-    def __init__(self, fluegel, leitwerk, rumpf):
+class FlugzeugParser():
+    def __init__(self, file_name):
         self.flugzeug = Flugzeug()
-        self.flugzeug.fluegel = fluegel
-        self.flugzeug.leitwerk = leitwerk
-        self.flugzeug.rumpf = rumpf
+        self.tree = ET.parse(file_name)
 
-    def get(self):
+    def build(self):
         return self.flugzeug
+
+
+def main():
+    f = FlugzeugParser('flugzeug.xml').build()
+
+
+if __name__ == "__main__":
+    main()
