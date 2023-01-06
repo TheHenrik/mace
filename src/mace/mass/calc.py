@@ -1,12 +1,8 @@
-#For testing purposes only
-import cProfile
-import pstats
 import re
-import time
-#rly needed
 from operator import attrgetter
 
 from mace.domain.vector import Vector, Vectorcalc
+from mace.domain.plane import *
 
 
 def scaleProfil(profil: list, nase: Vector, hinterkante: Vector) -> list:
@@ -15,7 +11,7 @@ def scaleProfil(profil: list, nase: Vector, hinterkante: Vector) -> list:
 
 
 def get_profil(airfoil: str) -> list:
-    file_location = f'airfoils/{airfoil}.dat'
+    file_location = f'./././data/airfoils/{airfoil}.dat'
     with open(file_location, 'rt') as f:
         raw_data = f.read()
         data = re.findall(r'([01].\d+) +([0\-].\d+)', raw_data)
@@ -74,35 +70,24 @@ def mesh(points, profil_innen, profil_außen):
     return area, -volume
         
 
-def get_mass(airfoil, nase_innen, nase_außen, hinterkante_innen, hinterkante_außen):
-    profil = get_profil(airfoil)
+def get_mass_wing(wing: Fluegel):
+    mass = 0
+    profil = get_profil(wing.airfoil)
     points = len(profil)
 
-    profil_innen = scaleProfil(profil, nase_innen, hinterkante_innen)
-    profil_außen = scaleProfil(profil, nase_außen, hinterkante_außen)
+    for segment in wing.fluegelsegment:
+        profil_innen = scaleProfil(profil, segment.nose_inner, segment.back_inner)
+        profil_außen = scaleProfil(profil, segment.nose_outer, segment.back_outer)
 
-    area, volume = mesh(points, profil_innen, profil_außen)  
+        area, volume = mesh(points, profil_innen, profil_außen)
+        mass += area
+        mass += volume * 10_000
 
-    return area, volume 
-
-
-def performance():
-    repetitions = 1
-    start = time.perf_counter()
-    for _ in range(repetitions):
-        get_mass()
-    end = time.perf_counter()
-    return (end-start)/repetitions
+    return mass 
 
 
-def perf_report():
-    with cProfile.Profile() as pr:
-        get_profil('n0012')
+def get_mass_aircraft(aircraft: Flugzeug):
+    mass = 0
+    mass += get_mass_wing(aircraft.fluegel)
 
-    stats = pstats.Stats(pr)
-    stats.sort_stats(pstats.SortKey.TIME)
-    stats.dump_stats(filename='need_profiling.prof')   
-
-
-if __name__ == '__main__':
-    print(get_mass())
+    return mass
