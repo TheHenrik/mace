@@ -21,11 +21,11 @@ def performance():
 
 def perf_report():
     with cProfile.Profile() as pr:
-        performance()
+        main()
     stats = pstats.Stats(pr)
     stats.sort_stats(pstats.SortKey.TIME)
     stats.dump_stats(filename='need_profiling.prof')  
  
 
 if __name__ == "__main__":
-    main()
+    perf_report()
