@@ -13,7 +13,8 @@ readme = "README.md"
 license = {file = "LICENSE.txt"}
 requires-python = ">=3.11"
 dependencies=[
-    'numpy'
+    'numpy',
+    'PySimpleGUI'
 ]
 
 classifiers = [
@@ -29,5 +30,5 @@ keywords = ["modell aircraft",
 [project.urls]
 "Repository" = "https://github.com/TheHenrik/mace"
 
-#[project.gui-scripts]
-#hello-world = "timmins:hello_world"
+[project.gui-scripts]
+mace-gui = "mace:gui"
