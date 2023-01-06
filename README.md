@@ -6,6 +6,18 @@ This package is created for the Akamodell Stuttgart by [Tjalf Stadel](https://gi
 
 ## How to use
 
+Clone this repository and run:
+
+```powershell
+    >>>pip install .
+```
+
+or if you want to edit the project use:
+
+```powershell
+    >>>pip install -e .
+```
+
 Read the non-existent documentation or write Gregor Zwickl for help. 
 
 ## License ad on
