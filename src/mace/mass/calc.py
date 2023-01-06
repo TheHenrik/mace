@@ -1,8 +1,9 @@
 import re
+from functools import cache
 from operator import attrgetter
 
-from mace.domain.vector import Vector, Vectorcalc
 from mace.domain.plane import *
+from mace.domain.vector import Vector, Vectorcalc
 
 
 def scaleProfil(profil: list, nase: Vector, hinterkante: Vector) -> list:
@@ -86,6 +87,7 @@ def mesh(points, profil_innen, profil_außen):
     return area, -volume
 
 
+@cache
 def get_mass_wing(wing: Fluegel):
     mass = 0
     profil = get_profil(wing.airfoil)

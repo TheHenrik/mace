@@ -1,8 +1,9 @@
-from mace.domain.plane import FlugzeugParser
-from mace.mass.calc import get_mass_aircraft
 import cProfile
 import pstats
 import time
+
+from mace.domain.plane import FlugzeugParser
+from mace.mass.calc import get_mass_aircraft
 
 
 def main():
