@@ -6,11 +6,12 @@ build-backend = "setuptools.build_meta"
 name = "mace"
 version = "0.0.1"
 authors = [
-  { name="Tjalf Stadel", email="tjalf13+github@gmail.com" },
+  { name="Tjalf Stadel", email="tjalf13+mace@gmail.com" },
 ]
 description = "A package for evaluating and analysing modell Aircraft"
 readme = "README.md"
 requires-python = ">=3.11"
+dependencies=['numpy','dataclasses']
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: GNU Public License",
@@ -18,7 +19,10 @@ classifiers = [
 ]
 
 [tool.setuptools.packages.find]
-where = ["mace"]  # ["."] by default
+where = ["mace"]
 
 [project.urls]
 "Homepage" = "https://github.com/TheHenrik/mace"
+
+#[project.gui-scripts]
+#hello-world = "timmins:hello_world"

@@ -6,7 +6,7 @@ import time
 #rly needed
 from operator import attrgetter
 
-from ..domain.vector import Vector, Vectorcalc
+from mace.domain.vector import Vector, Vectorcalc
 
 
 def scaleProfil(profil: list, nase: Vector, hinterkante: Vector) -> list:

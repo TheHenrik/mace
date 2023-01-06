@@ -1,7 +1,8 @@
-from typing import List
-from dataclasses import dataclass
-from vector import Vector
 import xml.etree.ElementTree as ET
+from dataclasses import dataclass
+from typing import List
+
+from mace.domain.vector import Vector
 
 
 @dataclass
