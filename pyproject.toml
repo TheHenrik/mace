@@ -11,18 +11,18 @@ authors = [
 description = "A package for evaluating and analysing modell Aircraft"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies=['numpy','dataclasses']
+dependencies=[
+    'numpy'
+]
+
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: GNU Public License",
     "Operating System :: OS Independent",
 ]
 
-#[tool.setuptools.packages.find]
-#where = ["mace"]
-
 [project.urls]
-"Homepage" = "https://github.com/TheHenrik/mace"
+"Repository" = "https://github.com/TheHenrik/mace"
 
 #[project.gui-scripts]
 #hello-world = "timmins:hello_world"
