@@ -10,6 +10,7 @@ authors = [
 ]
 description = "A package for evaluating and analysing modell Aircraft"
 readme = "README.md"
+license = {file = "LICENSE.txt"}
 requires-python = ">=3.11"
 dependencies=[
     'numpy'
@@ -19,6 +20,10 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: GNU Public License",
     "Operating System :: OS Independent",
+]
+
+keywords = ["modell aircraft",
+            "Akamodell Stuttgart"
 ]
 
 [project.urls]
