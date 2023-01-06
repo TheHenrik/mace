@@ -1,12 +1,8 @@
 class Params:
-    #Constants
-    
-    
-    
-    #Earth parameters
+    # Constants
+
+    # Earth parameters
     g = 9.81
 
-
-    #Akamodell parameters
+    # Akamodell parameters
     styro_density = 320
-

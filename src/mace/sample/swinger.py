@@ -4,10 +4,11 @@ import cProfile
 import pstats
 import time
 
+
 def main():
-    flugzeug = FlugzeugParser('flugzeug.xml').build_plane()
+    flugzeug = FlugzeugParser("flugzeug.xml").build_plane()
     flugzeug.weight = get_mass_aircraft(flugzeug)
-    print(f'The weight of the plane is approx. {flugzeug.weight} kg!')
+    print(f"The weight of the plane is approx. {flugzeug.weight} kg!")
 
 
 def performance():
@@ -16,7 +17,7 @@ def performance():
     for _ in range(repetitions):
         main()
     end = time.perf_counter()
-    return (end-start)/repetitions
+    return (end - start) / repetitions
 
 
 def perf_report():
@@ -24,8 +25,8 @@ def perf_report():
         main()
     stats = pstats.Stats(pr)
     stats.sort_stats(pstats.SortKey.TIME)
-    stats.dump_stats(filename='need_profiling.prof')  
- 
+    stats.dump_stats(filename="need_profiling.prof")
+
 
 if __name__ == "__main__":
     perf_report()

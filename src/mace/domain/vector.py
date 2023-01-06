@@ -8,14 +8,14 @@ class Vector:
         self.z = float(z)
 
     def __repr__(self) -> str:
-        return f'({self.x}, {self.y}, {self.z})'
+        return f"({self.x}, {self.y}, {self.z})"
 
-    def __eq__(self, next: 'Vector|int') -> bool:
+    def __eq__(self, next: "Vector|int") -> bool:
         if self.x == next.x and self.y == next.y and self.z == next.z:
             return True
         return False
 
-    def __add__(self, next: 'Vector|float') -> 'Vector':
+    def __add__(self, next: "Vector|float") -> "Vector":
         if type(next) is type(self):
             x = self.x + next.x
             y = self.y + next.y
@@ -24,96 +24,96 @@ class Vector:
             x = self.x + next
             y = self.y + next
             z = self.z + next
-        return Vector(x,y,z) 
-        
-    def __sub__(self, next: 'Vector|float') -> 'Vector':
+        return Vector(x, y, z)
+
+    def __sub__(self, next: "Vector|float") -> "Vector":
         if type(next) is type(self):
             x = self.x - next.x
-            y = self.y - next.y 
+            y = self.y - next.y
             z = self.z - next.z
         else:
             x = self.x - next
             y = self.y - next
             z = self.z - next
-        return Vector(x,y,z)
+        return Vector(x, y, z)
 
-    def __mul__(self, next: 'Vector|float') -> 'Vector':
+    def __mul__(self, next: "Vector|float") -> "Vector":
         if type(next) is type(self):
             x = self.x * next.x
-            y = self.y * next.y 
+            y = self.y * next.y
             z = self.z * next.z
         else:
             x = self.x * next
             y = self.y * next
             z = self.z * next
-        return Vector(x,y,z)
+        return Vector(x, y, z)
 
-    def __truediv__(self, next: 'Vector|float') -> 'Vector':
+    def __truediv__(self, next: "Vector|float") -> "Vector":
         if type(next) is type(self):
             x = self.x / next.x
-            y = self.y / next.y 
+            y = self.y / next.y
             z = self.z / next.z
         else:
             x = self.x / next
             y = self.y / next
             z = self.z / next
-        return Vector(x,y,z)
+        return Vector(x, y, z)
 
-    def __floordiv__(self, next: 'Vector|float') -> 'Vector':
+    def __floordiv__(self, next: "Vector|float") -> "Vector":
         if type(next) is type(self):
             x = self.x // next.x
-            y = self.y // next.y 
+            y = self.y // next.y
             z = self.z // next.z
         else:
             x = self.x // next
             y = self.y // next
             z = self.z // next
-        return Vector(x,y,z)
+        return Vector(x, y, z)
 
-    def __iadd__(self, next: 'Vector|float') -> None:
+    def __iadd__(self, next: "Vector|float") -> None:
         if type(next) is type(self):
             self.x += next.x
-            self.y += next.y 
+            self.y += next.y
             self.z += next.z
         else:
             self.x += next
             self.y += next
-            self.z += next 
-        
-    def __isub__(self, next: 'Vector|float') -> None:
+            self.z += next
+
+    def __isub__(self, next: "Vector|float") -> None:
         if type(next) is type(self):
             self.x -= next.x
-            self.y -= next.y 
+            self.y -= next.y
             self.z -= next.z
         else:
             self.x -= next
             self.y -= next
             self.z -= next
 
-    def __imul__(self, next: 'Vector|float') -> None:
+    def __imul__(self, next: "Vector|float") -> None:
         if type(next) is type(self):
             self.x *= next.x
-            self.y *= next.y 
+            self.y *= next.y
             self.z *= next.z
         else:
             self.x *= next
             self.y *= next
             self.z *= next
 
-    def __itruediv__(self, next: 'Vector|float') -> None:
+    def __itruediv__(self, next: "Vector|float") -> None:
         if type(next) is type(self):
             self.x /= next.x
-            self.y /= next.y 
+            self.y /= next.y
             self.z /= next.z
         else:
             self.x /= next
             self.y /= next
             self.z /= next
 
-    def __ifloordiv__(self, next: 'Vector|float') -> None:
+    def __ifloordiv__(self, next: "Vector|float") -> None:
         if type(next) is type(self):
             self.x //= next.x
-            self.y //= next.y 
+            self.y //= next.y
             self.z //= next.z
         else:
             self.x //= next
@@ -121,28 +121,28 @@ class Vector:
             self.z //= next
 
     def __abs__(self) -> float:
-        return np.sqrt(self.x**2+self.y**2+self.z**2)
+        return np.sqrt(self.x**2 + self.y**2 + self.z**2)
 
     __radd__ = __add__
     __rmul__ = __mul__
 
 
-class Vectorcalc():
+class Vectorcalc:
     def cross(first: Vector, second: Vector) -> Vector:
         x = first.y * second.z - first.z * second.y
         y = first.z * second.x - first.x * second.z
         z = first.x * second.y - first.y * second.x
-        return Vector(x,y,z)
+        return Vector(x, y, z)
 
     def dot(first: Vector, second: Vector) -> float:
         x = first.x * second.x
         y = first.y * second.y
         z = first.z * second.z
-        return x+y+z
+        return x + y + z
 
     def tri_volume(first: Vector, second: Vector, third: Vector) -> float:
-        """ V = <a⨯b, c>*1/6"""
-        return Vectorcalc.dot(Vectorcalc.cross(first,second),third)/6
+        """V = <a⨯b, c>*1/6"""
+        return Vectorcalc.dot(Vectorcalc.cross(first, second), third) / 6
 
     def tri_area(first: Vector, second: Vector, third: Vector) -> float:
-        return abs(Vectorcalc.cross(second-first,third-first))/2
+        return abs(Vectorcalc.cross(second - first, third - first)) / 2
