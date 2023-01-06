@@ -68,7 +68,7 @@ class Flugzeug():
 class FlugzeugParser():
     def __init__(self, file_name):
         self.flugzeug = Flugzeug()
-        self.tree = ET.parse(f'././data/{file_name}')
+        self.tree = ET.parse(f'./././data/planes/{file_name}')
 
     def build_plane(self):
         root = self.tree.getroot()
