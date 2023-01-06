@@ -15,6 +15,9 @@ class Vector:
             return True
         return False
 
+    def __hash__(self) -> int:
+        return hash((self.x, self.y, self.z))
+
     def __add__(self, next: "Vector|float") -> "Vector":
         if type(next) is type(self):
             x = self.x + next.x
