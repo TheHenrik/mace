@@ -1,7 +1,3 @@
-import cProfile
-import pstats
-import time
-
 from mace import FlugzeugParser, get_mass_aircraft
 
 
@@ -11,22 +7,5 @@ def main():
     print(f"The weight of the plane is approx. {flugzeug.weight} kg!")
 
 
-def performance():
-    repetitions = 1
-    start = time.perf_counter()
-    for _ in range(repetitions):
-        main()
-    end = time.perf_counter()
-    return (end - start) / repetitions
-
-
-def perf_report():
-    with cProfile.Profile() as pr:
-        main()
-    stats = pstats.Stats(pr)
-    stats.sort_stats(pstats.SortKey.TIME)
-    stats.dump_stats(filename="need_profiling.prof")
-
-
 if __name__ == "__main__":
-    perf_report()
+    main()
