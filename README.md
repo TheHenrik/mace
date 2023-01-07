@@ -29,6 +29,7 @@ If you want to uninstall 😢, run:
 ```powershell
 pip uninstall mace
 ```
+
 ## Documentation
 
 To be included, as well as docstrings.
