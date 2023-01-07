@@ -87,7 +87,6 @@ def mesh(points, profil_innen, profil_außen):
     return area, -volume
 
 
-@cache
 def get_mass_wing(wing: Fluegel):
     mass = 0
     profil = get_profil(wing.airfoil)
