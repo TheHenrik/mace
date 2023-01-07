@@ -97,7 +97,7 @@ def get_mass_wing(wing: Fluegel):
         profil_außen = scaleProfil(profil, segment.nose_outer, segment.back_outer)
 
         area, volume = mesh(points, profil_innen, profil_außen)
-        mass += area
+        mass += area * 1
         mass += volume * 10_000
 
     return mass
