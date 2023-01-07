@@ -2,8 +2,8 @@ import re
 from functools import cache
 from operator import attrgetter
 
-from mace import Vector, Vectorcalc
-from mace.domain import Fluegel, Fluegelsegment, Flugzeug
+from mace.domain.vector import Vector, Vectorcalc
+from mace.domain.plane import Fluegel, Fluegelsegment, Flugzeug
 
 
 def scaleProfil(profil: list, nase: Vector, hinterkante: Vector) -> list:

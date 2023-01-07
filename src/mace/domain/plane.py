@@ -2,7 +2,7 @@ import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from typing import List
 
-from mace import Vector
+from mace.domain.vector import Vector
 
 
 @dataclass
