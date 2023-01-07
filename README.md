@@ -26,12 +26,8 @@ mace-gui
 
 ## Documentation
 
-Read the non-existent documentation or write Gregor Zwickl for help.
+To be included, as well as docstrings.
 
 ## Creator
 
 This package is created for the [Akamodell Stuttgart](http://www.akamodell.de/) by [Tjalf Stadel](https://github.com/TheHenrik) and Gregor Zwickl as our Bachelor Thesis and is supervised by the [IFB](https://www.ifb.uni-stuttgart.de/).
-
-## License add on
-
-If this program is used to build a plane for ACC, you are required to gift the Akamodell Stuttgart a crate of beer or other liquor.
