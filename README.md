@@ -18,6 +18,12 @@ or if you want to edit the package, clone the repository and run:
 pip install -e .
 ```
 
+ But consider installing all optional dependencies:
+
+ ```powershell
+ pip install -e .[dev]
+ ```
+
 To open the mace-gui run:
 
 ```powershell
