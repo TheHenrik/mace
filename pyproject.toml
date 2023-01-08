@@ -28,6 +28,13 @@ keywords = ["modell aircraft",
             "Akamodell Stuttgart"
 ]
 
+[project.optional-dependencies]
+dev = [
+  'tqdm',
+  'bs4',
+  'requests'
+]
+
 [project.urls]
 "Repository" = "https://github.com/TheHenrik/mace"
 
