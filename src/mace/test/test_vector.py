@@ -10,8 +10,13 @@ class TestVector(unittest.TestCase):
         self.b = Vector(2, 4, 7)
 
     def test_add(self):
-        sum = self.a + self.b
-        self.assertEqual(sum, Vector(2, 5, 10))
+        sum = self.a + self.b + 1
+        self.assertEqual(sum, Vector(3, 6, 11))
+
+    def test_iadd(self):
+        self.a += 1
+        self.a += self.b
+        self.assertEqual(self.a, Vector(3,6,11))
 
     def test_true(self):
         self.assertTrue(True)

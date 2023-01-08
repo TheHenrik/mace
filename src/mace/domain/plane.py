@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import List
 
 from mace.domain.vector import Vector
-from mace.domain.params import Params
+from mace.domain.params import Parameter
 
 
 @dataclass

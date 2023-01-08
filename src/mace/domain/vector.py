@@ -82,6 +82,7 @@ class Vector:
             self.x += next
             self.y += next
             self.z += next
+        return self
 
     def __isub__(self, next: "Vector|float") -> None:
         if type(next) is type(self):
@@ -92,6 +93,7 @@ class Vector:
             self.x -= next
             self.y -= next
             self.z -= next
+        return self
 
     def __imul__(self, next: "Vector|float") -> None:
         if type(next) is type(self):
@@ -102,6 +104,7 @@ class Vector:
             self.x *= next
             self.y *= next
             self.z *= next
+        return self
 
     def __itruediv__(self, next: "Vector|float") -> None:
         if type(next) is type(self):
@@ -112,6 +115,7 @@ class Vector:
             self.x /= next
             self.y /= next
             self.z /= next
+        return self
 
     def __ifloordiv__(self, next: "Vector|float") -> None:
         if type(next) is type(self):
@@ -122,6 +126,7 @@ class Vector:
             self.x //= next
             self.y //= next
             self.z //= next
+        return self
 
     def __abs__(self) -> float:
         return np.sqrt(self.x**2 + self.y**2 + self.z**2)
