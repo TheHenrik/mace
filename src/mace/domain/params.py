@@ -1,8 +1,18 @@
-class Params:
-    # Constants
+from dataclasses import dataclass
 
-    # Earth parameters
-    g = 9.81
+@dataclass
+class Constants:
+    g:float = 9.81
 
-    # Akamodell parameters
-    styro_density = 320
+
+@dataclass
+class material:
+     name: str
+     use: str
+     count: int
+
+
+
+class Parameter:
+    constants = Constants
+
