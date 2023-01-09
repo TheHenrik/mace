@@ -103,10 +103,9 @@ def get_mass_wing(wing: Fluegel):
     return mass
 
 
-
 def get_mass_empennage(empennage: Leitwerktyp):
     mass = 0
-    if type(empennage.typ) is  TLeitwerk:
+    if type(empennage.typ) is TLeitwerk:
         segments = empennage.typ.hoehenleitwerk
     profil = get_profil(empennage.typ.hoehenleitwerk)
     points = len(profil)
@@ -125,6 +124,6 @@ def get_mass_empennage(empennage: Leitwerktyp):
 def get_mass_aircraft(aircraft: Flugzeug):
     mass = 0
     mass += get_mass_wing(aircraft.fluegel)
-    mass += get_mass_empennage(aircraft.leitwerk)   
+    mass += get_mass_empennage(aircraft.leitwerk)
 
     return mass

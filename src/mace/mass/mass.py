@@ -7,6 +7,14 @@ from mace.domain.plane import Fluegel, Fluegelsegment, Flugzeug, Leitwerktyp, TL
 
 
 class Calcmass:
+    mass: float = None
+
+    def __init__(self, arg) -> None:
+        if type(arg) is Flugzeug:
+            self.plane(arg)
+        else:
+            raise ValueError
+
     def plane():
         pass
 
