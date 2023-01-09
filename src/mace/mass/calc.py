@@ -104,7 +104,7 @@ def get_mass_wing(wing: Fluegel):
 
 
 
-def get_mass_enpennage(empennage: Leitwerktyp):
+def get_mass_empennage(empennage: Leitwerktyp):
     mass = 0
     if type(empennage.typ) is  TLeitwerk:
         segments = empennage.typ.hoehenleitwerk
