@@ -2,8 +2,8 @@ import numpy as np
 
 
 class Vector:
-    """Class for points in three dimensions (x, y, z)
-    """
+    """Class for points in three dimensions (x, y, z)"""
+
     def __init__(self, x, y, z) -> None:
         self.x = float(x)
         self.y = float(y)
@@ -143,8 +143,8 @@ class Vector:
 
 
 class Vectorcalc:
-    """Mathematical functions for Vector
-    """
+    """Mathematical functions for Vector"""
+
     def cross(first: Vector, second: Vector) -> Vector:
         x = first.y * second.z - first.z * second.y
         y = first.z * second.x - first.x * second.z
@@ -162,6 +162,5 @@ class Vectorcalc:
         return Vectorcalc.dot(Vectorcalc.cross(first, second), third) / 6
 
     def tri_area(first: Vector, second: Vector, third: Vector) -> float:
-        """A = abs(AB ⨯ AC)/2
-        """
+        """A = abs(AB ⨯ AC)/2"""
         return abs(Vectorcalc.cross(second - first, third - first)) / 2
