@@ -124,6 +124,6 @@ def get_mass_empennage(empennage: Leitwerktyp):
 def get_mass_aircraft(aircraft: Flugzeug):
     mass = 0
     mass += get_mass_wing(aircraft.fluegel)
-    mass += get_mass_empennage(aircraft.leitwerk)
+    #mass += get_mass_empennage(aircraft.leitwerk)
 
     return mass
