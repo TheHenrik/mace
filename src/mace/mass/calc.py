@@ -3,7 +3,7 @@ from functools import cache
 from operator import attrgetter
 
 from mace.domain.vector import Vector, Vectorcalc
-from mace.domain.plane import Fluegel, Fluegelsegment, Flugzeug
+from mace.domain.plane import Fluegel, Fluegelsegment, Flugzeug, Leitwerktyp, TLeitwerk
 
 
 def scaleProfil(profil: list, nase: Vector, hinterkante: Vector) -> list:
@@ -103,8 +103,27 @@ def get_mass_wing(wing: Fluegel):
     return mass
 
 
+def get_mass_empennage(empennage: Leitwerktyp):
+    mass = 0
+    if type(empennage.typ) is TLeitwerk:
+        segments = empennage.typ.hoehenleitwerk
+    profil = get_profil(empennage.typ.hoehenleitwerk)
+    points = len(profil)
+
+    for segment in segments:
+        profil_innen = scaleProfil(profil, segment.nose_inner, segment.back_inner)
+        profil_außen = scaleProfil(profil, segment.nose_outer, segment.back_outer)
+
+        area, volume = mesh(points, profil_innen, profil_außen)
+        mass += area * 1
+        mass += volume * 10_000
+
+    return mass
+
+
 def get_mass_aircraft(aircraft: Flugzeug):
     mass = 0
     mass += get_mass_wing(aircraft.fluegel)
+    mass += get_mass_empennage(aircraft.leitwerk)
 
     return mass
