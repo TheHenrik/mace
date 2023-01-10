@@ -16,7 +16,7 @@ class TestVector(unittest.TestCase):
     def test_iadd(self):
         self.a += 1
         self.a += self.b
-        self.assertEqual(self.a, Vector(3,6,11))
+        self.assertEqual(self.a, Vector(3, 6, 11))
 
     def test_true(self):
         self.assertTrue(True)

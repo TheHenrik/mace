@@ -32,7 +32,8 @@ keywords = ["modell aircraft",
 dev = [
   'tqdm',
   'bs4',
-  'requests'
+  'requests',
+  'black'
 ]
 
 [project.urls]
