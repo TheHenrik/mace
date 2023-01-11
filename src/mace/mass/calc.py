@@ -20,13 +20,12 @@ def get_profil(airfoil: str) -> list:
     upper, lower = [], []
     mode, start = "u", float(data[0][0])
     for point in data:
-        x, y = map(float, point)
-        v = Vector(x, y, 0.0)
+        v = Vector(*point, 0.0)
         if mode == "u":
             upper.append(v)
         elif mode == "l":
             lower.append(v)
-        if abs(start - x) == 1:
+        if abs(start - point[0]) == 1:
             mode = "l"
 
     upper.sort(key=attrgetter("x"), reverse=False)
@@ -38,9 +37,9 @@ def mesh(points, profil_innen, profil_außen):
     area = 0
     volume = 0
     for i in range(points // 2):
-        io1, io2 = profil_innen[i], profil_innen[i + 1]
+        io1, io2 = profil_innen[ i], profil_innen[ i + 1]
         iu1, iu2 = profil_innen[-i], profil_innen[-i - 1]
-        ao1, ao2 = profil_außen[i], profil_außen[i + 1]
+        ao1, ao2 = profil_außen[ i], profil_außen[ i + 1]
         au1, au2 = profil_außen[-i], profil_außen[-i - 1]
 
         volume += Vectorcalc.tri_volume(io1, io2, ao2)
