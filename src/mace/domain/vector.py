@@ -4,10 +4,15 @@ import numpy as np
 class Vector:
     """Class for points in three dimensions (x, y, z)"""
 
-    def __init__(self, x, y, z) -> None:
-        self.x = float(x)
-        self.y = float(y)
-        self.z = float(z)
+    def __init__(self, x, y, z, *, forcefloat = True) -> None:
+        if forcefloat:
+            self.x = float(x)
+            self.y = float(y)
+            self.z = float(z)
+        else:
+            self.x = x
+            self.y = y
+            self.z = z
 
     def __repr__(self) -> str:
         return f"({self.x}, {self.y}, {self.z})"

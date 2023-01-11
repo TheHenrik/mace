@@ -25,7 +25,7 @@ def get_profil(airfoil: str) -> list:
             upper.append(v)
         elif mode == "l":
             lower.append(v)
-        if abs(start - point[0]) == 1:
+        if abs(start - float(point[0])) == 1:
             mode = "l"
 
     upper.sort(key=attrgetter("x"), reverse=False)
