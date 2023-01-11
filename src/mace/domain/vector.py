@@ -1,4 +1,4 @@
-import numpy as np
+import math
 
 
 class Vector:
@@ -141,7 +141,7 @@ class Vector:
         Returns:
             float: Lenghts
         """
-        return np.sqrt(self.x**2 + self.y**2 + self.z**2)
+        return math.sqrt(self.x**2 + self.y**2 + self.z**2)
 
     __radd__ = __add__
     __rmul__ = __mul__
