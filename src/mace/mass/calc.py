@@ -1,14 +1,32 @@
 import re
 from functools import cache
 from operator import attrgetter
+import numpy as np
 
-from mace.domain.vector import Vector, Vectorcalc
 from mace.domain.plane import Fluegel, Fluegelsegment, Flugzeug, Leitwerktyp, TLeitwerk
 
+def tri_area(first, second, third):
+    return np.sum(np.linalg.norm(np.cross(second - first, third - first), axis=1)) / 2
 
-def scaleProfil(profil: list, nase: Vector, hinterkante: Vector) -> list:
-    scale_factor = abs(hinterkante - nase)
-    return [nase + scale_factor * coord for coord in profil]
+def tri_volume(first, second, third):
+    return np.sum(np.cross(first, second) * third) / 6
+
+def gen_profile(profil, start_innen, end_innen, start_außen, end_außen):
+    innen_strecke = end_innen - start_innen
+    außen_strecke = end_außen - start_außen
+    innen_außen = start_außen - start_innen
+    höhen_strecke = np.cross(innen_außen, innen_strecke)
+
+    def scale(factors, vecs):
+        return (factors * np.repeat(vecs[np.newaxis], len(factors), axis=0).T).T
+
+    profil_innen = start_innen \
+        + scale(profil[:, 0], innen_strecke) \
+        + scale(profil[:, 1], höhen_strecke)
+    profil_außen = start_außen \
+        + scale(profil[:, 0], außen_strecke) \
+        + scale(profil[:, 1], höhen_strecke)
+    return profil_innen, profil_außen
 
 
 def get_profil(airfoil: str) -> list:
@@ -32,57 +50,30 @@ def get_profil(airfoil: str) -> list:
     lower.sort(key=attrgetter("x"), reverse=True)
     return upper + lower
 
-
-def mesh(points, profil_innen, profil_außen):
+def mesh(profil_innen, profil_außen):
     area = 0
     volume = 0
-    for i in range(points // 2):
-        io1, io2 = profil_innen[ i], profil_innen[ i + 1]
-        iu1, iu2 = profil_innen[-i], profil_innen[-i - 1]
-        ao1, ao2 = profil_außen[ i], profil_außen[ i + 1]
-        au1, au2 = profil_außen[-i], profil_außen[-i - 1]
+    assert len(profil_innen) == len(profil_außen)
+    indices = np.arange(len(profil_innen) // 2)
+    io1s, io2s = profil_innen[indices], profil_innen[indices + 1]
+    iu1s, iu2s = profil_innen[-indices], profil_innen[-indices - 1]
+    ao1s, ao2s = profil_außen[indices], profil_außen[indices + 1]
+    au1s, au2s = profil_außen[-indices], profil_außen[-indices - 1]
 
-        volume += Vectorcalc.tri_volume(io1, io2, ao2)
-        volume += Vectorcalc.tri_volume(io1, ao2, ao1)
-        volume += Vectorcalc.tri_volume(iu1, au2, iu2)
-        volume += Vectorcalc.tri_volume(iu1, au1, au2)
-        volume += Vectorcalc.tri_volume(io1, iu1, iu2)
-        volume += Vectorcalc.tri_volume(io1, iu2, io2)
-        volume += Vectorcalc.tri_volume(ao1, au2, au1)
-        volume += Vectorcalc.tri_volume(ao1, ao2, au2)
+    volume += tri_volume(io1s, io2s, ao2s)
+    volume += tri_volume(io1s, ao2s, ao1s)
+    volume += tri_volume(iu1s, au2s, iu2s)
+    volume += tri_volume(iu1s, au1s, au2s)
+    volume += tri_volume(io1s, iu1s, iu2s)
+    volume += tri_volume(io1s, iu2s, io2s)
+    volume += tri_volume(ao1s, au2s, au1s)
+    volume += tri_volume(ao1s, ao2s, au2s)
 
-        area += Vectorcalc.tri_area(io1, io2, ao2)
-        area += Vectorcalc.tri_area(io1, ao2, ao1)
-        area += Vectorcalc.tri_area(iu1, iu2, au2)
-        area += Vectorcalc.tri_area(iu1, au2, au1)
-    return area, -volume
-    for i in range(points - 1):
-        volume += Vectorcalc.tri_volume(
-            profil_innen[i], profil_innen[i + 1], profil_außen[i + 1]
-        )
-        volume += Vectorcalc.tri_volume(
-            profil_innen[i], profil_außen[i + 1], profil_außen[i]
-        )
-        area += Vectorcalc.tri_area(
-            profil_innen[i], profil_innen[i + 1], profil_außen[i + 1]
-        )
-        area += Vectorcalc.tri_area(
-            profil_innen[i], profil_außen[i + 1], profil_außen[i]
-        )
-
-    for i in range(points // 2):
-        volume += Vectorcalc.tri_volume(
-            profil_innen[i], profil_innen[points - i - 1], profil_innen[points - i - 2]
-        )
-        volume += Vectorcalc.tri_volume(
-            profil_innen[i], profil_innen[points - i - 2], profil_innen[i + 1]
-        )
-        volume += Vectorcalc.tri_volume(
-            profil_außen[i], profil_außen[points - i - 2], profil_außen[points - i - 1]
-        )
-        volume += Vectorcalc.tri_volume(
-            profil_außen[i], profil_außen[i + 1], profil_außen[points - i - 2]
-        )
+    area += tri_area(io1s, io2s, ao2s)
+    area += tri_area(io1s, ao2s, ao1s)
+    area += tri_area(iu1s, iu2s, au2s)
+    area += tri_area(iu1s, au2s, au1s)
+        
     return area, -volume
 
 
@@ -92,8 +83,8 @@ def get_mass_wing(wing: Fluegel):
     points = len(profil)
 
     for segment in wing.fluegelsegment:
-        profil_innen = scaleProfil(profil, segment.nose_inner, segment.back_inner)
-        profil_außen = scaleProfil(profil, segment.nose_outer, segment.back_outer)
+        profil_innen, profil_außen = gen_profile(\
+            np.asarray(profil), np.array([0,0,0]), np.array([0,1,0]), np.array([1,0,0]), np.array([1,1,0]))
 
         area, volume = mesh(points, profil_innen, profil_außen)
         mass += area * 1
@@ -110,8 +101,8 @@ def get_mass_empennage(empennage: Leitwerktyp):
     points = len(profil)
 
     for segment in segments:
-        profil_innen = scaleProfil(profil, segment.nose_inner, segment.back_inner)
-        profil_außen = scaleProfil(profil, segment.nose_outer, segment.back_outer)
+        profil_innen, profil_außen = \
+        gen_profile(np.asarray(profil), np.array([0,0,0]), np.array([0,1,0]), np.array([1,0,0]), np.array([1,1,0]))
 
         area, volume = mesh(points, profil_innen, profil_außen)
         mass += area * 1
