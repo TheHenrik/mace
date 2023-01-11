@@ -17,7 +17,7 @@ class Vector:
     def __repr__(self) -> str:
         return f"({self.x}, {self.y}, {self.z})"
 
-    def __eq__(self, next: "Vector|int") -> bool:
+    def __eq__(self, next: "Vector") -> bool:
         if self.x == next.x and self.y == next.y and self.z == next.z:
             return True
         return False
