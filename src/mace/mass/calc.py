@@ -5,11 +5,14 @@ import numpy as np
 
 from mace.domain.plane import Fluegel, Fluegelsegment, Flugzeug, Leitwerktyp, TLeitwerk
 
+
 def tri_area(first, second, third):
     return np.sum(np.linalg.norm(np.cross(second - first, third - first), axis=1)) / 2
 
+
 def tri_volume(first, second, third):
     return np.sum(np.cross(first, second) * third) / 6
+
 
 def gen_profile(profil, start_innen, end_innen, start_außen, end_außen):
     innen_strecke = end_innen - start_innen
@@ -20,12 +23,16 @@ def gen_profile(profil, start_innen, end_innen, start_außen, end_außen):
     def scale(factors, vecs):
         return (factors * np.repeat(vecs[np.newaxis], len(factors), axis=0).T).T
 
-    profil_innen = start_innen \
-        + scale(profil[:, 0], innen_strecke) \
+    profil_innen = (
+        start_innen
+        + scale(profil[:, 0], innen_strecke)
         + scale(profil[:, 1], höhen_strecke)
-    profil_außen = start_außen \
-        + scale(profil[:, 0], außen_strecke) \
+    )
+    profil_außen = (
+        start_außen
+        + scale(profil[:, 0], außen_strecke)
         + scale(profil[:, 1], höhen_strecke)
+    )
     return profil_innen, profil_außen
 
 
@@ -37,9 +44,10 @@ def get_profil(airfoil: str) -> list:
 
     profil = []
     for point in data:
-        profil.append(list(map(float,point)))
-        
+        profil.append(list(map(float, point)))
+
     return profil
+
 
 def mesh(profil_innen, profil_außen):
     area = 0
@@ -64,7 +72,7 @@ def mesh(profil_innen, profil_außen):
     area += tri_area(io1s, ao2s, ao1s)
     area += tri_area(iu1s, iu2s, au2s)
     area += tri_area(iu1s, au2s, au1s)
-        
+
     return area, volume
 
 
@@ -74,8 +82,13 @@ def get_mass_wing(wing: Fluegel):
     points = len(profil)
 
     for segment in wing.fluegelsegment:
-        profil_innen, profil_außen = gen_profile(\
-            np.asarray(profil), segment.nose_inner, segment.back_inner, segment.nose_outer, segment.nose_outer)
+        profil_innen, profil_außen = gen_profile(
+            np.asarray(profil),
+            segment.nose_inner,
+            segment.back_inner,
+            segment.nose_outer,
+            segment.nose_outer,
+        )
 
         area, volume = mesh(profil_innen, profil_außen)
         mass += area * 1
@@ -92,8 +105,13 @@ def get_mass_empennage(empennage: Leitwerktyp):
     points = len(profil)
 
     for segment in segments:
-        profil_innen, profil_außen = \
-        gen_profile(np.asarray(profil), np.array([0,0,0]), np.array([0,1,0]), np.array([1,0,0]), np.array([1,1,0]))
+        profil_innen, profil_außen = gen_profile(
+            np.asarray(profil),
+            segment.nose_inner,
+            segment.back_inner,
+            segment.nose_outer,
+            segment.nose_outer,
+        )
 
         area, volume = mesh(points, profil_innen, profil_außen)
         mass += area * 1
@@ -105,6 +123,6 @@ def get_mass_empennage(empennage: Leitwerktyp):
 def get_mass_aircraft(aircraft: Flugzeug):
     mass = 0
     mass += get_mass_wing(aircraft.fluegel)
-    #mass += get_mass_empennage(aircraft.leitwerk)
+    # mass += get_mass_empennage(aircraft.leitwerk)
 
     return mass

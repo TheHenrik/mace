@@ -111,5 +111,6 @@ class FlugzeugParser:
         return segment
 
     def build_vector(self, element):
-        return np.array(list(map(float,\
-            [element[0].text, element[1].text, element[2].text])))
+        return np.array(
+            list(map(float, [element[0].text, element[1].text, element[2].text]))
+        )

@@ -4,7 +4,7 @@ import math
 class Vector:
     """Class for points in three dimensions (x, y, z)"""
 
-    def __init__(self, x, y, z, *, forcefloat = True) -> None:
+    def __init__(self, x, y, z, *, forcefloat=True) -> None:
         if forcefloat:
             self.x = float(x)
             self.y = float(y)
