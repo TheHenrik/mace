@@ -9,19 +9,19 @@
                 <z>0</z>
             </NaseInnen>
             <NaseAußen>
-                <x>1</x>
+                <x>0</x>
                 <y>0</y>
-                <z>10</z>
+                <z>100</z>
             </NaseAußen>
             <BackInner>
-                <x>10</x>
+                <x>100</x>
                 <y>0</y>
                 <z>0</z>
             </BackInner>
             <BackOuter>
-                <x>10</x>
+                <x>100</x>
                 <y>0</y>
-                <z>11</z>
+                <z>100</z>
             </BackOuter>
         </Fluegelsegment>
     </Fluegel>

@@ -36,6 +36,7 @@ def gen_profile(profil, start_innen, end_innen, start_außen, end_außen):
     return profil_innen, profil_außen
 
 
+@cache
 def get_profil(airfoil: str) -> list:
     file_location = f"./././data/airfoils/{airfoil}.dat"
     with open(file_location, "rt") as f:
@@ -46,7 +47,7 @@ def get_profil(airfoil: str) -> list:
     for point in data:
         profil.append(list(map(float, point)))
 
-    return profil
+    return np.asarray(profil)
 
 
 def mesh(profil_innen, profil_außen):
@@ -79,15 +80,14 @@ def mesh(profil_innen, profil_außen):
 def get_mass_wing(wing: Fluegel):
     mass = 0
     profil = get_profil(wing.airfoil)
-    points = len(profil)
 
     for segment in wing.fluegelsegment:
         profil_innen, profil_außen = gen_profile(
-            np.asarray(profil),
+            profil,
             segment.nose_inner,
             segment.back_inner,
             segment.nose_outer,
-            segment.nose_outer,
+            segment.back_outer,
         )
 
         area, volume = mesh(profil_innen, profil_außen)
@@ -102,18 +102,17 @@ def get_mass_empennage(empennage: Leitwerktyp):
     if type(empennage.typ) is TLeitwerk:
         segments = empennage.typ.hoehenleitwerk
     profil = get_profil(empennage.typ.hoehenleitwerk)
-    points = len(profil)
 
     for segment in segments:
         profil_innen, profil_außen = gen_profile(
-            np.asarray(profil),
+            profil,
             segment.nose_inner,
             segment.back_inner,
             segment.nose_outer,
             segment.nose_outer,
         )
 
-        area, volume = mesh(points, profil_innen, profil_außen)
+        area, volume = mesh(profil_innen, profil_außen)
         mass += area * 1
         mass += volume * 10_000
 
