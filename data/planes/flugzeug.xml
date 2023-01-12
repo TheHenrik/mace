@@ -5,22 +5,22 @@
     	<Fluegelsegment id='inner'>
             <NaseInnen>
                 <x>0</x>
-                <y>0</y>
+                <y>100</y>
                 <z>0</z>
             </NaseInnen>
             <NaseAußen>
                 <x>0</x>
-                <y>0</y>
+                <y>100</y>
                 <z>100</z>
             </NaseAußen>
             <BackInner>
                 <x>100</x>
-                <y>0</y>
+                <y>100</y>
                 <z>0</z>
             </BackInner>
             <BackOuter>
                 <x>100</x>
-                <y>0</y>
+                <y>100</y>
                 <z>100</z>
             </BackOuter>
         </Fluegelsegment>
