@@ -9,5 +9,6 @@ def main():
 
 
 if __name__ == "__main__":
-    print(performance_time(1_000, main))
-    performance_report(performance_time,1_000, main)
+    main()
+    #print(f'{performance_time(1_000, main)*1e3:.3f}ms')
+    #performance_report(performance_time,1_000, main)

@@ -35,20 +35,11 @@ def get_profil(airfoil: str) -> list:
         raw_data = f.read()
         data = re.findall(r"([01].\d+) +([0\-].\d+)", raw_data)
 
-    upper, lower = [], []
-    mode, start = "u", float(data[0][0])
+    profil = []
     for point in data:
-        v = Vector(*point, 0.0)
-        if mode == "u":
-            upper.append(v)
-        elif mode == "l":
-            lower.append(v)
-        if abs(start - float(point[0])) == 1:
-            mode = "l"
-
-    upper.sort(key=attrgetter("x"), reverse=False)
-    lower.sort(key=attrgetter("x"), reverse=True)
-    return upper + lower
+        profil.append(list(map(float,point)))
+        
+    return profil
 
 def mesh(profil_innen, profil_außen):
     area = 0
@@ -74,7 +65,7 @@ def mesh(profil_innen, profil_außen):
     area += tri_area(iu1s, iu2s, au2s)
     area += tri_area(iu1s, au2s, au1s)
         
-    return area, -volume
+    return area, volume
 
 
 def get_mass_wing(wing: Fluegel):
@@ -84,9 +75,9 @@ def get_mass_wing(wing: Fluegel):
 
     for segment in wing.fluegelsegment:
         profil_innen, profil_außen = gen_profile(\
-            np.asarray(profil), np.array([0,0,0]), np.array([0,1,0]), np.array([1,0,0]), np.array([1,1,0]))
+            np.asarray(profil), segment.nose_inner, segment.back_inner, segment.nose_outer, segment.nose_outer)
 
-        area, volume = mesh(points, profil_innen, profil_außen)
+        area, volume = mesh(profil_innen, profil_außen)
         mass += area * 1
         mass += volume * 10_000
 

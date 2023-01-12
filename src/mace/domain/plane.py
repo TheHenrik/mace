@@ -5,6 +5,8 @@ from typing import List
 from mace.domain.vector import Vector
 from mace.domain.params import Parameter
 
+import numpy as np
+
 
 @dataclass
 class RumpfProfil:
@@ -109,4 +111,5 @@ class FlugzeugParser:
         return segment
 
     def build_vector(self, element):
-        return Vector(element[0].text, element[1].text, element[2].text)
+        return np.array(list(map(float,\
+            [element[0].text, element[1].text, element[2].text])))
