@@ -19,4 +19,6 @@ jobs:
           max-line-length: "88"
           plugins: "flake8-black"
       - uses: isort/isort-action@v1.0.0
+        with:
+          profil: "black"
       
