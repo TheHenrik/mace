@@ -1,5 +1,5 @@
 from mace import FlugzeugParser, get_mass_aircraft
-from mace.test import performance_time, performance_report
+from mace.test import performance_report, performance_time
 
 
 def main():

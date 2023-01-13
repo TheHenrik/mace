@@ -1,6 +1,7 @@
-import numpy as np
 import re
 from functools import cache
+
+import numpy as np
 
 
 def tri_area(first, second, third):

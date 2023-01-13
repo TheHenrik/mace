@@ -1,6 +1,7 @@
 import re
 from functools import cache
 from operator import attrgetter
+
 import numpy as np
 
 from mace.domain.plane import Fluegel, Fluegelsegment, Flugzeug, Leitwerktyp, TLeitwerk

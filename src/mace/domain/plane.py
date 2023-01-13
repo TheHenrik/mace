@@ -2,9 +2,9 @@ import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from typing import List
 
-from mace.domain.params import Parameter
-
 import numpy as np
+
+from mace.domain.params import Parameter
 
 
 @dataclass

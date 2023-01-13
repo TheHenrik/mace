@@ -1,9 +1,9 @@
 from mace.domain.plane import (
-    Fluegelsegment,
     Fluegel,
+    Fluegelsegment,
     Flugzeug,
+    Leitwerktyp,
     Rumpf,
     RumpfProfil,
-    Leitwerktyp,
     TLeitwerk,
 )
