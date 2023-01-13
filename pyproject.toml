@@ -33,7 +33,8 @@ dev = [
   'tqdm',
   'bs4',
   'requests',
-  'black'
+  'black',
+  'isort'
 ]
 
 [project.urls]
