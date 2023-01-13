@@ -7,13 +7,14 @@ import numpy as np
 from mace.domain.plane import Fluegel, Fluegelsegment, Flugzeug, Leitwerktyp, TLeitwerk
 from mace.mass.mesh import gen_profile, get_profil, mesh
 
+
 class GetMass:
     def __init__(self, *args) -> int:
         self.mass = 0.0
         for arg in args:
             if type(arg) is Flugzeug:
                 self.aircraft(arg)
-    
+
     def wing(self, wing: Fluegel):
         self.segments(wing.fluegelsegment, wing.airfoil)
 
