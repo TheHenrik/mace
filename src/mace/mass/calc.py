@@ -34,7 +34,7 @@ def get_mass_segments(segments: list[Fluegelsegment], profil_name: str):
             segment.nose_inner,
             segment.back_inner,
             segment.nose_outer,
-            segment.nose_outer,
+            segment.back_outer,
         )
 
         area, volume = mesh(profil_innen, profil_außen)
