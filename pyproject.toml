@@ -42,3 +42,6 @@ dev = [
 
 [project.gui-scripts]
 mace-gui = "mace:hello_world"
+
+[tool.isort]
+profile = "black"

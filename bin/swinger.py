@@ -11,4 +11,4 @@ def main():
 if __name__ == "__main__":
     print(f"The weight of the plane is approx. {main()} kg!")
     performance_time(10_000, main)
-    performance_report(performance_time,1_000, main, output = None)
+    performance_report(performance_time, 1_000, main, output=None)
