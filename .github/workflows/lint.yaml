@@ -27,7 +27,7 @@ jobs:
         uses: py-actions/flake8@v2
         with:
           ignore: "E203"
-          except: "*__init__.py"
+          exclude: "*__init__.py"
           max-line-length: "88"
           plugins: "flake8-black"
       
