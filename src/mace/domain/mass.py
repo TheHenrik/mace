@@ -1,10 +1,10 @@
 from dataclasses import dataclass
-from typing import List
 
 
+@dataclass
 class MassTable:
     totalMass: int = None
     masses: dict = None
 
-    def output_to_cmd():
-        print(f"Weights of the Aircraft:")
+    def output_to_cmd(self):
+        print(f"Weights of the Aircraft: {self.totalMass}")

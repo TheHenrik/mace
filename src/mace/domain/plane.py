@@ -4,8 +4,6 @@ from typing import List
 
 import numpy as np
 
-from mace.domain.params import Parameter
-
 
 @dataclass
 class RumpfProfil:
@@ -91,7 +89,7 @@ class FlugzeugParser:
             if element.tag == "Airfoil":
                 fluegel.airfoil = element.text
             elif element.tag == "Fluegelsegment":
-                if fluegel.fluegelsegment == None:
+                if fluegel.fluegelsegment is None:
                     fluegel.fluegelsegment = []
                 fluegel.fluegelsegment.append(self.build_fluegelsegment(element))
         return fluegel

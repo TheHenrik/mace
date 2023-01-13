@@ -1,9 +1,3 @@
-import re
-from functools import cache
-from operator import attrgetter
-
-import numpy as np
-
 from mace.domain.plane import Fluegel, Fluegelsegment, Flugzeug, Leitwerktyp, TLeitwerk
 from mace.mass.mesh import gen_profile, get_profil, mesh
 
@@ -40,7 +34,7 @@ class GetMass:
             self.mass += volume * 10_000
 
     def aircraft(self, aircraft: Flugzeug):
-        if not aircraft.fluegel == None:
+        if aircraft.fluegel is not None:
             self.wing(aircraft.fluegel)
-        if not aircraft.leitwerk == None:
+        if aircraft.leitwerk is not None:
             self.empennage(aircraft.leitwerk)
