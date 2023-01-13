@@ -24,7 +24,7 @@ def get_mass_empennage(empennage: Leitwerktyp):
     return mass
 
 
-def get_mass_segments(segments: Fluegelsegment, profil_name: str):
+def get_mass_segments(segments: list[Fluegelsegment], profil_name: str):
     mass = 0
     profil = get_profil(profil_name)
 
