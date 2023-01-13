@@ -31,7 +31,7 @@ To open the mace-gui run:
 mace-gui
 ```
 
-If you want to uninstall 😢, run:
+If you want to uninstall, run:
 
 ```powershell
 pip uninstall mace
