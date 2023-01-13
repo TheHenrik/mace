@@ -2,23 +2,35 @@ name: Lint
 
 on:
   push:
-    -"main"
+    branch:
+      -"main"
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ['3.11']
+
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
         with:
-          python-version: "3.11"
-      - uses: psf/black@stable
-      - uses: py-actions/flake8@v2
+          python-version:  ${{ matrix.python-version }}
+      
+      - name: run black
+        uses: psf/black@stable
+      
+      - name: run flake8
+        uses: py-actions/flake8@v2
         with:
           ignore: "E203"
           max-line-length: "88"
           plugins: "flake8-black"
-      - uses: isort/isort-action@v1.0.0
-        with:
-          profil: "black"
       
+      - name: run isort
+        uses: isort/isort-action@v1.0.0
+        with:
+          configuration: "--profile black"
