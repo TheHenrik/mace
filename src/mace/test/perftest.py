@@ -3,14 +3,16 @@ import pstats
 import time
 
 
-def performance_time(repetitions, func, *args, output = 'toConsole', **kwargs):
+def performance_time(repetitions, func, *args, output="toConsole", **kwargs):
     start = time.perf_counter()
     for _ in range(repetitions):
         func(*args, **kwargs)
     end = time.perf_counter()
-    if output == 'toConsole':
-        took = (end-start)
-        print(f'took {took:.3f} s, {repetitions/took:.3f} it/s, {took/repetitions*1e3:.3f} ms/it')
+    if output == "toConsole":
+        took = end - start
+        print(
+            f"took {took:.3f} s, {repetitions/took:.3f} it/s, {took/repetitions*1e3:.3f} ms/it"
+        )
         return
     return (end - start) / repetitions
 

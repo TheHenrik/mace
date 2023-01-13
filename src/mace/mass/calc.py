@@ -6,6 +6,7 @@ import numpy as np
 from mace.domain.plane import Fluegel, Fluegelsegment, Flugzeug, Leitwerktyp, TLeitwerk
 from mace.mass.mesh import gen_profile, get_profil, mesh
 
+
 def get_mass_wing(wing: Fluegel):
     mass = 0
     profil = get_profil(wing.airfoil)
