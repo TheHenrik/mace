@@ -2,7 +2,8 @@ name: Lint
 
 on:
   push:
-    branch: "main"
+    branch:
+      -"main"
 
 jobs:
   lint:
