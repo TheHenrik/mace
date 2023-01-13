@@ -25,28 +25,4 @@
             </BackOuter>
         </Fluegelsegment>
     </Fluegel>
-    <Leitwerk type='TLeitwerk'>
-        <Fluegelsegment id='hoehenleitwerk'>
-            <NaseInnen>
-                <x>0</x>
-                <y>10</y>
-                <z>-5</z>
-            </NaseInnen>
-            <NaseAußen>
-                <x>1</x>
-                <y>10</y>
-                <z>5</z>
-            </NaseAußen>
-            <BackInner>
-                <x>4</x>
-                <y>10</y>
-                <z>-5</z>
-            </BackInner>
-            <BackOuter>
-                <x>4</x>
-                <y>10</y>
-                <z>5</z>
-            </BackOuter>
-        </Fluegelsegment>
-    </Leitwerk>
 </Flugzeug>
