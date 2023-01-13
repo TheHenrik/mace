@@ -2,7 +2,7 @@ name: Unittest
 
 on:
   push:
-    branch:
+    branches:
       -"main"
 
 jobs:
