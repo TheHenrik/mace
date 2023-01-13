@@ -10,30 +10,23 @@ from mace.mass.mesh import gen_profile, get_profil, mesh
 
 def get_mass_wing(wing: Fluegel):
     mass = 0
-    profil = get_profil(wing.airfoil)
-
-    for segment in wing.fluegelsegment:
-        profil_innen, profil_außen = gen_profile(
-            profil,
-            segment.nose_inner,
-            segment.back_inner,
-            segment.nose_outer,
-            segment.back_outer,
-        )
-
-        area, volume = mesh(profil_innen, profil_außen)
-        mass += area * 1
-        mass += volume * 10_000
+    mass += get_mass_segments(wing.fluegelsegment, wing.airfoil)
 
     return mass
 
 
 def get_mass_empennage(empennage: Leitwerktyp):
     mass = 0
-    if type(empennage.typ) is not TLeitwerk:
-        raise ValueError("Only T-Empannage supported at this time")
-    segments = Leitwerktyp.typ.hoehenleitwerk
-    profil = get_profil(empennage.typ.hoehenleitwerk)
+    if type(empennage.typ) is TLeitwerk:
+        mass += get_mass_segments(empennage.typ.hoehenleitwerk, empennage.typ.airfoilhl)
+        mass += get_mass_segments(empennage.typ.seitenleitwerk, empennage.typ.airfoilsl)
+
+    return mass
+
+
+def get_mass_segments(segments: Fluegelsegment, profil_name: str):
+    mass = 0
+    profil = get_profil(profil_name)
 
     for segment in segments:
         profil_innen, profil_außen = gen_profile(
@@ -47,23 +40,6 @@ def get_mass_empennage(empennage: Leitwerktyp):
         area, volume = mesh(profil_innen, profil_außen)
         mass += area * 1
         mass += volume * 10_000
-
-    segments = Leitwerktyp.typ.seitenleitwerk
-    profil = get_profil(empennage.typ.seitenleitwerk)
-
-    for segment in segments:
-        profil_innen, profil_außen = gen_profile(
-            profil,
-            segment.nose_inner,
-            segment.back_inner,
-            segment.nose_outer,
-            segment.nose_outer,
-        )
-
-        area, volume = mesh(profil_innen, profil_außen)
-        mass += area * 1
-        mass += volume * 10_000
-
     return mass
 
 
