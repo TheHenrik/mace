@@ -2,7 +2,6 @@ import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from typing import List
 
-from mace.domain.vector import Vector
 from mace.domain.params import Parameter
 
 import numpy as np
@@ -29,10 +28,10 @@ class Klappe:
 
 @dataclass()
 class Fluegelsegment:
-    nose_inner: Vector = None
-    nose_outer: Vector = None
-    back_inner: Vector = None
-    back_outer: Vector = None
+    nose_inner: np.ndarray = None
+    nose_outer: np.ndarray = None
+    back_inner: np.ndarray = None
+    back_outer: np.ndarray = None
 
 
 @dataclass()
