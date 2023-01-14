@@ -34,12 +34,10 @@ dev = [
   'requests',
   'black',
   'isort',
-  'snakeviz'
+  'pytest'
 ]
 
 test = [
-  'black',
-  'isort',
   'pytest'
 ]
 
