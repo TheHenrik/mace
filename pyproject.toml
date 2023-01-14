@@ -37,6 +37,12 @@ dev = [
   'snakeviz'
 ]
 
+test = [
+  'black',
+  'isort',
+  'pytest'
+]
+
 [project.urls]
 "Repository" = "https://github.com/TheHenrik/mace"
 
