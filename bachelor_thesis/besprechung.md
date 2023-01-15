@@ -14,8 +14,12 @@ lang: de-DE
 
 ## Allgemeine Fragen
 
-- Bewertung optionaler Aufgaben
-- Veröffentlichung (Gregor)
+1. Bewertung optionaler Aufgaben
+
+### Gregor
+
+1. Zugriff auf Git
+2. Veröffentlichen
 
 ## Features
 
