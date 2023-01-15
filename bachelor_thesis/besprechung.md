@@ -27,7 +27,8 @@ lang: de-DE
 
 1. Installierbares Paket
 2. Entry-Point
-3. Source-Controll
+3. Source-Control
+4. Source-Code Formatierung
 
 ### In Arbeit
 
