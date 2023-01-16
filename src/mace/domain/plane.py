@@ -16,6 +16,7 @@ class RumpfProfil:
 class Rumpf:
     laenge: int = None
     profile: RumpfProfil = None
+    mass: float = 0
 
 
 @dataclass()
@@ -38,12 +39,14 @@ class TLeitwerk:
     airfoilhl: str = None
     seitenleitwerk: List[Fluegelsegment] = None
     airfoilsl: str = None
+    mass: float = 0
 
 
 @dataclass()
 class VLeitwerk:
     leitwerk: List[Fluegelsegment] = None
     airfoil = None
+    mass: float = 0
 
 
 @dataclass
@@ -55,6 +58,7 @@ class Leitwerktyp:
 class Fluegel:
     fluegelsegment: List[Fluegelsegment] = None
     airfoil: str = None
+    mass: float = 0
 
 
 @dataclass()
@@ -63,6 +67,7 @@ class Flugzeug:
     leitwerk: Leitwerktyp = None
     fluegel: Fluegel = None
     rumpf: Rumpf = None
+    mass: float = 0
 
 
 class FlugzeugParser:
