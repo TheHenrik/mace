@@ -5,7 +5,7 @@ import pytest
 from mace.domain.parser import PlaneParser
 
 
-class TestVector(unittest.TestCase):
+class TestMassCalc(unittest.TestCase):
     def setUp(self) -> None:
         self.plane = PlaneParser("flugzeug.xml").build_plane()
 
