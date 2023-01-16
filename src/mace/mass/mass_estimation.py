@@ -2,27 +2,27 @@ from mace.domain.plane import Wing, WingSegment, Plane, EmpennageType, TEmpennag
 from mace.mass.mesh import gen_profile, get_profil, mesh
 
 
-def get_mass_plane(plane: Plane):
+def estimate_mass_plane(plane: Plane):
     if plane.wing is not None:
-        mass, wing = get_mass_wing(plane.wing)
+        mass, wing = estimate_mass_wing(plane.wing)
         plane.mass += mass
         plane.wing = wing
     return plane
 
 
-def get_mass_wing(wing: Wing):
-    mass, segments = get_mass_segments(wing.segments, wing.airfoil)
+def estimate_mass_wing(wing: Wing):
+    mass, segments = estimate_mass_segments(wing.segments, wing.airfoil)
     wing.mass = mass
     wing.segments = segments
     return mass, wing
 
 
-def get_mass_empannage(empennage: EmpennageType):
+def estimate_mass_empannage(empennage: EmpennageType):
     if empennage.typ is TEmpennage:
         pass
 
 
-def get_mass_segments(segments: list[WingSegment], airoil_name: str):
+def estimate_mass_segments(segments: list[WingSegment], airoil_name: str):
     airfoil = get_profil(airoil_name)
     new_segments, mass = [], 0
     for segment in segments:
@@ -36,6 +36,8 @@ def get_mass_segments(segments: list[WingSegment], airoil_name: str):
         area, volume = mesh(profil_innen, profil_außen)
         segment.mass += area * 1
         segment.mass += volume * 0
+        segment.area = area
+        segment.volume = volume
         mass = segment.mass
         new_segments.append(segment)
     return mass, new_segments

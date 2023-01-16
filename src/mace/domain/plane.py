@@ -31,6 +31,8 @@ class WingSegment:
     back_inner: np.ndarray = None
     back_outer: np.ndarray = None
     mass: float = 0
+    area: float = 0
+    volume: float = 0
 
 
 @dataclass()
