@@ -34,8 +34,8 @@ def get_mass_segments(segments: list[WingSegment], airoil_name: str):
             segment.back_outer,
         )
         area, volume = mesh(profil_innen, profil_außen)
-        segment.mass = area * 0
-        segment.mass = volume * 1
-        mass += segment.mass
+        segment.mass += area * 1
+        segment.mass += volume * 0
+        mass = segment.mass
         new_segments.append(segment)
     return mass, new_segments
