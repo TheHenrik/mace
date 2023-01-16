@@ -2,12 +2,12 @@ import unittest
 
 import pytest
 
-from mace.domain.plane import FlugzeugParser
+from mace.domain.parser import PlaneParser
 
 
 class TestVector(unittest.TestCase):
     def setUp(self) -> None:
-        self.plane = FlugzeugParser("flugzeug.xml").build_plane()
+        self.plane = PlaneParser("flugzeug.xml").build_plane()
 
     def test_parser(self):
         assert self.plane is not None

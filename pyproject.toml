@@ -49,3 +49,7 @@ mace-gui = "mace:hello_world"
 
 [tool.isort]
 profile = "black"
+
+[tool.pytest.ini_options]
+console_output_style = "progress"
+addopts = "--pyargs mace.test"
