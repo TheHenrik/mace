@@ -31,6 +31,7 @@ class Fluegelsegment:
     nose_outer: np.ndarray = None
     back_inner: np.ndarray = None
     back_outer: np.ndarray = None
+    mass: float = 0
 
 
 @dataclass()
