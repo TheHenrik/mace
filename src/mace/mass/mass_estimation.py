@@ -1,33 +1,33 @@
-from mace.domain.plane import Fluegel, Fluegelsegment, Flugzeug, Leitwerktyp, TLeitwerk
+from mace.domain.plane import Wing, WingSegment, Plane, EmpennageType, TEmpennage
 from mace.mass.mesh import gen_profile, get_profil, mesh
 
 
-def get_mass_plane(plane: Flugzeug):
-    if plane.fluegel is not None:
-        mass, wing = get_mass_wing(plane.fluegel)
+def get_mass_plane(plane: Plane):
+    if plane.wing is not None:
+        mass, wing = get_mass_wing(plane.wing)
         plane.mass += mass
-        plane.fluegel = wing
+        plane.wing = wing
     return plane
 
 
-def get_mass_wing(wing: Fluegel):
-    mass, segments = get_mass_segments(wing.fluegelsegment, wing.airfoil)
+def get_mass_wing(wing: Wing):
+    mass, segments = get_mass_segments(wing.segments, wing.airfoil)
     wing.mass = mass
-    wing.fluegelsegment = segments
+    wing.segments = segments
     return mass, wing
 
 
-def get_mass_empannage(empennage: Leitwerktyp):
-    if empennage.typ is TLeitwerk:
+def get_mass_empannage(empennage: EmpennageType):
+    if empennage.typ is TEmpennage:
         pass
 
 
-def get_mass_segments(segments: list[Fluegelsegment], airoil: str):
-    profil = get_profil(airoil)
+def get_mass_segments(segments: list[WingSegment], airoil_name: str):
+    airfoil = get_profil(airoil_name)
     new_segments, mass = [], 0
     for segment in segments:
         profil_innen, profil_außen = gen_profile(
-            profil,
+            airfoil,
             segment.nose_inner,
             segment.back_inner,
             segment.nose_outer,

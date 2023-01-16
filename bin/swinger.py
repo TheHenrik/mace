@@ -1,9 +1,9 @@
-from mace import FlugzeugParser, get_mass_plane
+from mace import PlaneParser, get_mass_plane
 from mace.test import performance_report, performance_time
 
 
 def main():
-    flugzeug = FlugzeugParser("flugzeug.xml").build_plane()
+    flugzeug = PlaneParser("flugzeug.xml").build_plane()
     flugzeug = get_mass_plane(flugzeug)
     return flugzeug.mass
 

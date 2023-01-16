@@ -6,27 +6,26 @@ import numpy as np
 
 
 @dataclass
-class RumpfProfil:
-    höhe: int = None
-    breite: int = None
+class HullProfile:
+    hight: int = None
+    width: int = None
     position: int = None
 
 
 @dataclass
-class Rumpf:
-    laenge: int = None
-    profile: RumpfProfil = None
+class Hull:
+    lenght: int = None
+    profile: HullProfile = None
     mass: float = 0
 
 
 @dataclass()
-class Klappe:
-    tiefe_links: int = None
-    tiefe_rechts: int = None
+class Flap:
+    pass
 
 
 @dataclass()
-class Fluegelsegment:
+class WingSegment:
     nose_inner: np.ndarray = None
     nose_outer: np.ndarray = None
     back_inner: np.ndarray = None
@@ -35,73 +34,73 @@ class Fluegelsegment:
 
 
 @dataclass()
-class TLeitwerk:
-    hoehenleitwerk: List[Fluegelsegment] = None
-    airfoilhl: str = None
-    seitenleitwerk: List[Fluegelsegment] = None
-    airfoilsl: str = None
+class TEmpennage:
+    elevator: List[WingSegment] = None
+    airfoil_e: str = None
+    rudder: List[WingSegment] = None
+    airfoil_r: str = None
     mass: float = 0
 
 
 @dataclass()
-class VLeitwerk:
-    leitwerk: List[Fluegelsegment] = None
+class VEmpennage:
+    segments: List[WingSegment] = None
     airfoil = None
     mass: float = 0
 
 
 @dataclass
-class Leitwerktyp:
-    typ: TLeitwerk | VLeitwerk = None
+class EmpennageType:
+    typ: TEmpennage | VEmpennage = None
 
 
 @dataclass()
-class Fluegel:
-    fluegelsegment: List[Fluegelsegment] = None
+class Wing:
+    segments: List[WingSegment] = None
     airfoil: str = None
     mass: float = 0
 
 
 @dataclass()
-class Flugzeug:
+class Plane:
     name: str = None
-    leitwerk: Leitwerktyp = None
-    fluegel: Fluegel = None
-    rumpf: Rumpf = None
+    empennage: EmpennageType = None
+    wing: Wing = None
+    hull: Hull = None
     mass: float = 0
 
 
-class FlugzeugParser:
+class PlaneParser:
     def __init__(self, file_name):
-        self.flugzeug = Flugzeug()
+        self.plane = Plane()
         self.tree = ET.parse(f"./././data/planes/{file_name}")
 
     def build_plane(self):
         root = self.tree.getroot()
-        self.flugzeug.name = root.attrib["Name"]
+        self.plane.name = root.attrib["Name"]
         for element in root:
             if element.tag == "Fluegel":
-                self.flugzeug.fluegel = self.build_fluegel(element)
+                self.plane.wing = self.build_fluegel(element)
             elif element.tag == "Leitwerk":
                 self.build_leitwerk(element)
-        return self.flugzeug
+        return self.plane
 
     def build_leitwerk(self, element):
         pass
 
     def build_fluegel(self, tree):
-        fluegel = Fluegel()
+        wing = Wing()
         for element in tree:
             if element.tag == "Airfoil":
-                fluegel.airfoil = element.text
+                wing.airfoil = element.text
             elif element.tag == "Fluegelsegment":
-                if fluegel.fluegelsegment is None:
-                    fluegel.fluegelsegment = []
-                fluegel.fluegelsegment.append(self.build_fluegelsegment(element))
-        return fluegel
+                if wing.segments is None:
+                    wing.segments = []
+                wing.segments.append(self.build_fluegelsegment(element))
+        return wing
 
     def build_fluegelsegment(self, tree):
-        segment = Fluegelsegment()
+        segment = WingSegment()
         for element in tree:
             if element.tag == "NaseInnen":
                 segment.nose_inner = self.build_vector(element)
