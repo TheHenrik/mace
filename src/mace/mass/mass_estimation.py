@@ -11,10 +11,10 @@ def get_mass_plane(plane: Flugzeug):
 
 
 def get_mass_wing(wing: Fluegel):
-    mass, segments = get_mass_segments(wing.fluegelsegment)
+    mass, segments = get_mass_segments(wing.fluegelsegment, wing.airfoil)
     wing.mass = mass
     wing.fluegelsegment = segments
-    return wing
+    return mass, wing
 
 
 def get_mass_empannage(empennage: Leitwerktyp):
@@ -34,8 +34,8 @@ def get_mass_segments(segments: list[Fluegelsegment], airoil: str):
             segment.back_outer,
         )
         area, volume = mesh(profil_innen, profil_außen)
-        segment.mass = area * 1
-        segment.mass = volume * 10_000
+        segment.mass = area * 0
+        segment.mass = volume * 1
         mass += segment.mass
         new_segments.append(segment)
     return mass, new_segments
