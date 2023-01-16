@@ -1,4 +1,4 @@
-from mace.domain.plane import Wing, WingSegment, Plane, EmpennageType, TEmpennage
+from mace.domain.plane import EmpennageType, Plane, TEmpennage, Wing, WingSegment
 from mace.mass.mesh import gen_profile, get_profil, mesh
 
 
