@@ -34,11 +34,15 @@ dev = [
   'requests',
   'black',
   'isort',
-  'pytest'
+  'pytest',
+  'flake8'
 ]
 
 test = [
-  'pytest'
+  'black',
+  'isort',
+  'pytest',
+  'flake8'
 ]
 
 [project.urls]
