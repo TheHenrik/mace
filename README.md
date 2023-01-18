@@ -25,7 +25,7 @@ pip install -e .
  pip install -e .[dev]
  ```
 
-To open the mace-gui run:
+To open the GUI run:
 
 ```powershell
 mace-gui
