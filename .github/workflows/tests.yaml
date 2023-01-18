@@ -28,7 +28,7 @@ jobs:
       - name : run linting
         run: |
           isort . --diff
-          black . --check --diff
+          black . --check --diff --quiet
           flake8 .
 
       - name: run tests
