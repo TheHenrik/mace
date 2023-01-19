@@ -1,0 +1,39 @@
+%********************************
+\chapter{Einleitung}					% Kapitel
+\label{chap:einleitung}					% Querverweis auf "einleitung"kann aufgerufen werden
+%********************************		% mit: \ref{chap:einleitung}
+
+%********************************
+\section{Motivation}					% Sektion
+\label{sec:motivation}
+%********************************
+Hier erfolgt die Hinführung zum Thema. Worum geht es? Was ist der Sinn und Zweck dieser Arbeit? Dem Leser wird hier auch erklärt, was ihn wo in dieser Arbeit erwartet.
+
+Die Motivation zu dieser Bachelorarbeit entspringt der Mitarbeit in der Akademischen Modellbaugruppe AkaModell Stuttgart e.V.. Dieser studentische Verein hat in der Vergangenheit mehrmals an der AirCargoChallenge teilgenommen. Bei diesem Wettbewerb muss entsprechend eines sich von Bewerb zu Bewerb ändernden Regulariums ein Flugzeug ausgelegt und gebaut werden, welches dann an einem Flugwettbewerb gegen die Konstruktionen anderer Teams antritt. Auch neben diesem Wettbewerb werden innerhalb dieses Vereins immer wieder neue Modellflugzeuge ausgelegt und gebaut.
+
+\subsection{Motivation genau}			% Untersektion
+\label{subsec:motgenau}
+
+%********************************
+\section{Zielsetzung}
+\label{sec:zielsetzung}
+%********************************
+Das Ziel der vorliegenden Masterarbeit soll sein...
+
+In der Vergangenheit wurden zur Auslegung der Flugzeuge unterschiedliche Entwicklungstools verwendet. Die Auswertung und Analyse verschiedener Konfigurationen erforderte aber meist viel Handarbeit. Daher entstand der Wunsch nach einem zusammenhängenden Entwurfstool, welches verschiedene Teilbereiche einschließt. Das Ziel dabei ist, dass in Zukunft die Flugzeugauslegung effizienter durchgeführt werden kann. Dass gilt sowohl in zeitlicher als auch in qualitativer Hinsicht. Dazu sollen auch Optimierungstools beitragen. Diese sind aber nicht Inhalt dieser studentischen Arbeit. Vielmehr ist es die Ziel alle notwendigen Grundlagen zu schaffen um zu einem späteren Zeitpunkt Optimierungstools für eine jeweils spezifische Anforderung möglichst schnell entwickeln zu können.
+Während eine andere studentische Arbeit aus unserem Verein die Grundlagen für eine Massenabschätzung bereitstellt, hat diese Arbeit zur Absicht die Grundlagen für eine aerodynamische Optimierung zu erarbeiten und zusammenzufassen.
+\ref{subsec:motgenau}				% Referenz auf Untersektion
+
+%********************************
+\section{Gliederung der Arbeit}
+\label{sec:gliederung}
+%********************************
+Die vorliegende Arbeit beginnt mit...
+
+Es sollen für den gesamten Entwurfsprozess Funktionen bereitgestellt werden. Das heißt es werden einfache Abschätzungsformeln für ein frühes Entwicklungsstadium bereitgestellt werden. Um ein genaueres Feintuning in einem fortgeschrittenen Entwicklungsstadium zu ermöglichen ist die Einbindung von OpenSource-Software angedacht.
+
+Im Rahmen dieser Arbeit wird recherchiert, welche Entwurfsformeln bereits bekannt sind um diese in den Gesamtalgorithmus aufzunehmen. Zusätzlich werden eigene Algorithmen für die Anwendung im in unserem Anforderungsbereich entwickelt. Diese Bachelorarbeit soll also Vorhandenes mit Eigenem in einem neuen Tool verbinden.
+
+Da eine analytische Betrachtung eines gesamten Flugs mit seinen unterschiedlichen Flugzuständen nicht möglich ist, müssen alle Flugzustände getrennt/punktuell betrachtet und bewertet werden. Besonders eignen sich hierzu stationäre Flugzustände, da sie gut analytisch betrachtet werden können.
+
+Ein Flug wird dazu in mehrere Flugabschnitte unterteilt. (Start, Beschleunigung, Steigen, Horizontalflug, Kurvenflug, Sinken, Landung) Im Rahmen dieser Arbeit sollen Tools bereitgestellt werden um diese unterschiedlichen Abschnitte zu betrachten. Diese Abschnitte sind für die meisten Flugzeuge allgemein gültig. Je nach Mission liegen die Schwerpunkte allerdings in unterschiedlichen Bereichen. Mithilfe der Tools können später verschiedene Missionsanforderungen modelliert und Flugzeugauslegungen diesbezüglich analysiert werden.

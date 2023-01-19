@@ -1,0 +1,397 @@
+%********************************
+\chapter{Grundlagen}
+\label{chap2:grundlagen}
+%********************************
+%********************************
+\section{Stand der Technik}
+\label{sec:sdt}
+%********************************
+Was sind die neusten Erkenntnisse auf dem Gebiet?
+
+%********************************
+\section{Notwendiges Wissen}
+\label{sec:wissen}
+%********************************
+Hier sollen die jeweiligen Grundlagen zu den verwendeten Verfahren/Analysen/Prozesse erläutert werden, so dass der Leser das nötige Wissen besitzt, den Rest der Arbeit zu verstehen.
+
+
+
+%********************************
+\subsection{Atmospäre}
+\label{subsec:atmosphere}
+
+Da das Fluggerät sich in der Atmosphäre bewegt, ist es wichtig die physikalischen Größen zu kennen, welche die aerodynamischen Kräfte und das Triebwerk beeinflussen. Diese sind:
+\begin{itemize}
+\item{Luftdichte $\rho$}
+\item{Temperatur $T$ bzw. Schallgeschwindigkeit $a$}
+\item{Druck $p$}
+\item{dynamische Viskosität (Zähigkeit) $\eta$}
+\end{itemize}
+
+
+
+\subsubsection{Reynoldszahls}
+\label{rezahl}
+
+Die Reynoldszahl ist eine dimensionslose Kenngröße. Sie stellt das Verhältnis zwischen Trägheits- und Zähigkeitskräften in einem Fluid dar.
+
+\begin{equation}
+Re = \frac{\rho * V * l}{\eta} = \frac{V * l}{\nu}
+\end{equation}
+
+%********************************
+\subsection{Aerodynamische Kräfte}
+\label{aerokräfte}
+
+\subsubsection{Beiwerte}
+\label{beiwerte}
+
+Um die aerodynamischen Kräfte und Momente einfacher vergleichen zu können werden dimensionslose Größen, sogenannte Beiwerte, verwendet. Der Index kennzeichnet die dazugehörige Kraft oder das Moment. Auftriebsbeiwert $C_A$, Widerstandsbeiwert $C_W$ und Momentenbeiwert $C_M$ werden wie folgt definiert:
+\begin{equation}
+A = C_A * q * S
+\end{equation}
+\begin{equation}
+W = C_W * q * S
+\end{equation}
+\begin{equation}
+M = C_M * q * S * l_\mu
+\end{equation}
+\\
+Der Ausdruck $S$ bezeichnet dabei die Bezugs(flügel)fläche. Weitere Kraft- und Momentenbeiwerte werden analog definiert.\\
+
+Wenn der jeweilige Beiwert sich nicht global auf den gesamten Flügel, sondern auf eine lokale Stelle bezieht, wird der Index klein geschrieben:
+
+\begin{equation}
+dA = C_a * q * l * dy
+\end{equation}
+\begin{equation}
+dW = C_w * q * l * dy
+\end{equation}
+\begin{equation}
+dM = C_m * q * l^2 * dy
+\end{equation}
+\\
+$q = (\rho/2) * V^2$ bezeichnet dabei den Staudruck. Dieser ist von $\rho$ und der Anströmgeschwindigkeit $V$ abhängig.
+
+\subsubsection{Auftrieb und Widerstand}
+\label{auftriebwiderstand}
+
+Die senkrecht zur Anströmung wirkende Kraft ist als Auftrieb $A$ definiert.
+
+Die parallel zur Anströmung wirkende Kraft ist als Widerstand $W$ definiert.
+
+Der Nullwiderstandsbeiwert $C_{W0}$ ist der Widerstandsbeiwert bei einem Auftriebsbeiwert von $C_A=0$.
+
+Der induzierte Widerstand entsteht durch ???. Dessen Widerstandsbeiwert kann wie folgt modelliert werden:
+
+\begin{equation}
+C_{Wi} = k_i * C^2_A
+\end{equation}
+
+Der Widerstandsfaktor $k_i$ hängt von der Flügelstreckung $\Lambda = \frac{b^2}{S}$ und der Auftriebsverteilung in Spannweitenrichtung ab. Ein Minimalwert wird bei einer elliptischen Auftriebsverteilung erreicht (noch umschreiben!!!ZitatHdLfzt, Spannweite $b$ noch einführen!):
+
+\begin{equation}
+k_i = \frac{1}{\pi * \Lambda}
+\end{equation}
+
+Der Profilwiderstandsfaktorsbeiwert ist abhängig vom Auftrieb. Der zugehörige Widerstandsfaktor ist $k_P$. Bei gewölbten Profilen ist der Auftriebsbeiwert dabei nicht symmetrisch. Für eine spätere analytische Betrachtung kann von folgender Formel ausgegangen werden:
+
+\begin{equation}
+C_{WP,A} = k_P * (C_A - C_{AP,0})^2
+\end{equation}
+
+Diese Formeln können zusammengefasst und in einer sogenannten Flugzeugpolare dargestellt werden werden:
+
+\begin{equation}
+C_{W} = C_{W,min} + k * (C_A - C_{A0})^2
+\end{equation}
+
+Geht man von der Annahme einer symmetrischen Polare aus, ergibt sich folgende Gleichung:
+
+\begin{equation}
+C_{W} = C_{W0} + k * C^2_A
+\end{equation}
+
+Dabei gilt: $C_{A0} = 0$.\\
+
+Die Flugzeugpolare ist abhängig von der Reynolds- und der Machzahl. In der vorliegenden Arbeit wird der Einfluss letzterer allerdings vernachlässigt, da wir uns ausschließlich im niedrigen Unterschallbereich ($Ma < 0,7$) bewegen.
+
+%********************************
+
+\subsection{Stationäre Flugzustände}
+\label{stationär}
+
+Bei der Betrachtung stationärer Flugzustände wird das Flugzeug als Punktmasse angesehen. So kann ausschließlich mit den Kraftgleichungen gearbeitet werden.
+
+\subsubsection{Gleitflug}
+\label{gleitflug}
+
+Als Gleitflug wird der Flug ohne Antrieb bezeichnet.
+Das Kräftegleichgewicht in horizontaler und vertikaler Richtung lautet wie folgt:
+
+\begin{equation}
+W = -m * g * sin(\gamma)
+\end{equation}
+
+\begin{equation}
+A = m * g * cos(\gamma)
+\end{equation}
+
+Dabei ist $\gamma$ der Bahnneigungswinkel. Dieser ist bei einem Sinkflug negativ definiert.
+
+Aus den beiden vorangegangenen Gleichungen ergibt sich:
+
+\begin{equation}
+tan(\gamma) = -C_W/C_A
+\end{equation}
+
+Der Betrag dieses Terms ist als Gleitzahl $\epsilon$ definiert.
+
+\begin{equation}
+\epsilon = C_W/C_A
+\end{equation}
+
+Die Sinkgeschwindigkeit $w$ ist die vertikale Geschwindigkeitskomponente und ergibt sich zu:
+
+\begin{equation}
+w = -V * sin(\gamma)
+\end{equation}
+
+\begin{equation}
+w = \sqrt{{\frac{2 * m * g}{\rho * S}}} * \frac{C_W}{(C^2_A + C^2_W)^{3/4}}
+\end{equation}
+
+Die horizontale Geschwindigkeit $u$ ergibt sich zu:
+
+\begin{equation}
+u = \sqrt{{\frac{2 * m * g}{\rho * S}}} * \frac{C_A}{(C^2_A + C^2_W)^{3/4}}
+\end{equation}
+
+\subsubsection{Bestes Gleiten}
+\label{bestesgleiten}
+
+Der Punkt des besten Gleitens ergibt sich, wenn $\epsilon$ minimal wird. Dazu legt man eine Gerade durch den Ursprung tangential an die Polare an. Für eine symmetrische Polare ergeben sich folgende Zusammenhänge:
+
+\begin{equation}
+\epsilon_{min} = 2 * \sqrt{C_{W0} * k}
+\end{equation}
+
+\begin{equation}
+C^*_A = \sqrt{C_{W0} / k}
+\end{equation}
+
+\begin{equation}
+C^*_W = 2 * C_{W0}
+\end{equation}
+
+mit $\epsilon^2_{min} << 1$ gilt:
+
+\begin{equation}
+V^* = \sqrt{\frac{2 * m * g}{C^*_A * \rho * S}}
+\end{equation}
+
+\subsubsection{Horizontalflug}
+\label{horizontalflug}
+
+Im Horizontalflug ($\gamma = 0$) muss der Auftrieb die Gewichtskraft und die Schubkraft den Widerstand kompensieren.
+
+\begin{equation}
+F = W
+\end{equation}
+
+\begin{equation}
+A = m * g
+\end{equation}
+
+Die Fluggeschwindigkeit ergibt sich zu:
+
+\begin{equation}
+V = \sqrt{\frac{2 * m * g}{C_A * \rho * S}}
+\end{equation}
+
+Die Minimalgeschwindigkeit $V_{min}$ ergibt sich daher zu:
+
+\begin{equation}
+V_{min} = \sqrt{\frac{2 * m * g}{C_{A,max} * \rho * S}}
+\end{equation}
+
+Mit einer symmetrischen Flugzeugpolare ergibt sich der Widerstand im Horizontalflug zu:
+\begin{equation}
+W = C_{W0} * \rho/2 * V^2 * S + k * \frac{(m*g)^2}{(\rho/2 * V^2 * S)}
+\end{equation}
+
+Mit voriger Gleichung ... ergibt sich der Minimalwiderstand zu:
+
+\begin{equation}
+W_{min} = \epsilon_{min} * m * g
+\end{equation}
+
+\subsubsection{Steigflug}
+\label{steigflug}
+
+Das Kräftegleichgewicht stellt sich folgendermaßen auf:
+
+\begin{equation}
+F = W + m * g * sin(\gamma)
+\end{equation}
+
+\begin{equation}
+A = m * g * cos(\gamma)
+\end{equation}
+
+Mit $A = q * C_A * S$ und $W = q * C_W * S$ folgt aus der ersten beider Gleichungen / Aus der ersten Gleichung folgt:
+
+\begin{equation}
+sin(\gamma) = \frac{F}{m * g} - \frac{C_W * q * S}{m * g} = \frac{F - W}{m * g}
+\end{equation}
+
+Für kleine Winkel $\gamma$ kann man annehmen, das $A = m * g$ gilt. Daraus folgt:
+
+\begin{equation}
+sin(\gamma) = \frac{F}{m * g} - \frac{W}{A} = \frac{F}{m * g} - \frac{C_W}{C_A} = \frac{F}{m * g} - \epsilon
+\end{equation}
+
+Die Steiggeschwindigkeit $-w$ entspricht der vertikalen Komponente der Geschwindigkeit $V_v$, welche auch als "Specific Excess Power" SEP bezeichnet wird. Diese ist:
+
+\begin{equation}
+V_v = -w = V * sin(\gamma) = V * \frac{F}{m * g} - \epsilon
+\end{equation}
+
+\subsubsection{Horizontaler Kurvenflug}
+\label{horizontalerkurvenflug}
+
+Um eine Richtungsänderung um einen Azimutwinkel $\chi$ durchzuführen, wird im Kurvenflug der Auftriebsvektor um einen Rollwinkel $\phi$ geneigt.
+
+Das Kräftegleichgewicht stellt sich wie folgt auf:
+
+\begin{equation}
+F = W
+\end{equation}
+
+\begin{equation}
+m * g = A * cos(\phi)
+\end{equation}
+
+\begin{equation}
+m * V * \dot{\chi} = A * sin(\phi)
+\end{equation}
+
+mit $\dot{\chi} = V / r_K$ folgt:
+
+\begin{equation}
+\frac{m * V^2}{r_K} = A * sin(\phi)
+\end{equation}
+
+Aus Gleichung ... und ... folgt der Zusammenhang zwischen $\phi$, $\dot{\chi}$ und $V$:
+
+\begin{equation}
+tan(\phi) = \frac{V}{g} * \dot{\chi} = \frac{V^2}{g * r_K}
+\end{equation}
+
+Der Lastfaktor $n$ beschreibt das Verhältnis zwischen Auftrieb und Gewicht:
+
+\begin{equation}
+n = \frac{A}{m * g} = \frac{1}{cos(\phi)}
+\end{equation}
+
+Wie aus den Formeln erkennbar, muss $C_A$ in der Kurve größer sein, als im Horizontalflug. Der Auftriebsbeiwert und mit ihm der Widerstandsbeiwert wächst wie folgt an:
+
+\begin{equation}
+C_A = \frac{2 * A}{\rho * V^2 * S} = \frac{2* n * m * g}{\rho * V^2 * S}
+\end{equation}
+
+Der Kurvenradius in Abhängigkeit von $n$ ergibt sich zu:
+
+\begin{equation}
+r_K = \frac{V^2 / g}{\sqrt{n^2 - 1}}
+\end{equation}
+
+Zu einem vorgegebenen $n_{max}$ kann somit $r_{K,min}$ ermittelt werden.
+
+Die Wendegeschwindigkeit $\dot{\chi}$ sollte für möglichst schnelle Wenden maximal werden:
+
+\begin{equation}
+\dot{\chi} = V / r_K
+\end{equation}
+
+%*******************************
+
+\subsection{Start und Landung}
+\label{startlandung}
+
+\subsubsection{Start}
+\label{start}
+
+Für die Rollstrecke ergeben sich folgende Kräftegleichgewichte:
+
+\begin{equation}
+m * \dot{V} = F - W_R - \mu_R * N_H - \mu * N_B
+\end{equation}
+
+\begin{equation}
+m * g = N_B + N_H + A_R
+\end{equation}
+
+\begin{equation}
+N_B * (x_B - \mu_R * z_H) - N_H * (x_H + \mu_R * z_H) - F * z_F - A_R * x_A + \Delta M_\eta = 0
+\end{equation}
+
+Die Rollstrecke kann integriert werden über:
+
+\begin{equation}
+\frac{dx}{dV} = \frac{m * V}{F - W_R - \mu_R * (m * g - A_R)}
+\end{equation}
+
+Hier noch Abschätzformel aus Handbuch der Luftfahrzeugtechnik unter Annahme $C_A$ und $C_W$ konstant während des Startvorgangs.
+
+\subsubsection{Landung}
+\label{landung}
+
+Rollstrecke ähnlich Startrollstrecke.
+
+%********************************
+
+\subsection{Leitwerksauslegung}
+\label{leitwerk}
+
+Momentengleichgewicht
+
+\subsection{Stabilität}
+\label{stabilität}
+
+Der Neutralpunkt ist der Punkt, an dem $\frac{dC_M}{d\alpha} = 0$ ist. Eine Störung des Anstellwinkels wird an diesem Punkt nicht reagiert. Es ist aber ein rückstellendes Moment gewünscht um statische Stabilität zu erreichen. Das ist gegeben, wenn $\frac{dC_M}{d\alpha} < 0$ ist. Dazu muss Schwerpunkt vor dem Neutralpunkt liegen.
+
+Das Stabilitätsmaß $\frac{x_N - x_S}{l_\mu}$ ist eine Größe die zum Vergleich herangezogen werden kann. Richtwerte hierfür sind 5 - 15%.
+
+
+
+%********************************
+
+%********************************
+\newpage
+Normatmossphäre
+
+Aerodynamisches und Geodätisches Koordinatensystem
+
+Rein inkompressible Strömung
+
+Aerodynamische Beiwerte
+
+Laminare, turbulente Grenzschicht
+
+Induzierter Widerstand
+
+Re-Zahl
+
+Grundgleichungen Flugbahn
+
+Luftraum
+
+Schub sehr einfach, da Windkanalwerte verwendet werden.
+
+Hauptsächlich stationäre Betrachtungen
+
+Steigen:
+
+Kurven: Wendedauer
+
