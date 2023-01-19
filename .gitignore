@@ -168,3 +168,6 @@ data/Airfoils/*.dat
 
 #Profiling files 
 *.prof
+
+#Markdownlint
+.markdownlint.json
