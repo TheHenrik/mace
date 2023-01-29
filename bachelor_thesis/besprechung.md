@@ -4,19 +4,7 @@ lang: de-DE
 
 # Ideen und Fragen zur Bachelorarbeit
 
-## Algorithmus
-
-1. Berechne Volumen, Fläche
-2. Einsetzen in Formel
-3. Ermitteln sicherer Lasten
-4. Bestimmung Holmanforderungen
-5. Korrektion der Massenabschätzung
-
-## Allgemeine Fragen
-
-1. Bewertung optionaler Aufgaben
-
-### Gregor
+## Gregor
 
 1. Zugriff auf Git
 2. Veröffentlichen
