@@ -2,34 +2,31 @@
 lang: de-DE
 ---
 
-# Ideen und Fragen zur Bachelorarbeit
+# Besprechung der Bachelorarbeit
 
-## Gregor
+## Sprechpunkte
 
-1. Zugriff auf Git
-2. Veröffentlichen
+1. Zweck des Algorithmus
+2. Massenbestimmung einzelner Stadien
+3. Iterationsschrittte
 
-## Features
+## Massenbestimmung eines definierten Flugzeuges in verschiedenen Stadien
 
-### Implementiert
+### 1. Top Level
 
-1. Installierbares Paket
-2. Entry-Point
-3. Source-Control
-4. Source-Code Formatierung
+Gegeben:
 
-### In Arbeit
+1. Flugaufgabe
+2. Konstruktionsbeschränkungen
+3. Schub
 
-1. Massenbestimmung
-2. Holmberechnung
-3. Flugzeug Erstellung
-4. Unittests
-5. Dokumentation
-6. Rumpf
+→ Berechnung durch Interpolation von vorhandenen Flugzeugen
 
-### Nicht Implementiert
+### 2. Durch Iteration
 
-1. GUI
-2. Optimierer
-3. Berechnung anderer Flugzeugparameter
-4. Leitwerkauslegung
+Gegeben:
+
+1. Top Level Werte
+2. definierte Flugzeug Parameter
+
+→ Berechnung durch bereits vorgestellte Methode
