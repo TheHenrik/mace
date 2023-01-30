@@ -39,7 +39,7 @@ def gen_profile(profil, start_innen, end_innen, start_außen, end_außen):
 
 @cache
 def get_profil(airfoil: str) -> list:
-    file_location = f"./././data/airfoils/{airfoil}.dat"
+    file_location = f"C:/Users/Gregor/Documents/GitHub/mace/data/airfoils/{airfoil}.dat"
     with open(file_location, "rt") as f:
         raw_data = f.read()
         data = re.findall(r"([01].\d+) +([0\-].\d+)", raw_data)

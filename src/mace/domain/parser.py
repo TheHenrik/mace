@@ -8,7 +8,7 @@ from mace.domain import Plane, Wing, WingSegment
 class PlaneParser:
     def __init__(self, file_name):
         self.plane = Plane()
-        self.tree = ET.parse(f"./././data/planes/{file_name}")
+        self.tree = ET.parse(f"C:/Users/Gregor/Documents/GitHub/mace/data/planes/{file_name}")
 
     def build_plane(self):
         root = self.tree.getroot()
