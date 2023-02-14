@@ -2,13 +2,9 @@ import sys
 from gc import get_referents
 from types import FunctionType, ModuleType
 
-# Custom objects know their class.
-# Function objects seem to know way too much, including modules.
-# Exclude modules as well.
-BLACKLIST = type, ModuleType, FunctionType
-
 
 def getsize(obj):
+    BLACKLIST = type, ModuleType, FunctionType
     """sum size of object & members."""
     if isinstance(obj, BLACKLIST):
         raise TypeError("getsize() does not take argument of type: " + str(type(obj)))

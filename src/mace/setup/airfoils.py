@@ -2,15 +2,17 @@ import asyncio
 from os import listdir
 
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, ResultSet
 
 
-async def _download(link, downloaded: set, path: str, url: str):
+async def _download(link: ResultSet, downloaded: set, path: str, url: str):
     file_name = link.get("href")
+    
     if ".dat" not in file_name:
         return
     if file_name in downloaded:
         return
+
     r = requests.get(url + file_name, stream=True)
     with open(path + file_name, "wb") as f:
         f.write(r.content)
