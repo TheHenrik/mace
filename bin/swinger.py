@@ -1,14 +1,22 @@
 from mace import PlaneParser, get_mass_plane
-from mace.test import performance_report, performance_time
+from mace.test import performance_report, performance_time, getsize
+from mace.setup import populate_airfoils
 
 
 def main():
-    flugzeug = PlaneParser("flugzeug.xml").build_plane()
-    flugzeug = get_mass_plane(flugzeug)
-    return flugzeug.mass
+    populate_airfoils()
+    plane = calc()
+    print(f"The weight of the plane is approx. {plane.mass} kg!")
+    print(f"Size on Disk of Plane: {getsize(plane)}")
+    performance_time(10_000, calc)
+    performance_report(performance_time, 1_000, calc, output=None)
+    
+
+def calc():
+    plane = PlaneParser("flugzeug.xml").build_plane()
+    plane = get_mass_plane(plane)
+    return plane
 
 
 if __name__ == "__main__":
-    print(f"The weight of the plane is approx. {main()} kg!")
-    performance_time(10_000, main)
-    performance_report(performance_time, 1_000, main, output=None)
+    main()
