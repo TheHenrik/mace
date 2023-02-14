@@ -26,5 +26,9 @@ def _main():
         #eval
     #print best?
 
+
+def calculate(*args):
+    pass
+
 if __name__ == "__main__":
     main()
