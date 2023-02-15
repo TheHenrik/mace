@@ -59,7 +59,7 @@ class EmpennageType:
 class Wing:
     segments: List[WingSegment] = None
     airfoil: str = None
-    mass: float = 0
+    mass: float = None
 
 
 @dataclass()
@@ -68,4 +68,4 @@ class Plane:
     empennage: EmpennageType = None
     wing: Wing = None
     hull: Hull = None
-    mass: float = 0
+    mass: float = None

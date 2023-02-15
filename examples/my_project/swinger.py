@@ -1,4 +1,4 @@
-from mace import PlaneParser, get_mass_plane
+from mace import PlaneParser, get_mass_plane, mace_setup
 from mace.test import performance_report, performance_time, getsize
 from mace.setup import populate_airfoils
 
@@ -17,6 +17,18 @@ def calc():
     plane = get_mass_plane(plane)
     return plane
 
+
+def _main():
+    #read from files
+    project = mace_setup()
+    for plane in project:
+        plane = calculate(plane)
+        #eval
+    #print best?
+
+
+def calculate(*args):
+    pass
 
 if __name__ == "__main__":
     main()
