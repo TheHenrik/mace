@@ -50,4 +50,4 @@ class PlaneParser:
     def build_vector(self, element):
         return np.array(
             list(map(float, [element[0].text, element[1].text, element[2].text]))
-        )
+        )       # mit map werden alle Werte in floats umgewandelt / float-function wird auf alle Werte angewendet
