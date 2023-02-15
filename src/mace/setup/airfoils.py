@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup, ResultSet
 
 async def _download(link: ResultSet, downloaded: set, path: str, url: str):
     file_name = link.get("href")
-    
+
     if ".dat" not in file_name:
         return
     if file_name in downloaded:

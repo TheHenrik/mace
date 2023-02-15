@@ -1,34 +1,18 @@
-from mace import PlaneParser, get_mass_plane, mace_setup
-from mace.test import performance_report, performance_time, getsize
-from mace.setup import populate_airfoils
+from mace import ProjectSetup, calculate_plane
+from mace.test import getsize, performance_report, performance_time
 
 
 def main():
-    populate_airfoils()
-    plane = calc()
-    print(f"The weight of the plane is approx. {plane.mass} kg!")
+    project = ProjectSetup(planes_location=["flugzeug.xml"])
+    for plane in project.planes:
+        plane = calculate_plane(plane)
+        print(f"The weight of the plane is approx. {plane.mass} kg!")
+
+    plane = project.planes[0]
     print(f"Size on Disk of Plane: {getsize(plane)}")
-    performance_time(10_000, calc)
-    performance_report(performance_time, 1_000, calc, output=None)
-    
+    performance_time(10_000, calculate_plane, plane)
+    performance_report(performance_time, 1_000, calculate_plane, plane, output=None)
 
-def calc():
-    plane = PlaneParser("flugzeug.xml").build_plane()
-    plane = get_mass_plane(plane)
-    return plane
-
-
-def _main():
-    #read from files
-    project = mace_setup()
-    for plane in project:
-        plane = calculate(plane)
-        #eval
-    #print best?
-
-
-def calculate(*args):
-    pass
 
 if __name__ == "__main__":
     main()

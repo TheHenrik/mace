@@ -68,4 +68,4 @@ class Plane:
     empennage: EmpennageType = None
     wing: Wing = None
     hull: Hull = None
-    mass: float = None
+    mass: float = 0
