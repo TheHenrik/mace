@@ -36,7 +36,7 @@ def v_v(v, sin_gam):                # sin_gamma bereits vorher berechnen, ist ü
 
 # ---Iteration über V---
 
-def iteration(dif_re, tolerance_re, m, g, f, rho, s_ref, cw, ca, v_init: float, flaechentiefe, ny, it_max=20):
+def iteration(dif_re, tolerance_re, m, g, f, rho, s_ref, ca, v_init: float, flaechentiefe, ny, it_max=20):
 
     v_shot = v_init
     i = 0
@@ -46,14 +46,39 @@ def iteration(dif_re, tolerance_re, m, g, f, rho, s_ref, cw, ca, v_init: float, 
 
         generalfunctions.gen_polar(re)
         generalfunctions.get_coeffs()
-
+                                                            # cw aus get_polar
         v_res, _ = v_climb(m, g, f, rho, s_ref, cw, ca)     # Unterstrich Platzhalter Platzhalter für Nichtbenutzung
 
         dif_re = (v_res - v_shot)
-        v_shot = v_res
+        v_shot = v_res, _
 
         i += 1
+    return v_shot, cw, ca, re
 
+# ---Iteration über Ca---
+
+
+def climb(ca_init, ca_end, step):
+    ca = ca_init
+    res = np.array()
+
+    i = 0
+    while ca <= ca_end:
+        v = iteration(ca)
+
+        if no_polar_available:
+            break
+
+        sin = sin_gamma()
+        cos = cos_gamma()
+        gamma = gamma()
+        v_v = v_v()
+
+        res[i] = v, sin, cos, v_v, gamma
+
+        i += 1
+        ca += step
+    return res
 
 # ---Auswertung---
 
