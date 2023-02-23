@@ -1,6 +1,6 @@
 import os                       # operation system
 import numpy as np
-import runsubprocess as runsub
+from mace.aero.implementations import runsubprocess as runsub
 
 
 # ---Inputs---
