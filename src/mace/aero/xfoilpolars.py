@@ -6,15 +6,35 @@ import runsubprocess as runsub
 # ---Inputs---
 
 
-def get_xfoil_polar(airfoil_name, alfa_start, alfa_end, alfa_step, reynoldsnumber, n_iter):
+def get_xfoil_polar(airfoil_name, alfa_start, alfa_end, alfa_step, reynoldsnumber, n_iter,
+                    mach: float=0, n_crit: float=9, x_transition_top=100, x_transition_bottom=100):
     """
     returns a numpy array with all polar data:
         each row contains:
         alpha, CL, CD, CDp, CM, Top_Xtr, Bot_Xtr
+
     inputs:
     airfoil_name, alfa_start, alfa_end, alfa_step, reynoldsnumber, n_iter
 
     it is recommended to have alfa_start = 0 for better convergence.
+
+    ----------------
+    Mach: float between 0 and Mach_crit (<<1), only use for Mach > 0.3
+    ----------------
+
+          situation            Ncrit
+      -----------------        -----
+      sailplane                12-14
+      motorglider              11-13
+      clean wind tunnel        10-12
+      average wind tunnel        9     <=  standard "e^9 method"
+      dirty wind tunnel         4-8
+
+    ------------------
+    Forced transition:
+
+    x_transition_top: int between 0 and 100%        (from leading edge to trailing edge)
+    x_transition_bottom: int between 0 and 100%     (from leading edge to trailing edge)
     """
     # ---Inputfile writer---
 
@@ -27,6 +47,15 @@ def get_xfoil_polar(airfoil_name, alfa_start, alfa_end, alfa_step, reynoldsnumbe
     input_file.write("PANE\n")
     input_file.write("OPER\n")
     input_file.write("Visc {0}\n".format(reynoldsnumber))
+    if mach != 0:
+        input_file.write("Mach {0}\n".format(mach))
+    if n_crit != 9 or x_transition_top != 100 or x_transition_bottom != 100:
+        input_file.write("VPAR\n")
+        if n_crit != 9:
+            input_file.write("N {0}\n".format(n_crit))
+        if x_transition_top != 100 or x_transition_bottom != 100:
+            input_file.write("XTR {0} {1}\n".format(x_transition_top/100, x_transition_bottom/100))
+        input_file.write("\n")
     input_file.write("PACC\n")
     input_file.write("polar_file.txt\n\n")
     input_file.write("ITER {0}\n".format(n_iter))
@@ -61,5 +90,6 @@ if __name__ == "__main__":
     re = 200000
     n_iter = 80            # wenn keine Konvergenz reduzieren, Ergebnisse scheinen annähernd gleich zu bleiben
 
-    polar_daten = get_xfoil_polar(airfoil_name, alfa_start, alfa_end, alfa_step, re, n_iter)
+    polar_daten = get_xfoil_polar(airfoil_name, alfa_start, alfa_end, alfa_step, re, n_iter,
+                                  n_crit=5.794, x_transition_top=54, mach=0.6)
     print(polar_daten)
