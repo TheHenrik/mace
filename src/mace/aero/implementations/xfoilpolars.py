@@ -70,7 +70,7 @@ def get_xfoil_polar(airfoil_name, alfa_start, alfa_end, alfa_step, reynoldsnumbe
     cmd = "C:/Users/Gregor/Documents/Modellflug/Software/XFOIL/xfoil.exe < input_file.in"   # external command to run
     runsub.run_subprocess(cmd)
 
-    polar_data = np.loadtxt("polar_file.txt", skiprows=12)
+    polar_data = np.loadtxt("polar_file.txt", skiprows=12)      # max_rows ist Parameter für Anzahl Zeilen
 
     # Find all PIDs of all the running instances of process that contains "xfoil" in its name
     list_of_process_ids = runsub.find_process_id_by_name("xfoil")
