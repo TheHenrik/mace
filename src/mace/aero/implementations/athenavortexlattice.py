@@ -4,9 +4,9 @@ from mace.aero.implementations import runsubprocess as runsub
 
 
 def avl_output(avl_file, mass_file, run_file, total_forces_file_name, strip_forces_file_name,
-               run_case: int = 1, maschine_readable_file=True):
+               angle_of_attack=None, lift_coefficient=None, run_case: int = 1, maschine_readable_file=True):
     """
-    For run_case != 1 pleas check runcase is available!
+    For run_case != 1 please check runcase is available!
     """
     # --- Input file writer---
 
@@ -18,10 +18,14 @@ def avl_output(avl_file, mass_file, run_file, total_forces_file_name, strip_forc
     input_file = open("input_file_avl.in", 'w')
     input_file.write("LOAD {0}\n".format(avl_file))
     input_file.write("MASS {0}\n".format(mass_file))
-    input_file.write("CASE {0}\n".format(run_file))
+    # input_file.write("CASE {0}\n".format(run_file))
     input_file.write("OPER\n")
     if run_case != 1:                                           # select run_case
         input_file.write("{0}\n".format(run_case))
+    if angle_of_attack is not None:                             # set angle of attack in degrees
+        input_file.write("A A {0}\n".format(angle_of_attack))
+    if lift_coefficient is not None:                             # set angle of attack with cl
+        input_file.write("A C {0}\n".format(lift_coefficient))
     input_file.write("X\n")                         # execute runcase, XX executes all runcases but uses last runcase
     if maschine_readable_file:
         input_file.write("MRF\n")                               # maschine readable file
@@ -165,7 +169,7 @@ def read_avl_files():
         cdv = float(values[11])         # cdv
         cm_c = float(values[12])        # cm_c / 4
         cm_le = float(values[13])       # cm_LE
-        cpx = float(values[14])         # C.P.x / c
+        cpx = float(values[14])         # C.P.x / c     Center of Pressure in x-Axis over chord (Druckpunkt)
 
         print("strip number = {0}\n".format(j), "Xle = {:.4f}\n".format(xle), "Yle = {:.4f}\n".format(yle),
               "Zle = {:.4f}\n".format(zle), "Chord = {:.4f}\n".format(chord), "Area = {:.4f}\n".format(area),
@@ -186,5 +190,5 @@ if __name__ == "__main__":
     strip_forces_file_name = "strip_forces_avl"
 
     avl_output(avl_file, mass_file, run_file, total_forces_file_name, strip_forces_file_name,
-               run_case=1, maschine_readable_file=True)
+               angle_of_attack=0, run_case=1, maschine_readable_file=True)
     read_avl_files()
