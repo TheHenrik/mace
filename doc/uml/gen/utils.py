@@ -93,7 +93,7 @@ def write_uml_file(filename, classes):
             write_class(f, clas, classes)
 
         f.write(f"@enduml")
-    os.system(f"java -jar doc/uml/plantuml.jar {filename}")
+    os.system(f"java -jar doc/uml/gen/plantuml.jar {filename}")
 
 
 if __name__ == "__main__":
@@ -104,4 +104,4 @@ if __name__ == "__main__":
         if not is_valid_class(value):
             continue
         classes.append(value)
-    write_uml_file("doc/test.puml", classes)
+    write_uml_file("doc/uml/test.puml", classes)
