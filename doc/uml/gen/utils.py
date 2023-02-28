@@ -50,9 +50,10 @@ def write_class(f, clas, classes):
     f.write(f"class {name} {{\n")
     edges = []
     for varname, vartype in find_class_variables(clas).items():
+        print(repr(vartype))
         reg = re.findall(
             r"<class '(?:\w+\.)*(\w+)'>|"
-            + r"typing\.(List)(\[)(?:\w+\.)*(\w+)(\])|"
+            + r"(?:typing\.)?(List|list)(\[)(?:\w+\.)*(\w+)(\])|"
             + r"(?:\w+\.)*(\w+)( \| )(?:\w+\.)*(\w+)",
             repr(vartype),
         )[0]
@@ -97,10 +98,10 @@ def write_uml_file(filename, classes):
 
 
 if __name__ == "__main__":
-    from mace.domain import plane
+    from mace import domain
 
     classes = []
-    for attr, value in plane.__dict__.items():
+    for attr, value in domain.__dict__.items():
         if not is_valid_class(value):
             continue
         classes.append(value)

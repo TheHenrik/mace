@@ -11,53 +11,21 @@ skinparam linetype ortho
         RoundCorner 10
     }
 </style>
-class HullProfile {
-hight: int
-width: int
-position: int
+class EmpennageType {
+typ: TEmpennage | VEmpennage
 }
+TEmpennage <-- EmpennageType
 class Hull {
 lenght: int
 profile: HullProfile
 mass: float
 }
 HullProfile <-- Hull
-class Flap {
+class HullProfile {
+hight: int
+width: int
+position: int
 }
-class WingSegment {
-nose_inner: ndarray
-nose_outer: ndarray
-back_inner: ndarray
-back_outer: ndarray
-mass: float
-area: float
-volume: float
-}
-class TEmpennage {
-elevator: List[WingSegment]
-airfoil_e: str
-rudder: List[WingSegment]
-airfoil_r: str
-mass: float
-}
-WingSegment <-- TEmpennage
-WingSegment <-- TEmpennage
-class VEmpennage {
-segments: List[WingSegment]
-mass: float
-}
-WingSegment <-- VEmpennage
-class EmpennageType {
-typ: TEmpennage | VEmpennage
-}
-TEmpennage <-- EmpennageType
-VEmpennage <-- EmpennageType
-class Wing {
-segments: List[WingSegment]
-airfoil: str
-mass: float
-}
-WingSegment <-- Wing
 class Plane {
 name: str
 empennage: EmpennageType
@@ -68,4 +36,28 @@ mass: float
 EmpennageType <-- Plane
 Wing <-- Plane
 Hull <-- Plane
+class TEmpennage {
+elevator: List[WingSegment]
+airfoil_e: str
+rudder: List[WingSegment]
+airfoil_r: str
+mass: float
+}
+WingSegment <-- TEmpennage
+WingSegment <-- TEmpennage
+class Wing {
+segments: List[WingSegment]
+airfoil: str
+mass: float
+}
+WingSegment <-- Wing
+class WingSegment {
+nose_inner: ndarray
+nose_outer: ndarray
+back_inner: ndarray
+back_outer: ndarray
+mass: float
+area: float
+volume: float
+}
 @enduml
