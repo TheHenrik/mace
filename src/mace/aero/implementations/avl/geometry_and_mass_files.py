@@ -18,7 +18,7 @@ def build_geo_header(geometry_file, plane_name=None, cdp=0, mach=0):
     if cdp != 0:
         geometry_file.write("# CDp\n")
         geometry_file.write("{0}\n".format(profile_drag))
-
+#
 
 def build_geo_surface_section_control(geometry_file):
 
