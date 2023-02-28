@@ -1,5 +1,6 @@
 import inspect
 import os
+import re
 
 FILTER_CLASSES = ["Enum", "object", "Representation", "Base"]
 
@@ -43,24 +44,22 @@ def is_enum(clas):
     return False
 
 
-def get_class_from(class_names, vartype) -> None | str:
-    vartype = repr(vartype)
-    vartype = vartype.replace(">", "").replace("]", "").replace("'", "")
-    vartype = vartype.split(".")[-1]
-    if vartype in class_names:
-        return vartype
-    return None
-
-
 def write_class(f, clas, classes):
     name = find_class_table_name(clas)
     class_names = [find_class_table_name(c) for c in classes]
     f.write(f"class {name} {{\n")
     edges = []
     for varname, vartype in find_class_variables(clas).items():
-        f.write(f"{varname}: {repr(vartype)}\n")
-        if get_class_from(class_names, vartype) is not None:
-            edges.append(get_class_from(class_names, vartype))
+        reg = re.findall(
+            r"<class '(?:\w+\.)*(\w+)'>|"
+            + r"typing\.(List)(\[)(?:\w+\.)*(\w+)(\])|"
+            + r"(?:\w+\.)*(\w+)( \| )(?:\w+\.)*(\w+)",
+            repr(vartype),
+        )[0]
+        f.write(f"{varname}: {''.join(reg)}\n")
+        for reference in reg:
+            if reference in class_names:
+                edges.append(reference)
     f.write(f"}}\n")
 
     if inspect.isabstract(clas) or clas.__name__.startswith("Abstract"):
@@ -84,17 +83,16 @@ def is_valid_class(clas):
 
 
 def write_uml_file(filename, classes):
-    f = open(filename, "w")
-    f.write(f"@startuml\n")
-    f.write("skinparam useBetaStyle true\n")
-    f.write("skinparam linetype ortho\n")
-    f.write(STYLE)
+    with open(filename, "w") as f:
+        f.write(f"@startuml\n")
+        f.write("skinparam useBetaStyle true\n")
+        f.write("skinparam linetype ortho\n")
+        f.write(STYLE)
 
-    for clas in classes:
-        write_class(f, clas, classes)
+        for clas in classes:
+            write_class(f, clas, classes)
 
-    f.write(f"@enduml")
-    f.close()
+        f.write(f"@enduml")
     os.system(f"java -jar doc/uml/plantuml.jar {filename}")
 
 

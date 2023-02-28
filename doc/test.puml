@@ -12,57 +12,58 @@ skinparam linetype ortho
     }
 </style>
 class HullProfile {
-hight: <class 'int'>
-width: <class 'int'>
-position: <class 'int'>
+hight: int
+width: int
+position: int
 }
 class Hull {
-lenght: <class 'int'>
-profile: <class 'mace.domain.plane.HullProfile'>
-mass: <class 'float'>
+lenght: int
+profile: HullProfile
+mass: float
 }
 HullProfile <-- Hull
 class Flap {
 }
 class WingSegment {
-nose_inner: <class 'numpy.ndarray'>
-nose_outer: <class 'numpy.ndarray'>
-back_inner: <class 'numpy.ndarray'>
-back_outer: <class 'numpy.ndarray'>
-mass: <class 'float'>
-area: <class 'float'>
-volume: <class 'float'>
+nose_inner: ndarray
+nose_outer: ndarray
+back_inner: ndarray
+back_outer: ndarray
+mass: float
+area: float
+volume: float
 }
 class TEmpennage {
-elevator: typing.List[mace.domain.plane.WingSegment]
-airfoil_e: <class 'str'>
-rudder: typing.List[mace.domain.plane.WingSegment]
-airfoil_r: <class 'str'>
-mass: <class 'float'>
+elevator: List[WingSegment]
+airfoil_e: str
+rudder: List[WingSegment]
+airfoil_r: str
+mass: float
 }
 WingSegment <-- TEmpennage
 WingSegment <-- TEmpennage
 class VEmpennage {
-segments: typing.List[mace.domain.plane.WingSegment]
-mass: <class 'float'>
+segments: List[WingSegment]
+mass: float
 }
 WingSegment <-- VEmpennage
 class EmpennageType {
-typ: mace.domain.plane.TEmpennage | mace.domain.plane.VEmpennage
+typ: TEmpennage | VEmpennage
 }
+TEmpennage <-- EmpennageType
 VEmpennage <-- EmpennageType
 class Wing {
-segments: typing.List[mace.domain.plane.WingSegment]
-airfoil: <class 'str'>
-mass: <class 'float'>
+segments: List[WingSegment]
+airfoil: str
+mass: float
 }
 WingSegment <-- Wing
 class Plane {
-name: <class 'str'>
-empennage: <class 'mace.domain.plane.EmpennageType'>
-wing: <class 'mace.domain.plane.Wing'>
-hull: <class 'mace.domain.plane.Hull'>
-mass: <class 'float'>
+name: str
+empennage: EmpennageType
+wing: Wing
+hull: Hull
+mass: float
 }
 EmpennageType <-- Plane
 Wing <-- Plane
