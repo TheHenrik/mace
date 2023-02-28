@@ -37,7 +37,7 @@ def kurvenradius(arg1, arg2, mode, masse) -> (float, float, float, float, float)
     Mode 8: ca and n
     Mode 9: ca and phi
     Mode 10: n and phi"""
-
+# umschreiben zu z.B. if v is not None and r_k is not none:
     m = masse
 
     if mode == 1:                           # v, r_k

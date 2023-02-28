@@ -63,7 +63,7 @@ def get_xfoil_polar(airfoil_name, alfa_start, alfa_end, alfa_step, reynoldsnumbe
 
     input_file.write("\n\n")
     input_file.write("quit \n")
-    input_file.close()
+    input_file.close()              # mit context manager nicht notwendig
 
     # ---Run XFOIL---
 

@@ -1,7 +1,9 @@
 import os
 
 
-def build_geo_header(geometry_file, plane_name=None, cdp=0):
+# ========== Geometry File ==========
+
+def build_geo_header(geometry_file, plane_name=None, cdp=0, mach=0):
 
     if plane_name is not None:
         geometry_file.write("{0}\n".format(plane_name))
@@ -67,16 +69,15 @@ def build_geo_surface(geometry_file):
     build_geo_surface_section()
 
 
-def build_geometry_file(plane_name=None, cdp=0):
+def build_geometry_file(number_of_surfaces, plane_name=None, cdp=0, mach=0):
     if os.path.exists("geometry_file.avl"):
         os.remove("geometry_file.avl")
-
     geometry_file = open("geometry_file.avl", 'w')
-
-    build_geo_header(geometry_file, plane_name, cdp)
-
+    build_geo_header(geometry_file, plane_name, cdp, mach)
     geometry_file.write("#======================\n")
+    for surface in range(number_of_surfaces):   # or list with all surfaces
+        build_geo_surface(geometry_file)        # surface nr.1 and then more surfaces
+    geometry_file.close()
 
-    build_geo_surface(geometry_file)        # surface nr.1
 
-
+# ========== Mass File ==========
