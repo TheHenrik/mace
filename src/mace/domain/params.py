@@ -7,6 +7,13 @@ class Constants:
     rho: float = 1.225
 
 
+@dataclass()
+class Units():
+    l_unit: float = 0.001   # m -> mm   LengthUnit
+    m_unit: float = 1       # kg        MassUnit
+    t_unit: float = 1       # s         TimeUnit
+
+
 @dataclass
 class Material:
     name: str
@@ -14,5 +21,6 @@ class Material:
     count: int
 
 
-class Parameter:
+class Parameters:
     constants = Constants
+    units = Units
