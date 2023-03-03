@@ -2,4 +2,40 @@
 %********************************
 \chapter{Hauptteil}
 
-text
+%Flowchart
+
+\section[short]{Algorithmus}
+
+\subsection[short]{Flugzeugdarstellung}
+
+%UML Diagramm
+
+Das Flugzeug wird als Klasse dargestellt. Dieses hat verschiedene Parameter darunter 
+
+\subsection[short]{Gitternetz}
+
+Um verschiedene Parameter zu bestimmen, muss zunächst ein 3D-Objekt aus dem Flugzeug erstellt werden. Dafür wird bei dem Flügel das Profil auf die jeweiligen Punkte Projeziert und über die erzeugten Profile ein Netz bestehend aus Dreiecken gespannt.
+
+\subsection{Parameterbestimmung}
+
+\subsubsection*{Flügelfläche}
+Da das Gitternetz durch Dreiecke dargestellt wird, kann man die Oberfläche als Summe der Flächen der Dreiecke berechnet werden.
+
+$$
+A = \sum \frac{|AB \times AC|}{2}
+$$
+
+Die Referenzflügelfläche kann über die Außenpunkte 
+
+\subsubsection[short]{Flügelvolumen}
+
+Das Volumen eines Flügelsegments kann über die Summe eines sechstels des Spatproduktes der drei Ecken der Dreiecke bestimmt werden. Dabei ist die Reihenfolge der Punkte so zu wählen, dass der Normalenvektor aus dem Körper zeigt.
+
+$$
+V = \sum \frac{(a\times b )\cdot c}{6}
+$$
+
+\subsection[short]{Lastenbestimmung}
+
+%vn diagramm 
+%sicherheitfaktor
