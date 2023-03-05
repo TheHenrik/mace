@@ -1,10 +1,12 @@
 import os  # operation system
 import numpy as np
 from mace.aero.implementations import runsubprocess as runsub
+from mace.aero.implementations.xfoil.xfoilpolars import get_xfoil_polar
 
 
-def avl_output(avl_file, mass_file, run_file, total_forces_file_name, strip_forces_file_name,
-               angle_of_attack=None, lift_coefficient=None, run_case: int = 1, maschine_readable_file=True):
+def run_avl(avl_file, mass_file, run_file, total_forces_file_name="total_forces_avl",
+            strip_forces_file_name="strip_forces_avl", angle_of_attack=None, lift_coefficient=None,
+            run_case: int = 1, maschine_readable_file=True):
     """
     For run_case != 1 please check runcase is available!
     """
@@ -45,7 +47,13 @@ def avl_output(avl_file, mass_file, run_file, total_forces_file_name, strip_forc
     runsub.run_subprocess(cmd)
 
 
-def read_avl_files():
+def read_avl_output():
+    """
+    returns a tuple of:
+    (clff , cdff, cyff, oswaldfactor, s_ref, c_ref, b_ref, x_ref, y_ref, z_ref,
+    number_of_strips, number_of_surfaces, number_of_vortices, surface_data, strip_forces)
+    """
+
     file = open("total_forces_avl")
     lines = file.readlines()
 
@@ -83,6 +91,19 @@ def read_avl_files():
             c_ref = float(values[1])
             b_ref = float(values[2])
 
+    x_ref: float = 0
+    y_ref: float = 0
+    z_ref: float = 0
+
+    for line in lines:
+        if line.endswith("| Xref, Yref, Zref\n"):
+            string = line.split("|")
+            value_string = string[0]
+            values = value_string.split()
+            x_ref = float(values[0])
+            y_ref = float(values[1])
+            z_ref = float(values[2])
+
     # ---Number of Strips---
 
     number_of_strips: int = 0
@@ -118,7 +139,7 @@ def read_avl_files():
 
     file.close()
 
-    print("CLff = {:.4f}\n".format(clff))
+    """print("CLff = {:.4f}\n".format(clff))
     print("CDff = {:.4f}\n".format(cdff))
     print("CYff = {:.4f}\n".format(cyff))
     print("Oswaldfactor = {:.4f}\n".format(oswaldfactor))
@@ -127,16 +148,43 @@ def read_avl_files():
     print("Reference chord depth = {:.4f}\n".format(c_ref))
     print("Reference Wingspan = {:.4f}\n".format(b_ref))
 
+    print("Reference x value = {:.4f}\n".format(x_ref))
+    print("Reference y value = {:.4f}\n".format(y_ref))
+    print("Reference z value = {:.4f}\n".format(z_ref))
+
     print("number of strips = {0}\n".format(number_of_strips))
     print("number of surfaces = {0}\n".format(number_of_surfaces))
-    print("number of vortices = {0}\n".format(number_of_vortices))
+    print("number of vortices = {0}\n".format(number_of_vortices))"""
 
 # ------strip_forces_avl file------
 
     file = open("strip_forces_avl")
 
     lines = file.readlines()
+
+    # ---Surface Data---
+    surface_data = np.array([])
     values: list = []
+    hits = 0
+    for line in lines:
+        if line.endswith("| Surface #, # Chordwise, # Spanwise, First strip\n"):
+            hits += 1
+            string = line.split("|")
+            value_string = string[0]
+            values = value_string.split()
+            if hits == 1:
+                surface_data = np.array(values)
+            else:
+                arr = np.array(values)
+                surface_data = np.vstack((surface_data, arr))
+
+    """print(surface_data)
+    print("Number of surface = {0}\n".format(surface_data[:, 0]))
+    print("number of strips in chordwise direction = {0}\n".format(surface_data[:, 1]))
+    print("number of strips in spanwise direction (important) = {0}\n".format(surface_data[:, 2]))
+    print("surface begins with strip number = {0}\n".format(surface_data[:, 3]))"""
+
+    strip_forces = np.array([])
     for strip_number in range(number_of_strips):
         for line in lines:
             if strip_number + 1 < 10:
@@ -153,9 +201,13 @@ def read_avl_files():
                     values = line.split()
             else:
                 print("No valid data format")
-        # print(values)
+        if strip_number == 0:
+            strip_forces = np.array(values)
+        else:
+            arr = np.array(values)
+            strip_forces = np.vstack((strip_forces, arr))
 
-        j = int(values[0])              # entspricht strip_number
+        """j = int(values[0])              # entspricht strip_number
         xle = float(values[1])          # Xle
         yle = float(values[2])          # Yle
         zle = float(values[3])          # Zle
@@ -176,19 +228,25 @@ def read_avl_files():
               "c_cl = {:.4f}\n".format(c_cl), "ai = {:.4f}\n".format(ai), "cl_norm = {:.4f}\n".format(cl_norm),
               "cl = {:.4f}\n".format(cl), "cd = {:.4f}\n".format(cd), "cdv = {:.4f}\n".format(cdv),
               "cm_c / 4 = {:.4f}\n".format(cm_c), "cm_LE = {:.4f}\n".format(cm_le), "C.P.x / c = {:.4f}\n".format(cpx))
+"""
     file.close()
+
+    result = (clff, cdff, cyff, oswaldfactor, s_ref, c_ref, b_ref, x_ref, y_ref, z_ref,
+              number_of_strips, number_of_surfaces, number_of_vortices, surface_data, strip_forces)
+    return result
 
 
 # ---Test---
 
 
 if __name__ == "__main__":
-    avl_file = "C:/Users/Gregor/Documents/Modellflug/Software/AVL/runs/supra.avl"
-    mass_file = "C:/Users/Gregor/Documents/Modellflug/Software/AVL/runs/supra.mass"
-    run_file = "C:/Users/Gregor/Documents/Modellflug/Software/AVL/runs/supra.run"
-    total_forces_file_name = "total_forces_avl"
-    strip_forces_file_name = "strip_forces_avl"
+    avl_file_path = "C:/Users/Gregor/Documents/Modellflug/Software/AVL/runs/supra.avl"
+    mass_file_path = "C:/Users/Gregor/Documents/Modellflug/Software/AVL/runs/supra.mass"
+    run_file_path = "C:/Users/Gregor/Documents/Modellflug/Software/AVL/runs/supra.run"
+    total_forces_file = "total_forces_avl"
+    strip_forces_file = "strip_forces_avl"
 
-    avl_output(avl_file, mass_file, run_file, total_forces_file_name, strip_forces_file_name,
-               angle_of_attack=0, run_case=1, maschine_readable_file=True)
-    read_avl_files()
+    run_avl(avl_file_path, mass_file_path, run_file_path, total_forces_file, strip_forces_file,
+            angle_of_attack=0, run_case=1, maschine_readable_file=True)
+    results = read_avl_output()
+    # print(results)

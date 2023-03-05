@@ -6,8 +6,10 @@ from mace.aero.implementations import runsubprocess as runsub
 # ---Inputs---
 
 
-def get_xfoil_polar(airfoil_name, alfa_start, alfa_end, alfa_step, reynoldsnumber, n_iter,
-                    mach: float=0, n_crit: float=9, x_transition_top=100, x_transition_bottom=100):
+def get_xfoil_polar(airfoil_name, reynoldsnumber, *,
+                    alfa=None, alfa_start=None, alfa_end=None, cl=None, cl_start=None, cl_end=None,
+                    alfa_step: float = 0.5, cl_step: float = 0.05, n_iter=80,
+                    mach: float = 0, n_crit: float = 9, x_transition_top=100, x_transition_bottom=100):
     """
     returns a numpy array with all polar data:
         each row contains:
@@ -59,7 +61,16 @@ def get_xfoil_polar(airfoil_name, alfa_start, alfa_end, alfa_step, reynoldsnumbe
     input_file.write("PACC\n")
     input_file.write("polar_file.txt\n\n")
     input_file.write("ITER {0}\n".format(n_iter))
-    input_file.write("ASeq {0} {1} {2}\n".format(alfa_start, alfa_end, alfa_step))
+    if alfa:
+        input_file.write("Alfa {0}\n".format(alfa))
+    elif alfa_start is not None and alfa_end is not None:
+        input_file.write("ASeq {0} {1} {2}\n".format(alfa_start, alfa_end, alfa_step))
+    elif cl:
+        input_file.write("Cl {0}\n".format(cl))
+    elif cl_start is not None and cl_end is not None:
+        input_file.write("CSeq {0} {1} {2}\n".format(cl_start, cl_end, cl_step))
+    else:
+        print("wrong XFOIL inputs")       # Error
 
     input_file.write("\n\n")
     input_file.write("quit \n")
@@ -87,9 +98,11 @@ if __name__ == "__main__":
     alfa_start = 0
     alfa_end = 20
     alfa_step = 0.25
-    re = 200000
+    reynolds = 200000
     n_iter = 80            # wenn keine Konvergenz reduzieren, Ergebnisse scheinen annähernd gleich zu bleiben
 
-    polar_daten = get_xfoil_polar(airfoil_name, alfa_start, alfa_end, alfa_step, re, n_iter,
+    polar_daten = get_xfoil_polar(airfoil_name, reynolds,
+                                  cl_start=-0.1, cl_end=0.5,
+                                  # alfa_start=alfa_start, alfa_end=alfa_end, alfa_step=alfa_step, n_iter=n_iter,
                                   n_crit=5.794, x_transition_top=54, mach=0.6)
     print(polar_daten)

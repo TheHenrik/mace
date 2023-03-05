@@ -197,10 +197,10 @@ class LandingGear:
 
 @dataclass()
 class Electronics:
-    servos:
-    cabels:
-    batteries:
-    linkages:
+    servos = None
+    cabels = None
+    batteries = None
+    linkages = None
 
 @dataclass()
 class ReferenceValues:

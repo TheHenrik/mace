@@ -1,3 +1,5 @@
+from mace.domain import params
+
 # ---lineare Interpolation---
 
 
@@ -30,8 +32,8 @@ ynew = np.interp(xnew, x, y)  # interpolation
 
 # ---Re-Zahl---
 
-def re(v, length, ny):              # neuer Name
-    rey = (v * length) / ny
+def get_reynolds_number(v, length):              # neuer Name
+    rey = (v * length) / params.Constants.ny
     return rey
 
 # ---Polaren erstellen---

@@ -5,6 +5,7 @@ from dataclasses import dataclass
 class Constants:
     g: float = 9.81
     rho: float = 1.225
+    ny: float = 18*10**(-6)   # kinematische Viskosität Luft
 
 
 @dataclass()
