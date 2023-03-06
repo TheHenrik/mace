@@ -2,42 +2,44 @@ from mace.aero.implementations.avl import athenavortexlattice
 from mace.aero import generalfunctions
 from mace.aero.implementations.xfoil import xfoilpolars
 from mace.domain import params, Plane
+from mace.aero.implementations.avl.athenavortexlattice import AVL
 import numpy as np
 
 
 class ViscousDrag:
     def __init__(self, plane: Plane):
         self.plane = plane
-        self.results = athenavortexlattice.read_avl_output()
-        self.s_ref = self.results[4]
-        # self.number_of_strips = self.results[10]
-        self.number_of_surfaces = self.results[11]
-        self.surface_data = self.results[-2]  # matrix([number, chordwise-, spanwise-, first-strip], number_of_surfaces)
+        AVL(self.plane).read_avl_output()
+        # self.s_ref = self.plane.avl.outputs.s_ref
+        # self.number_of_surfaces = self.plane.avl.outputs.number_of_surfaces
+        # self.surface_data = self.plane.avl.outputs.surface_data
+        # matrix([number, chordwise-, spanwise-, first-strip], number_of_surfaces)
         """print(self.surface_data)
         print("Number of surface = {0}\n".format(self.surface_data[:, 0]))
         print("number of strips in chordwise direction = {0}\n".format(self.surface_data[:, 1]))
         print("number of strips in spanwise direction (important) = {0}\n".format(self.surface_data[:, 2]))
         print("surface begins with strip number = {0}\n".format(self.surface_data[:, 3]))"""
-        self.strip_forces = self.results[-1]
+        # self.strip_forces = self.plane.avl.outputs.strip_forces
 
     def get_cl_min_of_surface(self):
-        cl_min = np.min(self.strip_forces[6, :])    # (element, zeile)
+        cl_min = np.min(self.plane.avl.outputs.strip_forces[6, :])    # (element, zeile)
         return cl_min
 
     def get_cl_max_of_surface(self):
-        cl_max = np.max(self.strip_forces[6, :])    # (element, zeile)
+        cl_max = np.max(self.plane.avl.outputs.strip_forces[6, :])    # (element, zeile)
         return cl_max
 
     def get_chord_min_of_surface(self):
-        chord_min = np.min(self.strip_forces[4, :])    # (element, zeile)
-        return chord_min
+        chord_min = np.min(self.plane.avl.outputs.strip_forces[4, :])    # (element, zeile)
+        return chord_min    # außen sollte noch bedacht werden
 
     def get_chord_max_of_surface(self):
-        chord_max = np.max(self.strip_forces[4, :])    # (element, zeile)
-        return chord_max
+        chord_max = np.max(self.plane.avl.outputs.strip_forces[4, :])    # (element, zeile)
+        return chord_max    # außen sollte noch bedacht werden
 
     def get_reynolds(self, length, cl):
-        velocity = ((2 * self.plane.mass * params.Constants.g)/(cl * params.Constants.rho * self.s_ref))**0.5
+        velocity = ((2 * self.plane.mass * params.Constants.g)/(cl * params.Constants.rho *
+                                                                self.plane.avl.outputs.s_ref))**0.5
         reynolds = generalfunctions.get_reynolds_number(velocity, length)
         return reynolds
 
@@ -59,8 +61,8 @@ class ViscousDrag:
         """
         returns surface_index, equals (number_of_surface - 1)
         """
-        first_strip_of_surface = self.surface_data[:, 3]
-        for surface_index in range(self.number_of_surfaces):
+        first_strip_of_surface = self.plane.avl.outputs.surface_data[:, 3]
+        for surface_index in range(self.plane.avl.outputs.number_of_surfaces):
             if first_strip_of_surface[surface_index] < strip:
                 continue
             else:
@@ -112,13 +114,13 @@ class ViscousDrag:
                                                          cl_start=cl_min, cl_end=cl_max)"""
             i += 1
 
-        strips = self.strip_forces[0, :]
+        strips = self.plane.avl.outputs.strip_forces[0, :]
         for element in strips:
             surface_index = self.mach_strip_to_surface(element)
-            strip_values = self.strip_forces[:, element-1]
+            strip_values = self.plane.avl.outputs.strip_forces[:, element-1]
 
             if element == strips[-1]:
-                strip_values_outer = self.strip_forces[:, element]
+                strip_values_outer = self.plane.avl.outputs.strip_forces[:, element]
             else:
                 strip_values_outer = None
 
@@ -152,11 +154,11 @@ class ViscousDrag:
             cd_local = np.interp(y_le_mac, interp, cd_list)
 
             # adapt profile_cd to s_ref with CD = profile_cd*strip_area/s_ref
-            cd_local_to_global = cd_local * area / self.plane.reference_values.s_ref
+            cd_local_to_global = cd_local * area / self.plane.avl.outputs.s_ref
 
             # check to wich surface strip is located
-            first_strip_of_surface = self.surface_data[:, 3]
-            for surface in range(self.number_of_surfaces):
+            first_strip_of_surface = self.plane.avl.outputs.surface_data[:, 3]
+            for surface in range(self.plane.avl.outputs.number_of_surfaces):
                 if first_strip_of_surface[surface] < element:
                     continue
                 else:

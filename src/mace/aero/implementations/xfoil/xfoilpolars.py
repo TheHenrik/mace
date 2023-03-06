@@ -43,38 +43,37 @@ def get_xfoil_polar(airfoil_name, reynoldsnumber, *,
     if os.path.exists("polar_file.txt"):
         os.remove("polar_file.txt")
 
-    input_file = open("input_file.in", 'w')
-    input_file.write("LOAD {0}\n".format(airfoil_name))
-    input_file.write("NORM\n")
-    input_file.write("PANE\n")
-    input_file.write("OPER\n")
-    input_file.write("Visc {0}\n".format(reynoldsnumber))
-    if mach != 0:
-        input_file.write("Mach {0}\n".format(mach))
-    if n_crit != 9 or x_transition_top != 100 or x_transition_bottom != 100:
-        input_file.write("VPAR\n")
-        if n_crit != 9:
-            input_file.write("N {0}\n".format(n_crit))
-        if x_transition_top != 100 or x_transition_bottom != 100:
-            input_file.write("XTR {0} {1}\n".format(x_transition_top/100, x_transition_bottom/100))
-        input_file.write("\n")
-    input_file.write("PACC\n")
-    input_file.write("polar_file.txt\n\n")
-    input_file.write("ITER {0}\n".format(n_iter))
-    if alfa:
-        input_file.write("Alfa {0}\n".format(alfa))
-    elif alfa_start is not None and alfa_end is not None:
-        input_file.write("ASeq {0} {1} {2}\n".format(alfa_start, alfa_end, alfa_step))
-    elif cl:
-        input_file.write("Cl {0}\n".format(cl))
-    elif cl_start is not None and cl_end is not None:
-        input_file.write("CSeq {0} {1} {2}\n".format(cl_start, cl_end, cl_step))
-    else:
-        print("wrong XFOIL inputs")       # Error
+    with open("input_file.in", 'w') as input_file:
+        input_file.write(f'LOAD {airfoil_name}\n')
+        input_file.write(f'NORM\n')
+        input_file.write(f'PANE\n')
+        input_file.write(f'OPER\n')
+        input_file.write(f'Visc {reynoldsnumber}\n')
+        if mach != 0:
+            input_file.write(f'Mach {mach}\n')
+        if n_crit != 9 or x_transition_top != 100 or x_transition_bottom != 100:
+            input_file.write(f'VPAR\n')
+            if n_crit != 9:
+                input_file.write(f'N {n_crit}\n')
+            if x_transition_top != 100 or x_transition_bottom != 100:
+                input_file.write(f'XTR {x_transition_top/100} {x_transition_bottom/100}\n')
+            input_file.write(f'\n')
+        input_file.write(f'PACC\n')
+        input_file.write(f'polar_file.txt\n\n')
+        input_file.write(f'ITER {n_iter}\n')
+        if alfa:
+            input_file.write(f'Alfa {alfa}\n')
+        elif alfa_start is not None and alfa_end is not None:
+            input_file.write(f'ASeq {alfa_start} {alfa_end} {alfa_step}\n')
+        elif cl:
+            input_file.write(f'Cl {cl}\n')
+        elif cl_start is not None and cl_end is not None:
+            input_file.write(f'CSeq {cl_start} {cl_end} {cl_step}\n')
+        else:
+            print(f'wrong XFOIL inputs')       # Error
 
-    input_file.write("\n\n")
-    input_file.write("quit \n")
-    input_file.close()              # mit context manager nicht notwendig
+        input_file.write(f'\n\n')
+        input_file.write(f'quit \n')
 
     # ---Run XFOIL---
 
