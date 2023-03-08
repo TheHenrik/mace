@@ -4,6 +4,7 @@ from mace.aero.implementations.xfoil import xfoilpolars
 from mace.domain import params, Plane
 from mace.aero.implementations.avl.athenavortexlattice import AVL
 import numpy as np
+import math
 
 
 class ViscousDrag:
@@ -21,20 +22,24 @@ class ViscousDrag:
         print("surface begins with strip number = {0}\n".format(self.surface_data[:, 3]))"""
         # self.strip_forces = self.plane.avl.outputs.strip_forces
 
-    def get_cl_min_of_surface(self):
-        cl_min = np.min(self.plane.avl.outputs.strip_forces[6, :])    # (element, zeile)
+    def get_cl_min_of_surface(self, surface):
+        # cl_min = np.min(self.plane.avl.outputs.strip_forces[:, 6])    # (zeile, element) von allen Reihen 6. Element
+        cl_min = np.min(self.plane.avl.outputs.surface_dictionary[surface]["strips"][:, 6])
         return cl_min
 
-    def get_cl_max_of_surface(self):
-        cl_max = np.max(self.plane.avl.outputs.strip_forces[6, :])    # (element, zeile)
+    def get_cl_max_of_surface(self, surface):
+        # cl_max = np.max(self.plane.avl.outputs.strip_forces[:, 6])    # (zeile, element)
+        cl_max = np.max(self.plane.avl.outputs.surface_dictionary[surface]["strips"][:, 6])
         return cl_max
 
-    def get_chord_min_of_surface(self):
-        chord_min = np.min(self.plane.avl.outputs.strip_forces[4, :])    # (element, zeile)
+    def get_chord_min_of_surface(self, surface):
+        # chord_min = np.min(self.plane.avl.outputs.strip_forces[:, 4])    # (zeile, element)
+        chord_min = np.min(self.plane.avl.outputs.surface_dictionary[surface]["strips"][:, 4])
         return chord_min    # außen sollte noch bedacht werden
 
-    def get_chord_max_of_surface(self):
-        chord_max = np.max(self.plane.avl.outputs.strip_forces[4, :])    # (element, zeile)
+    def get_chord_max_of_surface(self, surface):
+        # chord_max = np.max(self.plane.avl.outputs.strip_forces[:, 4])    # (zeile, element)
+        chord_max = np.max(self.plane.avl.outputs.surface_dictionary[surface]["strips"][:, 4])
         return chord_max    # außen sollte noch bedacht werden
 
     def get_reynolds(self, length, cl):
@@ -69,104 +74,114 @@ class ViscousDrag:
                 return surface_index
 
     def create_avl_viscous_drag_from_xfoil(self):
-        viscous_drag = np.array([])
-        cl_min = self.get_cl_min_of_surface()                   # noch abrunden
-        cl_max = self.get_cl_max_of_surface()                   # noch aufrunden
-        chord_min = self.get_chord_min_of_surface()
-        chord_max = self.get_chord_max_of_surface()
-        reynolds_min = self.get_reynolds(chord_min, cl_min)     # noch abrunden
-        reynolds_max = self.get_reynolds(chord_max, cl_max)     # noch aufrunden
-        reynolds_steps = self.get_reynolds_step(reynolds_min, reynolds_max)
-        inner_airfoil = None
-        outer_airfoil = None
-        alfa_start = [0, 0]
-        alfa_end = [0, 0]
-        alfa_step = 1
+        cd_local_to_global = 0
+        viscous_drag = np.zeros(self.plane.avl.outputs.number_of_surfaces)
+        overall_viscous_drag = 0
+        for surface in range(1, self.plane.avl.outputs.number_of_surfaces+1):   # 1, 2, 3, ... , last surface
+            cl_min = math.floor(self.get_cl_min_of_surface(surface)*10)/10                  # abgerundet [0.1]
+            cl_max = math.ceil(self.get_cl_max_of_surface(surface)*10)/10                   # aufgerundet [0.1]
+            chord_min = math.floor(self.get_chord_min_of_surface(surface)*1000)/1000        # abgerundet [mm]
+            chord_max = math.ceil(self.get_chord_max_of_surface(surface)*1000)/1000         # aufgerundet [mm]
+            reynolds_min = math.floor(self.get_reynolds(chord_min, cl_min))                 # abgerundet [integer]
+            reynolds_max = math.ceil(self.get_reynolds(chord_max, cl_max))                  # aufgerundet [integer]
+            reynolds_steps = math.ceil(self.get_reynolds_step(reynolds_min, reynolds_max))  # aufgerundet [integer]
 
-        # ---Calculation of alfa_start and alfa_end---
-        for airfoil in [inner_airfoil, outer_airfoil]:
-            i = 0
-            cl_of_alfa_zero = xfoilpolars.get_xfoil_polar(airfoil, reynolds_min, alfa=0)[1]
-            if cl_min < cl_of_alfa_zero:
-                cl_dif_neg = cl_of_alfa_zero - cl_min
-                alfa_start[i] = -0.11 / cl_dif_neg - 2     # Auftriebsabfall = 0.11 /Grad - Reserve
-            else:
-                alfa_start[i] = 0                          # für bessere Konvergenz
-            cl_dif = cl_max - cl_of_alfa_zero
-            alfa_end[i] = 0.11/cl_dif + 2                  # Auftriebsanstieg = 0.11 /Grad + Reserve
-            i += 1
+            list_index = int()
+            number_of_wing_segments_per_halfspan = len(self.plane.wing.segments)
+            if surface > number_of_wing_segments_per_halfspan * 2:
+                pass    # skip to empennage, implemented later
+            elif surface % 2 != 0:      # right wing
+                list_index = int((surface - 1) / 2)
+            elif surface % 2 == 0:      # left wing
+                list_index = int(surface / 2)
+            inner_airfoil = self.plane.wing.segments[list_index].inner_airfoil
+            outer_airfoil = self.plane.wing.segments[list_index].outer_airfoil
 
-        # ---Polar calculations---
+            """inner_airfoil = None
+            outer_airfoil = None"""
 
-        i = 0
-        inner_polar = []
-        outer_polar = []
-        list_of_reynolds = range(reynolds_min, reynolds_max, reynolds_steps)
-        for reynolds in list_of_reynolds:
-            inner_polar[i] = xfoilpolars.get_xfoil_polar(inner_airfoil, reynolds,
-                                                         alfa_start=alfa_start, alfa_end=alfa_end, alfa_step=alfa_step)
-            outer_polar[i] = xfoilpolars.get_xfoil_polar(outer_airfoil, reynolds,
-                                                         alfa_start=alfa_start, alfa_end=alfa_end, alfa_step=alfa_step)
-            # oder:
-            """inner_polar[i] = xfoilpolars.get_xfoil_polar(inner_airfoil, reynolds,
-                                                         cl_start=cl_min, cl_end=cl_max)
-            outer_polar[i] = xfoilpolars.get_xfoil_polar(outer_airfoil, reynolds,
-                                                         cl_start=cl_min, cl_end=cl_max)"""
-            i += 1
+            alfa_start = [0, 0]     # [inner_airfoil, outer_airfoil]
+            alfa_end = [0, 0]       # [inner_airfoil, outer_airfoil]
+            alfa_step = 1
+            reserve = 2     # degrees
 
-        strips = self.plane.avl.outputs.strip_forces[0, :]
-        for element in strips:
-            surface_index = self.mach_strip_to_surface(element)
-            strip_values = self.plane.avl.outputs.strip_forces[:, element-1]
-
-            if element == strips[-1]:
-                strip_values_outer = self.plane.avl.outputs.strip_forces[:, element]
-            else:
-                strip_values_outer = None
-
-            chord = strip_values[4]
-            local_cl = strip_values[6]
-            local_reynolds = self.get_reynolds(chord, local_cl)
-
-            # interpolate polar for inner_airfoil (with local_reynolds)
-            new_inner_polar = np.interp(local_reynolds, list_of_reynolds, inner_polar)
-            #       interpolate cd for given cl for inner_airfoil
-            cd_new_inner = np.interp(local_cl, new_inner_polar[1, :], new_inner_polar[2, :])  # cl_new, cl, cd
-            # interpolate polar for outer_airfoil (with local_reynolds)
-            new_outer_polar = np.interp(local_reynolds, list_of_reynolds, outer_polar)
-            #       interpolate cd for given cl for outer_airfoil
-            cd_new_outer = np.interp(local_cl, new_outer_polar[1, :], new_outer_polar[2, :])  # cl_new, cl, cd
-
-            # interpolate profile_cd for position between inner and outer strip.
-            y_le_inner = strip_values[2]
-            chord_inner = strip_values[4]
-            if strip_values_outer is None:
-                y_le_outer = self.plane.wing.segments[surface_index].nose_outer[0]
-                chord_outer = self.plane.wing.segments[surface_index].chord_outer
-            else:
-                y_le_outer = strip_values_outer[2]
-                chord_outer = strip_values_outer[4]
-            # --- Calculation of y_l_my at Mean Aerodynamic Chord (MAC) of trapezial strip ---
-            area = strip_values[5]
-            y_le_mac = self.get_y_le_mac(y_le_inner, y_le_outer, chord_inner, chord_outer, area)
-            interp = np.array([y_le_inner, y_le_outer])
-            cd_list = np.array([cd_new_inner, cd_new_outer])
-            cd_local = np.interp(y_le_mac, interp, cd_list)
-
-            # adapt profile_cd to s_ref with CD = profile_cd*strip_area/s_ref
-            cd_local_to_global = cd_local * area / self.plane.avl.outputs.s_ref
-
-            # check to wich surface strip is located
-            first_strip_of_surface = self.plane.avl.outputs.surface_data[:, 3]
-            for surface in range(self.plane.avl.outputs.number_of_surfaces):
-                if first_strip_of_surface[surface] < element:
-                    continue
+            # ---Calculation of alfa_start and alfa_end---
+            for airfoil in [inner_airfoil, outer_airfoil]:
+                i = 0
+                cl_of_alfa_zero = xfoilpolars.get_xfoil_polar(airfoil, reynolds_min, alfa=0)[1]
+                # Auftriebsanstieg: cl = 0.11 * alfa[Grad]
+                if cl_min < cl_of_alfa_zero:
+                    cl_dif_neg = cl_of_alfa_zero - cl_min
+                    alfa_start[i] = -(cl_dif_neg/0.11 + reserve)    # Auftriebsabfall = 0.11 /Grad - Reserve
                 else:
-                    viscous_drag[surface] += cd_local_to_global
+                    alfa_start[i] = 0                          # für bessere Konvergenz
+                cl_dif = cl_max - cl_of_alfa_zero
+                alfa_end[i] = cl_dif/0.11 + reserve                  # Auftriebsanstieg = 0.11 /Grad + Reserve
+                i += 1
 
-            overall_viscous_drag = sum(viscous_drag)
+            # ---Polar calculations---
 
-            return overall_viscous_drag, viscous_drag
+            i = 0
+            inner_polar = []
+            outer_polar = []
+            list_of_reynolds = range(reynolds_min, reynolds_max, reynolds_steps)
+            for reynolds in list_of_reynolds:
+                inner_polar[i] = xfoilpolars.get_xfoil_polar(inner_airfoil, reynolds,
+                                                             alfa_start=alfa_start, alfa_end=alfa_end, alfa_step=alfa_step)
+                outer_polar[i] = xfoilpolars.get_xfoil_polar(outer_airfoil, reynolds,
+                                                             alfa_start=alfa_start, alfa_end=alfa_end, alfa_step=alfa_step)
+                # oder:
+                """inner_polar[i] = xfoilpolars.get_xfoil_polar(inner_airfoil, reynolds,
+                                                             cl_start=cl_min, cl_end=cl_max)
+                outer_polar[i] = xfoilpolars.get_xfoil_polar(outer_airfoil, reynolds,
+                                                             cl_start=cl_min, cl_end=cl_max)"""
+                i += 1
+
+            # strips = self.plane.avl.outputs.strip_forces[:, 0]
+            strips = self.plane.avl.outputs.surface_dictionary[surface]["strips"][:, 0]
+            for element in strips:
+                # surface_index = self.mach_strip_to_surface(element)
+                # strip_values = self.plane.avl.outputs.strip_forces[:, element-1]
+                strip_values = self.plane.avl.outputs.surface_dictionary[surface]["strips"][element-1, :]
+
+                """if element == strips[-1]:
+                    strip_values_outer = self.plane.avl.outputs.strip_forces[:, element] # nächstes Element, noch ändern
+                else:
+                    strip_values_outer = None"""
+
+                chord = strip_values[4]
+                local_cl = strip_values[6]
+                local_reynolds = self.get_reynolds(chord, local_cl)
+
+                # interpolate polar for inner_airfoil (with local_reynolds)
+                new_inner_polar = np.interp(local_reynolds, list_of_reynolds, inner_polar)
+                #       interpolate cd for given cl for inner_airfoil
+                cd_new_inner = np.interp(local_cl, new_inner_polar[1, :], new_inner_polar[2, :])  # cl_new, cl, cd
+                # interpolate polar for outer_airfoil (with local_reynolds)
+                new_outer_polar = np.interp(local_reynolds, list_of_reynolds, outer_polar)
+                #       interpolate cd for given cl for outer_airfoil
+                cd_new_outer = np.interp(local_cl, new_outer_polar[1, :], new_outer_polar[2, :])  # cl_new, cl, cd
+
+                # interpolate profile_cd for position between inner and outer strip.
+                y_le_inner = float()
+                y_le_outer = float()
+                if surface > number_of_wing_segments_per_halfspan * 2:
+                    pass  # skip to empennage, implemented later
+                else:
+                    y_le_inner = self.plane.wing.segments[list_index].nose_inner[1]
+                    y_le_outer = self.plane.wing.segments[list_index].nose_outer[1]
+                interp = np.array([y_le_inner, y_le_outer])
+                cd_list = np.array([cd_new_inner, cd_new_outer])
+                cd_local = np.interp(strip_values[2], interp, cd_list)  # (y_le, interp, cd_list)
+
+                # adapt profile_cd to s_ref with CD = profile_cd*strip_area/s_ref
+                area = strip_values[5]
+                cd_local_to_global = cd_local * area / self.plane.avl.outputs.s_ref
+
+            viscous_drag[surface] += cd_local_to_global
+            overall_viscous_drag += viscous_drag[surface]
+
+        return overall_viscous_drag, viscous_drag
 
 
 # Tests: veränderung der Größe des viskosen Widerstandes mit Erhöhung von Stripanzahl untersuchen.

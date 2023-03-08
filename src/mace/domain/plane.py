@@ -84,7 +84,8 @@ class WingSegment:
     a_inc_outer: float = 0
     n_spanwise: int = None
     s_space: int = None
-    airfoil = Airfoil
+    inner_airfoil = Airfoil
+    outer_airfoil = Airfoil
     control = Control
 
 
