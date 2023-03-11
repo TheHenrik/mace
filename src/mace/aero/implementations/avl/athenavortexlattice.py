@@ -47,6 +47,49 @@ class AVL:
     def __init__(self, plane: Plane):
         self.plane = plane
 
+    def run_avl(self, avl_file=None, mass_file=None,
+                total_forces_file_name="total_forces_avl", strip_forces_file_name="strip_forces_avl",
+                angle_of_attack=None, lift_coefficient=None, run_case: int = 1, maschine_readable_file=True):
+        """
+        For run_case != 1 please check if runcase is available! At the time not possible! (maybe in future versions)
+        """
+        if os.path.exists("total_forces_avl"):
+            os.remove("total_forces_avl")
+        if os.path.exists("strip_forces_avl"):
+            os.remove("strip_forces_avl")
+
+        # --- Input file writer---
+        with open("input_file_avl.in", 'w') as input_file:
+            if avl_file:
+                input_file.write(f'LOAD {avl_file}\n')
+            else:
+                input_file.write(f'LOAD {self.plane.avl.inputs.avl_file}\n')
+            if mass_file:
+                input_file.write(f'MASS {mass_file}\n')
+            else:
+                input_file.write(f'MASS {self.plane.avl.inputs.mass_file}\n')
+            # input_file.write(f'CASE {run_file}\n')
+            input_file.write(f'OPER\n')
+            if run_case != 1:  # select run_case
+                input_file.write(f'{run_case}\n')
+            if angle_of_attack is not None:  # set angle of attack in degrees
+                input_file.write(f'A A {angle_of_attack}\n')
+            if lift_coefficient is not None:  # set angle of attack with cl
+                input_file.write(f'A C {lift_coefficient}\n')
+            input_file.write(f'X\n')  # execute runcase, XX executes all runcases but uses last runcase
+            if maschine_readable_file:
+                input_file.write(f'MRF\n')  # maschine readable file
+            input_file.write(f'FT\n')  # write total forces
+            input_file.write(f'{total_forces_file_name}\n')
+            input_file.write(f'FS\n')  # write strip forces
+            input_file.write(f'{strip_forces_file_name}\n')
+            input_file.write("\n")
+            input_file.write("QUIT\n")
+
+        # ---Run AVL---
+        cmd = "C:/Users/Gregor/Documents/Modellflug/Software/AVL/avl.exe < input_file_avl.in"  # external command to run
+        runsub.run_subprocess(cmd)
+
     def read_total_forces_avl_file(self, lines):
 
         # ---Trefftz Plane---

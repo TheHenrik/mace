@@ -1,105 +1,185 @@
 import numpy as np
 from mace.aero import generalfunctions
+from mace.domain import params, Plane
+from mace.aero.implementations.avl import athenavortexlattice, geometry_and_mass_files
+from mace.aero.implementations.viscousdrag import ViscousDrag
 
 
-def v_climb(m, g, f, rho, s_ref, cw, ca) -> (float, float):
-    a = ((m * g)**2 - f**2) / ((rho/2) * s_ref)
-    b = (f * cw)**2 / ((rho/2) * s_ref * (cw**2 + ca**2))
-    c = (rho/2) * s_ref * (cw**2 + ca**2)
-    d = (f * cw) / ((rho/2) * s_ref * (cw**2 + ca**2))
+class Climb:
+    def __init__(self, plane: Plane):
+        self.plane = plane
+        self.mass = self.plane.mass
+        self.s_ref = self.plane.reference_values.s_ref
+        self.g = params.Constants.g
+        self.rho = params.Constants.rho
 
-    v = (((a + b) / c)**0.5 + d)**0.5
-    v2 = ((a + b) / c)**0.5 + d
-    return v, v2                        # gibt als Tupel V und V^2 zurück
+    def v_climb(self, current_thrust, cl, cd) -> (float, float):
+        """
+        Returns the velocity (on the flightpath) of a plane.
+        (It is a bit more complex compared to horizontal flight.)
+        It is !not! the vertical velocity. It is the velocity during climb/descent.
+        It depends on the current thrust and aerodynamic coefficients.
 
+        It returns as a tupel (v, v^2).
+        """
+        a = ((self.mass * self.g)**2 - current_thrust**2) / ((self.rho/2) * self.s_ref)
+        b = (current_thrust * cd)**2 / ((self.rho/2) * self.s_ref * (cd**2 + cl**2))
+        c = (self.rho/2) * self.s_ref * (cd**2 + cl**2)
+        d = (current_thrust * cd) / ((self.rho/2) * self.s_ref * (cd**2 + cl**2))
 
-def sin_gamma(f, rho, v2, s_ref, cw, m, g):         # v2 = V^2
-    sin = (f - (rho/2) * v2 * s_ref * cw) / (m * g)
-    return sin
+        v = (((a + b) / c)**0.5 + d)**0.5
+        v_square = ((a + b) / c)**0.5 + d
+        return v, v_square                        # gibt als Tupel V und V^2 zurück
 
+    def sin_gamma(self, current_thrust, v_square, cd):         # v_square = V^2
+        """
+        Returns the sinus of the climbing/descent angle gamma.
+        It depends on the current thrust, v_square and the aerodynamic drag coefficient.
+        """
+        sin = (current_thrust - (self.rho/2) * v_square * self.s_ref * cd) / (self.mass * self.g)
+        return sin
 
-def cos_gamma(rho, v2, s_ref, ca, m, g):         # V2 = V^2
-    cos = ((rho/2) * v2 * s_ref * ca) / (m * g)
-    return cos
+    def cos_gamma(self, v_square, cl):         # v_square = V^2
+        """
+        Returns the cosinus of the climbing/descent angle gamma.
+        It depends on v_square and the aerodynamic lift coefficient.
+        """
+        cos = ((self.rho/2) * v_square * self.s_ref * cl) / (self.mass * self.g)
+        return cos
 
+    def gamma(self, sin, cos):                # zu Vergleichszwecken doppelte Berechnung
+        """
+        Returns the climbing/descent angle gamma if sin and cos are given.
+        """
+        gamma1 = np.arcsin(sin)
+        gamma2 = np.arccos(cos)
+        return gamma1, gamma2           # wird als Tupel übergeben
 
-def gamma(sin, cos):                # zu Vergleichszwecken doppelte Berechnung
-    gamma1 = np.arcsin(sin)
-    gamma2 = np.arccos(cos)
-    return gamma1, gamma2           # wird als Tupel übergeben
+    def v_vertical(self, velocity, sin_gam):                # sin_gamma bereits vorher berechnen, ist übersichtlicher
+        """
+        Returns vertical velocity if velocity on flightpath and sinus(gamma) is given.
+        """
+        v_vert = velocity * sin_gam
+        return v_vert
 
+    # ---Iteration über Ca---
 
-def v_v(v, sin_gam):                # sin_gamma bereits vorher berechnen, ist übersichtlicher
-    v_vert = v * sin_gam
-    return v_vert
+    def climb(self, cl_start, cl_end, cl_step: float = 0.1, v_tolerance: float = 1, it_max: int = 20):
+        """
+        cl_init should start around 0, so AVL can easily converge.
+        Returns a numpy matrix with [cl, velocity, v_vertical, sin, cos, gamma, current_thrust] in each row.
+        """
+        cl = cl_start
+        climb_data = np.array([])
+        i = 0
+        velocity = float()
+        while cl <= cl_end:
+            # AVL mit cl ausführen. -> cd_induced.
+            geometry_and_mass_files.GeometryFile(self.plane).build_geometry_file(
+                self.plane.reference_values.number_of_surfaces)
+            geometry_and_mass_files.MassFile(self.plane).build_mass_file()
+            athenavortexlattice.AVL(self.plane).run_avl(lift_coefficient=cl)
+            athenavortexlattice.AVL(self.plane).read_avl_output()
 
+            # v_iteration_start aus Horizontalflug bestimmen
+            if i == 0:
+                v_iteration = ((2 * self.mass * self.g) / (cl * self.rho * self.s_ref)) ** 0.5
+            else:
+                v_iteration = velocity
 
-# ---Iteration über V---
+            # Iteration über v -> über Re-Zahl cd_viscous ermitteln.
+            current_thrust = float()
+            cd = float()
 
-def iteration(dif_re, tolerance_re, m, g, f, rho, s_ref, ca, v_init: float, flaechentiefe, ny, it_max=20):
+            while abs(v_iteration - velocity[0]) >= v_tolerance and i < it_max:
+                ViscousDrag(self.plane).create_avl_viscous_drag_from_xfoil(velocity=velocity)
+                cd = self.plane.aero_coeffs.drag_coeff.cd_viscous + self.plane.aero_coeffs.drag_coeff.cd_ind
+                current_thrust = generalfunctions.GeneralFunctions(self.plane).current_thrust(v_iteration)
+                velocity = self.v_climb(current_thrust, cd, cl)
+                i += 1
 
-    v_shot = v_init
-    i = 0
-    while i < it_max or dif_re > tolerance_re:
+            sin = self.sin_gamma(current_thrust, velocity[1], cd)
+            cos = self.cos_gamma(velocity[1], cl)
+            gamma = self.gamma(sin, cos)
+            v_vertical = self.v_vertical(velocity, sin)
 
-        re = generalfunctions.re(v_shot, flaechentiefe, ny)
+            results = np.array([cl, velocity, v_vertical, sin, cos, gamma, current_thrust])
+            if i == cl_start:
+                climb_data = results
+            else:
+                climb_data = np.vstack((climb_data, results))
 
-        generalfunctions.gen_polar(re)
-        generalfunctions.get_coeffs()
-                                                            # cw aus get_polar
-        v_res, _ = v_climb(m, g, f, rho, s_ref, cw, ca)     # Unterstrich Platzhalter Platzhalter für Nichtbenutzung
+            cl += cl_step
 
-        dif_re = (v_res - v_shot)
-        v_shot = v_res, _
+        self.plane.flightconditions.climb.results.climb_data = climb_data
+        return climb_data
 
-        i += 1
-    return v_shot, cw, ca, re
+    # ---Auswertung---
 
-# ---Iteration über Ca---
+    def steepest_climb(self):
+        # gamma maximal
+        gamma_max = np.max(self.plane.flightconditions.climb.results.climb_data[:, 5])  # ganze Zeile, Element
+        self.plane.flightconditions.climb.results.gamma_max = gamma_max
+        return gamma_max
 
+    def fastest_climb(self):
+        # V_v maximal
+        v_vertical_max = np.max(self.plane.flightconditions.climb.results.climb_data[:, 2])  # ganze Zeile, Element
+        self.plane.flightconditions.climb.results.v_vertical_max = v_vertical_max
+        return v_vertical_max
 
-def climb(ca_init, ca_end, step):
-    ca = ca_init
-    res = np.array()
+    def gained_heigth(self, time, *, v_vertical=None, cl=None, velocity=None, gamma=None):
+        """
+        Returns a gained height. Needs therefore a timespan and an additional value.
+        """
+        if v_vertical:
+            v_v = v_vertical
+        else:
+            v_vertical_array = self.plane.flightconditions.climb.results.climb_data[:, 2]
+            if cl:
+                new_value = cl
+                value_arr = self.plane.flightconditions.climb.results.climb_data[:, 0]
+            elif velocity:
+                new_value = velocity
+                value_arr = self.plane.flightconditions.climb.results.climb_data[:, 1]
+            elif gamma:
+                new_value = gamma
+                value_arr = self.plane.flightconditions.climb.results.climb_data[:, 5]
+            else:
+                return print("Please chose an argument and try again.")
+            v_v = np.interp(new_value, value_arr, v_vertical_array)
 
-    i = 0
-    while ca <= ca_end:
-        v = iteration(ca)
+        heigth = v_v * time
+        return heigth
 
-        if no_polar_available:
-            break
+    def gained_distance(self, time, *, v_vertical=None, cl=None, velocity=None, gamma=None):
+        """
+        Returns a reached distance. Needs therefore a timespan and an additional value.
+        """
+        new_value = float()
+        value_arr = np.array([])
+        if velocity:
+            v = velocity
+        else:
+            v_array = self.plane.flightconditions.climb.results.climb_data[:, 1]
+            if cl:
+                new_value = cl
+                value_arr = self.plane.flightconditions.climb.results.climb_data[:, 0]
+            elif v_vertical:
+                new_value = v_vertical
+                value_arr = self.plane.flightconditions.climb.results.climb_data[:, 2]
+            elif gamma:
+                new_value = gamma
+                value_arr = self.plane.flightconditions.climb.results.climb_data[:, 5]
+            else:
+                return print("Please chose an argument and try again.")
+            v = np.interp(new_value, value_arr, v_array)
 
-        sin = sin_gamma()
-        cos = cos_gamma()
-        gamma = gamma()
-        v_v = v_v()
+        cos_gam_array = self.plane.flightconditions.climb.results.climb_data[:, 4]
+        cos_gam = np.interp(new_value, value_arr, cos_gam_array)
 
-        res[i] = v, sin, cos, v_v, gamma
-
-        i += 1
-        ca += step
-    return res
-
-# ---Auswertung---
-
-def steepest_climb():
-    # gamma maximal
-    pass
-
-
-def fastest_climb():
-    # V_v maximal
-    pass
-
-
-def gained_heigth(v_v, t):
-    h = v_v * t
-    return h
-
-
-def gained_distance(v, cos_gam, t):
-    s = v * cos_gam * t
-    return s
+        distance = v * cos_gam * time
+        return distance
 
 
 # --------------------------------
@@ -107,6 +187,6 @@ def gained_distance(v, cos_gam, t):
 # --------------------------------
 
 
-if __name__ == "__main__":
+"""if __name__ == "__main__":
     x = gamma(0.4, 0.2)
-    print(x)
+    print(x)"""

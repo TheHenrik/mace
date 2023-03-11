@@ -89,13 +89,13 @@ class WingSegment:
     control = Control
 
 
-@dataclass()
+"""@dataclass()
 class GeometricWingValues:
     h: float = 0.4  # Height wof WingNP above ground for rolling
     b: float = 3.0  # Spanwidth
     s_ref: float = 1.5  # Wing reference area
     lambd_k: float = 0.4  # Taper ratio (Zuspitzung)
-    lambd_g: float = 11  # Aspect ratio (Streckung)
+    lambd_g: float = 11  # Aspect ratio (Streckung)"""
 
 
 @dataclass()
@@ -169,7 +169,7 @@ class Propulsion:
     motor: str = None
     esc: str = None
     propeller: str = None
-    thrust: np.ndarray = None
+    thrust: np.ndarray = None       # [[v0, f0], [v1, f1], [v2, f2], [v3, f3], ...]
     mass_of_motor = MassAndInertia
     mass_of_esc = MassAndInertia
     mass_of_propeller = MassAndInertia
@@ -211,6 +211,7 @@ class Electronics:
 
 @dataclass()
 class ReferenceValues:
+    number_of_surfaces: float = 0
     mach: float = 0  # mach number for Prandtl-Glauert correction
     iy_sym: float = 0  # has to be 0 for YDUPLICATE
     iz_sym: float = 0  # 0: no z-symmetry assumed
@@ -221,7 +222,10 @@ class ReferenceValues:
     x_ref: float = 0  # must bei CG location for trim calculation
     y_ref: float = 0  # must bei CG location for trim calculation
     z_ref: float = 0  # must bei CG location for trim calculation
-
+    h: float = 0  # Height wof WingNP above ground for rolling
+    b: float = 0  # Spanwidth
+    lambd_k: float = 0.4  # Taper ratio (Zuspitzung)
+    lambd_g: float = 11  # Aspect ratio (Streckung)
 
 # ---Aerodynamic Coefficients---
 
@@ -229,8 +233,8 @@ class ReferenceValues:
 @dataclass()
 class Cl:
     # cl: float = None
-    cl_roll: float = None
-    cl_take_off: float = None
+    # cl_roll: float = None
+    # cl_take_off: float = None
     # --- from AVL:
     cl_tot: float = None
 
@@ -243,6 +247,8 @@ class Cd:
     cd_tot: float = 0
     cd_vis: float = 0
     cd_ind: float = 0
+    # from viscousdrag
+    cd_viscous: float = 0
 
 
 @dataclass()
@@ -258,7 +264,8 @@ class AeroCoeffs:
 
 @dataclass()
 class AvlInputs:
-    pass
+    avl_file = None
+    mass_file = None
 
 
 @dataclass()
@@ -292,6 +299,44 @@ class Avl:
     outputs: AvlOutputs = None
 
 
+# ---Flightconditions---
+
+@dataclass()
+class ClimbResults:
+    climb_data = np.array([])
+    gamma_max: float() = 0
+    v_vertical_max: float() = 0
+
+@dataclass()
+class Climb:
+    results: ClimbResults = None
+
+
+@dataclass()
+class TakeOffResults:
+    v_max_rolling: float = None
+    v_timer_start: float = 0
+    rolling_distance: float = None
+    rolling_time: float = None
+
+@dataclass()
+class TakeOff:
+    cl_roll: float = 0
+    cd_viscous: float = 0
+    cd_induced: float = 0
+    phi_a: float = 0
+    phi_w: float = 0
+    delta_a: float = 0
+    delta_w: float = 0
+    beta_a: float = 0
+    beta_w: float = 0
+    results: TakeOffResults = None
+
+@dataclass()
+class FlightConditions:
+    takeoff: TakeOff = None
+    climb: Climb = None
+
 # ---Plane itself---
 
 
@@ -310,7 +355,7 @@ class Plane:
     reference_values = ReferenceValues
     # list_of_component_names: list = [fuselage, wing, empennage, propulsion, landing_gear, electronics]
     avl: Avl = None
-
+    flightconditions: FlightConditions = None
 
 # ------ Initialize Test Airplane ------
 

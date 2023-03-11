@@ -882,6 +882,7 @@ class GeometryFile:
             for surface in range(number_of_surfaces):
                 GeometryFile.build_geo_surface(self, geometry_file)
 
+        self.plane.avl.inputs.avl_file = "geometry_file.avl"
 
         """geometry_file = open("geometry_file.avl", 'w')
         build_geo_header(geometry_file, plane_name, cdp, mach)
@@ -1258,3 +1259,5 @@ class MassFile:
             mass_file.write(f'g = {self.plane.parameters.constants.g}')
             mass_file.write(f'rho = {self.plane.parameters.constants.rho}')
             MassFile.build_mass_table(self, mass_file)
+
+        self.plane.avl.inputs.mass_file = "mass_file.avl"

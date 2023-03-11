@@ -1,4 +1,4 @@
-from mace.domain import params
+from mace.domain import params, Plane
 
 # ---lineare Interpolation---
 
@@ -30,11 +30,42 @@ xnew = np.linspace(0, 10, num=1001)
 ynew = np.interp(xnew, x, y)  # interpolation
 
 
-# ---Re-Zahl---
+# ---Reynoldsnumber---
 
 def get_reynolds_number(v, length):              # neuer Name
     rey = (v * length) / params.Constants.ny
     return rey
+
+# ------------------------
+
+
+class GeneralFunctions:
+    def __init__(self, plane: Plane):
+        self.plane = plane
+
+    # ---Thrust in Newton---
+
+    def current_thrust(self, current_velocity):
+        """
+        Returns thrust in Newton related to a current velocity of the plane.
+        """
+        velocity_arr = self.plane.propulsion.thrust[0, :]
+        thrust_arr = self.plane.propulsion.thrust[1, :]
+        thrust = np.interp(current_velocity, velocity_arr, thrust_arr)
+        return thrust
+
+    # ---Lift---
+
+    def coefficient_to_lift_or_drag(self, velocity, coefficient):
+        """
+        Returns the lift/drag at given velocity and lift/drag coefficient.
+        """
+        s_ref = self.plane.reference_values.s_ref
+        rho = params.Constants.rho
+        lift = coefficient * rho / 2 * velocity**2 * s_ref
+        return lift
+
+
 
 # ---Polaren erstellen---
 
