@@ -83,7 +83,7 @@ class ViscousDrag:
             else:
                 return surface_index
 
-    def create_avl_viscous_drag_from_xfoil(self, *, velocity):
+    def create_avl_viscous_drag_from_xfoil(self, *, velocity=None):
         """
         This is written for stationary horizontal flight.
         For other velocities please intput them. The function will compare it with horizontal flight and
@@ -95,11 +95,11 @@ class ViscousDrag:
         cl_global = self.plane.aero_coeffs.lift_coeff.cl_tot
 
         # Compare v_horizontal with new velocity
-        if velocity:
+        if velocity is None:
+            v_factor = 1
+        else:
             v_horizontal = ((2 * self.mass * self.g) / (cl_global * self.rho * self.s_ref)) ** 0.5
             v_factor = velocity / v_horizontal
-        else:
-            v_factor = 1
 
         for surface in range(1, self.plane.avl.outputs.number_of_surfaces + 1):  # 1, 2, 3, ... , last surface
             cl_min = math.floor(self.get_cl_min_of_surface(surface) * 10) / 10  # abgerundet [0.1]

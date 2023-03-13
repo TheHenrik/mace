@@ -104,7 +104,7 @@ class Climb:
             v_vertical = self.v_vertical(velocity, sin)
 
             results = np.array([cl, velocity, v_vertical, sin, cos, gamma, current_thrust])
-            if i == cl_start:
+            if cl == cl_start:
                 climb_data = results
             else:
                 climb_data = np.vstack((climb_data, results))
@@ -118,13 +118,13 @@ class Climb:
 
     def steepest_climb(self):
         # gamma maximal
-        gamma_max = np.max(self.plane.flightconditions.climb.results.climb_data[:, 5])  # ganze Zeile, Element
+        gamma_max = np.max(self.plane.flightconditions.climb.results.climb_data[:, 5])  # alle Zeilen, Element
         self.plane.flightconditions.climb.results.gamma_max = gamma_max
         return gamma_max
 
     def fastest_climb(self):
         # V_v maximal
-        v_vertical_max = np.max(self.plane.flightconditions.climb.results.climb_data[:, 2])  # ganze Zeile, Element
+        v_vertical_max = np.max(self.plane.flightconditions.climb.results.climb_data[:, 2])  # alle Zeilen, Element
         self.plane.flightconditions.climb.results.v_vertical_max = v_vertical_max
         return v_vertical_max
 

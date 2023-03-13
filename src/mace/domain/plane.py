@@ -302,22 +302,12 @@ class Avl:
 # ---Flightconditions---
 
 @dataclass()
-class ClimbResults:
-    climb_data = np.array([])
-    gamma_max: float() = 0
-    v_vertical_max: float() = 0
-
-@dataclass()
-class Climb:
-    results: ClimbResults = None
-
-
-@dataclass()
 class TakeOffResults:
     v_max_rolling: float = None
     v_timer_start: float = 0
     rolling_distance: float = None
     rolling_time: float = None
+
 
 @dataclass()
 class TakeOff:
@@ -332,10 +322,33 @@ class TakeOff:
     beta_w: float = 0
     results: TakeOffResults = None
 
+
+@dataclass()
+class ClimbResults:
+    climb_data = np.array([])
+    gamma_max: float() = 0
+    v_vertical_max: float() = 0
+
+
+@dataclass()
+class Climb:
+    results: ClimbResults = None
+
+@dataclass()
+class HorizontalFlightResults:
+    thrust_velocity_correlation: np.array([])   # [[v1, t1], [v2, t2], [...], ...]
+    minimum_thrust: np.array([])
+    maximum_flight_velocity: tuple = None
+
+@dataclass()
+class HorizontalFlight:
+    results: HorizontalFlightResults = None
+
 @dataclass()
 class FlightConditions:
     takeoff: TakeOff = None
     climb: Climb = None
+    horizontalflight: HorizontalFlight = None
 
 # ---Plane itself---
 
