@@ -345,10 +345,24 @@ class HorizontalFlight:
     results: HorizontalFlightResults = None
 
 @dataclass()
+class GlidingFlightResults:
+    gliding_data: np.array([])      # [cl, cd, cd_viscous, cd_induced, velocity, vertical_velocity] in each row
+    data_best_glide_ratio: np.array([])
+    data_smallest_decline: np.array([])
+    best_glide_ratio: float = None
+    row_index_best_glide_ratio: int = None
+    smallest_decline: float = None
+    row_index_smallest_decline: int = None
+@dataclass()
+class GlidingFlight:
+    results: GlidingFlightResults = None
+
+@dataclass()
 class FlightConditions:
     takeoff: TakeOff = None
     climb: Climb = None
     horizontalflight: HorizontalFlight = None
+    glidingflight: GlidingFlight = None
 
 # ---Plane itself---
 

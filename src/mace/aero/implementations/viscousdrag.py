@@ -87,7 +87,7 @@ class ViscousDrag:
         """
         This is written for stationary horizontal flight.
         For other velocities please intput them. The function will compare it with horizontal flight and
-        will use an optimized reynoldsnumber.
+        will use an optimized reynoldsnumber. (Therefore cl has to be higher than 0.)
         """
         cd_local_to_global = 0
         viscous_drag = np.zeros(self.plane.avl.outputs.number_of_surfaces)
