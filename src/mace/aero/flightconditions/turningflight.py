@@ -1,149 +1,145 @@
 import math
 
 import numpy as np
+from mace.aero.implementations.avl import athenavortexlattice, geometry_and_mass_files
+from mace.aero.implementations.viscousdrag import ViscousDrag
+from mace.domain import params, Plane
 
 
-# ---Kurvengeschwindigkeit---
+class TurningFlight:
+    def __init__(self, plane: Plane):
+        self.plane = plane
+        self.mass = self.plane.mass
+        self.s_ref = self.plane.reference_values.s_ref
+        self.g = params.Constants.g
+        self.rho = params.Constants.rho
 
+    # ---Kurvengeschwindigkeit---
 
-def kurvengeschwindigkeit(m, g, rho, s_ref, ca, phi):
-    v_k = ((2 * m * g) / (rho * s_ref * ca * math.cos(phi)))**0.5
-    return v_k
+    def velocity_turning_flight(self, cl, phi):
+        """
+        Returns the velocity of the plane during a horizontal turning flight.
+        """
+        v_k = ((2 * self.mass * self.g) / (self.rho * self.s_ref * cl * math.cos(phi)))**0.5
+        return v_k
 
+    def min_velocity_turning_flight(self, cl_max, phi):
+        """
+        Returns the minimum velocity of the plane during a horizontal turning flight.
+        """
+        v_k_min = self.velocity_turning_flight(cl_max, phi)
+        return v_k_min
 
-def min_kurvengeschw(m, g, rho , s_ref, ca_max, phi):
-    v_k_min = kurvengeschwindigkeit(m, g, rho , s_ref, ca_max, phi)
-    return v_k_min
+    # ---Kurvenradius---
 
+    def turn_radius(self, *, v=None, r_k=None, cl=None, n=None, phi=None) -> (float, float, float, float, float):
+        """This fuction recieves 2 input parameters (not n and phi, either or) and returns a tupel with all 5 turning flight defining parameters.
+        (velocity, radius of turning flight, lift coefficient, load faktor, rolling angle, turning_velocity chi_dot)
 
-# ---Kurvenradius---
-# Achtung Winkel sind noch in Rad
+        phi in degrees
+        phi dot in degrees/s
+        """
+    # umschreiben zu z.B. if v is not None and r_k is not none:
+        m = self.mass
 
-def check_mode():
-    pass
+        if v and r_k:                           # v, r_k
+            n = ((v**2) / (self.g * r_k))**2 + 1
+            phi = math.degrees(math.acos(1/n))
+            cl = (2 * m) / (self.rho * self.s_ref * r_k * (1/n) * (n**2 - 1)**0.5)
+            return v, r_k, cl, n, phi
 
+        elif v and cl:                         # v, ca
 
-def kurvenradius(arg1, arg2, mode, masse) -> (float, float, float, float, float):
-    """This fuction recieves 2 input parameters and returns a tupel with all 5 turning flight defining parameters.
-    (velocity, radius of turning flight, lift coefficient, load faktor, rolling angle)
+            n = (cl * self.rho/2 * v**2 * self.s_ref) / (self.mass * self.g)
+            phi = math.degrees(math.acos(1 / n))
+            r_k = (v**2) / (self.g * (n**2 - 1)**0.5)
+            return v, r_k, cl, n, phi, self.turning_velocity(v, r_k)
 
-    Mode 1: v and r_k
-    Mode 2: v and ca
-    Mode 3: v and n
-    Mode 4: v and phi
-    Mode 5: r_k and ca
-    Mode 6: r_k and n
-    Mode 7: r_k and phi
-    Mode 8: ca and n
-    Mode 9: ca and phi
-    Mode 10: n and phi"""
-# umschreiben zu z.B. if v is not None and r_k is not none:
-    m = masse
+        elif v and n:                         # v, n
+            r_k = (v**2) / (self.g * (n**2 - 1)**0.5)
+            phi = math.degrees(math.acos(1 / n))
+            cl = (2 * m) / (self.rho * self.s_ref * r_k * (1 / n) * (n ** 2 - 1) ** 0.5)
+            return v, r_k, cl, n, phi, self.turning_velocity(v, r_k)
 
-    if mode == 1:                           # v, r_k
-        v = arg1
-        r_k = arg2
-        n = ((v**2) / (g * r_k))**2 + 1
-        phi = math.acos(1/n)
-        ca = (2 * m) / (rho * s_ref * r_k * (1/n) * (n**2 - 1)**0.5)
-        return arg1, arg2, ca, n, phi
+        elif v and phi:                         # v, phi
+            n = 1 / math.cos(math.radians(phi))
+            r_k = (v ** 2) / (self.g * (n ** 2 - 1) ** 0.5)
+            cl = (2 * m) / (self.rho * self.s_ref * r_k * (1 / n) * (n ** 2 - 1) ** 0.5)
+            return v, r_k, cl, n, phi, self.turning_velocity(v, r_k)
 
-    elif mode == 2:                         # v, ca
-        v = arg1
-        ca = arg2
-        n = (ca * rho/2 * v**2 * s_ref) / (m * g)
-        phi = math.acos(1 / n)
-        r_k = (v**2) / (g * (n**2 - 1)**0.5)
-        return arg1, r_k, arg2, n, phi
+        elif r_k and cl:                         # r_k, cl
+            cos_phi = (1 - (2 * m) / (self.rho * self.s_ref * cl * r_k))**0.5
+            phi = math.degrees(math.acos((1 - (2 * m) / (self.rho * self.s_ref * cl * r_k))**0.5))
+            n = 1 / cos_phi
+            v = (r_k / (self.g * ((1 / cos_phi)**2 - 1)**0.5))**0.5
+            return v, r_k, cl, n, phi, self.turning_velocity(v, r_k)
 
-    elif mode == 3:                         # v, n
-        v = arg1
-        n = arg2
-        r_k = (v**2) / (g * (n**2 - 1)**0.5)
-        phi = math.acos(1 / n)
-        ca = (2 * m) / (rho * s_ref * r_k * (1 / n) * (n ** 2 - 1) ** 0.5)
-        return arg1, r_k, ca, arg2, phi
+        elif r_k and n:                         # r_k, n
+            v = (r_k / (self.g * (n**2 - 1)**0.5))**0.5
+            phi = math.degrees(math.acos(1 / n))
+            cl = (2 * m) / (self.rho * self.s_ref * r_k * (1 / n) * (n ** 2 - 1) ** 0.5)
+            return v, r_k, cl, n, phi, self.turning_velocity(v, r_k)
 
-    elif mode == 4:                         # v, phi
-        v = arg1
-        phi = arg2
-        n = 1 / math.cos(phi)
-        r_k = (v ** 2) / (g * (n ** 2 - 1) ** 0.5)
-        ca = (2 * m) / (rho * s_ref * r_k * (1 / n) * (n ** 2 - 1) ** 0.5)
-        return arg1, r_k, ca, n, arg2
+        elif r_k and phi:                         # r_k, phi
+            n = 1 / math.cos(math.radians(phi))
+            v = (r_k / (self.g * (n**2 - 1)**0.5))**0.5
+            cl = (2 * m) / (self.rho * self.s_ref * r_k * (1 / n) * (n ** 2 - 1) ** 0.5)
+            return v, r_k, cl, n, phi, self.turning_velocity(v, r_k)
 
-    elif mode == 5:                         # r_k, ca
-        r_k = arg1
-        ca = arg2
-        cos_phi = (1 - (2 * m) / (rho * s_ref * ca * r_k))**0.5
-        phi = math.acos((1 - (2 * m) / (rho * s_ref * ca * r_k))**0.5)
-        n = 1 / cos_phi
-        v = (r_k / (g * ((1 / cos_phi)**2 - 1)**0.5))**0.5
-        return v, arg1, arg2, n, phi
+        elif cl and n:                         # cl, n
+            phi = math.degrees(math.acos(1 / n))
+            r_k = (2 * m) / (self.rho * self.s_ref * cl * (1 - (math.cos(math.radians(phi)))**2)**0.5)
+            v = (r_k / (self.g * (n ** 2 - 1) ** 0.5)) ** 0.5
+            return v, r_k, cl, n, phi, self.turning_velocity(v, r_k)
 
-    elif mode == 6:                         # r_k, n
-        r_k = arg1
-        n = arg2
-        v = (r_k / (g * (n**2 - 1)**0.5))**0.5
-        phi = math.acos(1 / n)
-        ca = (2 * m) / (rho * s_ref * r_k * (1 / n) * (n ** 2 - 1) ** 0.5)
-        return v, arg1, ca, arg2, phi
+        elif cl and phi:                         # cl, phi
+            n = 1 / math.cos(math.radians(phi))
+            r_k = (2 * m) / (self.rho * self.s_ref * cl * (1 - (math.cos(math.radians(phi))) ** 2) ** 0.5)
+            v = (r_k / (self.g * (n ** 2 - 1) ** 0.5)) ** 0.5
+            return v, r_k, cl, n, phi, self.turning_velocity(v, r_k)
 
-    elif mode == 7:                         # r_k, phi
-        r_k = arg1
-        phi = arg2
-        n = 1 / math.cos(phi)
-        v = (r_k / (g * (n**2 - 1)**0.5))**0.5
-        ca = (2 * m) / (rho * s_ref * r_k * (1 / n) * (n ** 2 - 1) ** 0.5)
-        return v, arg1, ca, n, arg2
+        elif n and phi:                        # n, phi
+            print("error: n and phi are too less arguments")
 
-    elif mode == 8:                         # ca, n
-        ca = arg1
-        n = arg2
-        phi = math.acos(1 / n)
-        r_k = (2 * m) / (rho * S * ca * (1 - (math.cos(phi))**2)**0.5)
-        v = (r_k / (g * (n ** 2 - 1) ** 0.5)) ** 0.5
-        return v, r_k, arg1, arg2, phi
+        else:
+            print("error: wrong arguments")
 
-    elif mode == 9:                         # ca, phi
-        ca = arg1
-        phi = arg2
-        n = 1 / math.cos(phi)
-        r_k = (2 * m) / (rho * S * ca * (1 - (math.cos(phi)) ** 2) ** 0.5)
-        v = (r_k / (g * (n ** 2 - 1) ** 0.5)) ** 0.5
-        return v, r_k, arg1, n, arg2
+    # ---Wendegeschwindigkeit und Wendedauer---
 
-    elif mode == 10:                        # n, phi
-        print("error: n and phi are too less arguments")
+    def turning_velocity(self, velocity, turn_radius):
+        """
+        Returns the turning velocity chi dot in degrees/s
+        Needs the velocity of the plane and the turn radius.
+        """
+        chi_punkt = math.degrees(velocity / turn_radius)
+        return chi_punkt
 
-    else:
-        print("error: Mode has to be between 1 and 10")
+    def turning_time(self, angle, turning_velocity):
+        """
+        angle in degrees
+        turning velocity in degrees/s
+        """
+        time = angle / turning_velocity
+        return time
 
+    # def wendegeschwindigkeit2(v, g, rho, m, s_ref, ca):
+        # chi_punkt = (g * (((ca * rho/2 * v**2 *s_ref) / (m * g))**2 - 1)**0.5) / (v)
+        # return chi_punkt
 
-# ---Wendegeschwindigkeit und Wendedauer---
+    # ---Schubbedarf für stationäre Kurve___
 
-
-def wendegeschwindigkeit(v, r_k):
-    chi_punkt = v / r_k
-    return chi_punkt
-
-"""
-def wendegeschwindigkeit2(v, g, rho, m, s_ref, ca):
-    chi_punkt = (g * (((ca * rho/2 * v**2 *s_ref) / (m * g))**2 - 1)**0.5) / (v)
-    return chi_punkt
-"""
-
-def wendedauer(winkel, wendegeschw):
-    t = winkel / wendegeschw
-    return t
-
-
-# ---Schubbedarf für stationäre Kurve___
-
-
-def schubbedarf_kurve(cw, ca, m, g, phi):
-    f = cw/ca * (m *g) / (math.cos(phi))
-    return f
+    def needed_thrust_for_turn(self, cd, cl, *, n=None, phi=None):
+        """
+        Returns needed thrust for a specified turning flight.
+        Input cd, cl and n or phi (in degrees).
+        phi in degrees
+        """
+        if n is None and phi is None:
+            print("Bitte Parameter n oder phi ausfüllen.")
+        elif n:
+            phi = math.degrees(math.acos(1 / n))
+        needed_thrust = cd/cl * (self.mass * self.g) / (math.cos(math.radians(phi)))
+        return needed_thrust
 
 
 # ---beschleunigte/abgebremste Kurve---

@@ -1,5 +1,4 @@
 import math
-
 import numpy as np
 from mace.aero.implementations.avl import athenavortexlattice, geometry_and_mass_files
 from mace.aero.implementations.viscousdrag import ViscousDrag
@@ -107,6 +106,9 @@ class GlidingFlight:
         return best_glide_ratio
 
     def smallest_decline(self):
+        """
+        Returns the smallest decline and saves the corresponding data in the object plane.
+        """
         smallest_decline = np.min(self.plane.flightconditions.glidingflight.results.gliding_data[:, 5])
         row_index = np.argmin(self.plane.flightconditions.glidingflight.results.gliding_data[:, 5])
         corresponding_data = self.plane.flightconditions.glidingflight.results.gliding_data[row_index, :]
