@@ -63,7 +63,7 @@ Vorstellung von verschiedenen Algorithmen, die auf mein Tool zugreifen können u
 
 ### Materialien
 
-Auflistungen und Tabellen von Materialparametern
+Auflistungen und Tabellen von Materialparametern.
 
 ## Ergebnisse
 
