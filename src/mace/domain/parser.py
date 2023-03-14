@@ -1,49 +1,62 @@
+import inspect
+import tomllib
 import xml.etree.ElementTree as ET
 
 import numpy as np
 
-from mace.domain import Plane, Wing, WingSegment
+from mace import domain
 
 
-class PlaneParser(Plane):
-    def __init__(self, file_name):
-        self.tree = ET.parse(f"./././data/planes/{file_name}")
-        root = self.tree.getroot()
-        self.name = root.attrib["Name"]
-        for element in root:
-            if element.tag == "Fluegel":
-                self.wing = self.build_fluegel(element)
-            elif element.tag == "Leitwerk":
-                self.build_leitwerk(element)
+class PlaneParser:
+    def __init__(self, path) -> None:
+        with open(path, "rb") as f:
+            self.data = tomllib.load(f)
+        glb = globals()
+        self.classes = {clas: glb[clas] for clas in glb if inspect.isclass(glb[clas])}
 
-    def build_leitwerk(self, element):
-        pass
+    def get(self):
+        return self.rec_par("Plane")
 
-    def build_fluegel(self, tree):
-        wing = Wing()
-        for element in tree:
-            if element.tag == "Airfoil":
-                wing.airfoil = element.text
-            elif element.tag == "Fluegelsegment":
-                if wing.segments is None:
-                    wing.segments = []
-                wing.segments.append(self.build_fluegelsegment(element))
-        return wing
+    def rec_par(self, curr):
+        sup = self.classes[curr]()
+        for obj in self.data[curr]:
+            if obj not in sup.__dict__:
+                raise ValueError(
+                    f"Object {obj!r} not attribute of {self.classes[curr]}"
+                )
+            val = self.data[curr][obj]
+            if type(val) is list:
+                sup.__dict__[obj] = np.array(val)
+            elif obj == "segments":
+                sup.__dict__[obj] = self.wing_segments()
+            elif val in self.classes:
+                sup.__dict__[obj] = self.rec_par(val)
+            else:
+                sup.__dict__[obj] = val
+        return sup
 
-    def build_fluegelsegment(self, tree):
-        segment = WingSegment()
-        for element in tree:
-            if element.tag == "NaseInnen":
-                segment.nose_inner = self.build_vector(element)
-            elif element.tag == "NaseAußen":
-                segment.nose_outer = self.build_vector(element)
-            elif element.tag == "BackInner":
-                segment.back_inner = self.build_vector(element)
-            elif element.tag == "BackOuter":
-                segment.back_outer = self.build_vector(element)
-        return segment
+    def wing_segments(self):
+        segments = []
+        for segment in self.data["WingSegment"]:
+            sup = domain.WingSegment()
+            for obj in self.data["WingSegment"][segment]:
+                if obj not in sup.__dict__:
+                    raise ValueError(
+                        f'Object {obj!r} not attribute of {self.classes["WingSegment"]}'
+                    )
+                val = self.data["WingSegment"][segment][obj]
+                if type(val) is list:
+                    sup.__dict__[obj] = np.array(val)
+                elif obj == "segments":
+                    sup.__dict__[obj] = self.wing_segments()
+                elif val in self.classes:
+                    sup.__dict__[obj] = self.rec_par(val)
+                else:
+                    sup.__dict__[obj] = val
+            segments.append(sup)
+        return segments
 
-    def build_vector(self, element):
-        return np.array(
-            list(map(float, [element[0].text, element[1].text, element[2].text]))
-        )
+
+if __name__ == "__main__":
+    plane = PlaneParser("plane.toml").get()
+    print(plane)
