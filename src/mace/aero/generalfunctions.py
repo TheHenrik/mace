@@ -1,4 +1,6 @@
 from mace.domain import params, Plane
+from mace.aero.implementations.avl import athenavortexlattice, geometry_and_mass_files
+from mace.aero.implementations.viscousdrag import ViscousDrag
 
 # ---lineare Interpolation---
 
@@ -62,6 +64,10 @@ def get_reynolds_number(v, length):              # neuer Name
 class GeneralFunctions:
     def __init__(self, plane: Plane):
         self.plane = plane
+        self.mass = self.plane.mass
+        self.s_ref = self.plane.reference_values.s_ref
+        self.g = params.Constants.g
+        self.rho = params.Constants.rho
 
     # ---Thrust in Newton---
 
@@ -74,6 +80,14 @@ class GeneralFunctions:
         thrust = np.interp(current_velocity, velocity_arr, thrust_arr)
         return thrust
 
+    def thrust_supply(self, cd, cl):  # Schubbedarf
+        thrust = cd / cl * self.mass * self.g
+        return thrust
+
+    def excess_power(self, cd, cl, thrust):
+        excess_power = thrust - self.thrust_supply(cd, cl)
+        return excess_power
+
     # ---Lift---
 
     def coefficient_to_lift_or_drag(self, velocity, coefficient):
@@ -85,7 +99,20 @@ class GeneralFunctions:
         lift = coefficient * rho / 2 * velocity**2 * s_ref
         return lift
 
-
+    def calcualate_drag(self, lift_coefficient, *, velocity):
+        # AVL
+        geometry_and_mass_files.GeometryFile(self.plane).build_geometry_file(
+            self.plane.reference_values.number_of_surfaces)
+        geometry_and_mass_files.MassFile(self.plane).build_mass_file()
+        athenavortexlattice.AVL(self.plane).run_avl(lift_coefficient=lift_coefficient)
+        athenavortexlattice.AVL(self.plane).read_avl_output()
+        # Viscous drag
+        if velocity:
+            ViscousDrag(self.plane).create_avl_viscous_drag_from_xfoil(velocity=velocity)
+        else:
+            ViscousDrag(self.plane).create_avl_viscous_drag_from_xfoil()
+        cd = self.plane.aero_coeffs.drag_coeff.cd_viscous + self.plane.aero_coeffs.drag_coeff.cd_ind
+        return cd
 
 # ---Polaren erstellen---
 

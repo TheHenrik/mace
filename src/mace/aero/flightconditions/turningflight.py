@@ -4,6 +4,8 @@ import numpy as np
 from mace.aero.implementations.avl import athenavortexlattice, geometry_and_mass_files
 from mace.aero.implementations.viscousdrag import ViscousDrag
 from mace.domain import params, Plane
+from mace.aero import generalfunctions
+
 
 
 class TurningFlight:
@@ -18,14 +20,24 @@ class TurningFlight:
 
     def velocity_turning_flight(self, cl, phi):
         """
-        Returns the velocity of the plane during a horizontal turning flight.
+        Returns the velocity of the plane during a horizontal turning flight
+        phi in degrees.
         """
-        v_k = ((2 * self.mass * self.g) / (self.rho * self.s_ref * cl * math.cos(phi)))**0.5
+        v_k = ((2 * self.mass * self.g) / (self.rho * self.s_ref * cl * math.cos(math.radians(phi))))**0.5
         return v_k
+
+    def cl_turning_flight(self, velocity, phi):
+        """
+        Returns the lift_coefficient of the plane during a horizontal turning flight.
+        phi in degrees.
+        """
+        cl = (2 * self.mass * self.g) / (self.rho * self.s_ref * velocity**2 * math.cos(math.radians(phi)))
+        return cl
 
     def min_velocity_turning_flight(self, cl_max, phi):
         """
         Returns the minimum velocity of the plane during a horizontal turning flight.
+        phi in degrees
         """
         v_k_min = self.velocity_turning_flight(cl_max, phi)
         return v_k_min
@@ -141,34 +153,62 @@ class TurningFlight:
         needed_thrust = cd/cl * (self.mass * self.g) / (math.cos(math.radians(phi)))
         return needed_thrust
 
+    # ---beschleunigte/abgebremste Kurve---
 
-# ---beschleunigte/abgebremste Kurve---
+    def delta_chi(self, excess_power, r_k, time, v_0):
+        delta = excess_power / (2 * r_k * self.mass) * time**2 + v_0 / r_k * time
+        v_0_neu = excess_power / self.mass * time + v_0
+        return delta, v_0_neu
 
+    def delta_t(self, r_k, excess_power, v_0, chi_inkrement):
+        """
+        chi_increment in degrees
+        """
+        delta = (r_k * self.mass / excess_power) * (
+                    (v_0 / r_k) ** 2 + 2 * math.radians(chi_inkrement) * excess_power / (r_k * self.mass) ** 0.5 - v_0 / r_k)
+        v_0_neu = excess_power / self.mass * delta + v_0
+        return delta, v_0_neu
 
-def ueberschusskraft_kurve(f, schubbedarf):
-    ueberschuss = f - schubbedarf
-    return ueberschuss
+    def turn_acceleration(self, v_start, turn_angle, chi_inkrement, *,
+                          lift_coefficient=None, turn_radius=None, phi=None, load_factor=None):
+        """
+        Returns the velocity at the end of the turn, the duration of the turn and the flight distance in a tuple.
+        Needs the velocity at the bigin of the turn, the turn angle, the increment/step_size
+        and a constant lift coefficient, a constant turn radius, or a constant rolling angle or load factor.
+        chi_increment and turn angle in degrees
+        """
+        duration = 0
+        distance1 = 0
+        distance2 = 0
+        current_velocity = v_start
+        cl = float()
+        r_k = float()
+        number_of_steps = (turn_angle / chi_inkrement) + 1
+        for angle in np.linspace(0, turn_angle, number_of_steps):
+            thrust = generalfunctions.GeneralFunctions(self.plane).current_thrust(current_velocity)
+            if lift_coefficient:
+                cl = lift_coefficient
+                r_k = self.turn_radius(v=current_velocity, cl=cl)
+            if turn_radius:
+                cl = self.turn_radius(v=current_velocity, r_k=turn_radius)[2]
+                r_k = turn_radius
+            elif phi:
+                cl = self.turn_radius(v=current_velocity, phi=phi)[2]
+                r_k = self.turn_radius(v=current_velocity, phi=phi)
+            elif load_factor:
+                cl = self.turn_radius(v=current_velocity, n=load_factor)[2]
+                r_k = self.turn_radius(v=current_velocity, n=load_factor)
+            else:
+                print("Error, too less arguments.")
+            # drag estimation
+            cd = generalfunctions.GeneralFunctions(self.plane).calcualate_drag(cl, velocity=current_velocity)
 
-
-def delta_chi(f_ueberschuss, r_k, m, t, v_0):
-    delta = f_ueberschuss / (2 * r_k * m) * t**2 + v_0 / r_k * t
-    v_0_neu = f_ueberschuss / m * t + v_0
-    return delta, v_0_neu
-
-
-def delta_t(r_k, m, f_ueberschuss, v_0, chi_inkrement):
-    delta = (r_k * m / f_ueberschuss) * (
-                (v_0 / r_k) ** 2 + 2 * chi_inkrement * f_ueberschuss / (r_k * m) ** 0.5 - v_0 / r_k)
-    v_0_neu = f_ueberschuss / m * delta + v_0
-    return delta, v_0_neu
-
-
-def kurve_beschleunigt(v_start, winkel, winkelinkrement):
-    kurvendauer = 0
-    v_aktuell = v_start
-    for kurvenwinkel in np.linspace(0,winkel,winkelinkrement):
-        delta_time = delta_t(r_k,m, f_ueberschuss,v_aktuell,chi_inkrement)
-        kurvendauer += delta_time[1]
-        v_aktuell = delta_time[2]
-    v_ende = v_aktuell
-    return v_ende, kurvendauer
+            excess_power = generalfunctions.GeneralFunctions(self.plane).excess_power(cd, cl, thrust)
+            delta_time = self.delta_t(r_k, excess_power, current_velocity, chi_inkrement)
+            duration += delta_time[1]
+            distance1 += delta_time[1] * current_velocity
+            current_velocity = delta_time[2]
+            distance2 += delta_time[1] * current_velocity
+        distance = (distance1 + distance2) / 2
+        finish_velocity = current_velocity
+        return finish_velocity, duration, distance
