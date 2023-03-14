@@ -61,6 +61,10 @@ Erklärung Algorithmus anhand von Grafiken
 
 Vorstellung von verschiedenen Algorithmen, die auf mein Tool zugreifen können und wie, was, wieso.
 
+### Materialien
+
+Auflistungen und Tabellen von Materialparametern
+
 ## Ergebnisse
 
 Hier werden alle während der Arbeit gewonnenen Informationen ausführlich dargestellt.
