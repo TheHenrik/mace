@@ -9,9 +9,9 @@ from mace import domain
 
 class PlaneParser:
     def __init__(self, path) -> None:
-        with open(path, "rb") as f:
+        with open(f"./././data/planes/{path}", "rb") as f:
             self.data = tomllib.load(f)
-        glb = globals()
+        glb = globals()["domain"].__dict__
         self.classes = {clas: glb[clas] for clas in glb if inspect.isclass(glb[clas])}
 
     def get(self):

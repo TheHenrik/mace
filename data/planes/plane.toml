@@ -2,7 +2,6 @@
 name = "swinger"
 mass = 5
 wing = "Wing"
-pos = [0.0,0.0,0.0]
 
 [Wing]
 airfoil = "n0012"

@@ -2,7 +2,7 @@ from mace import Project
 
 
 def main():
-    project = Project(planes_location=["flugzeug.xml"])
+    project = Project(planes_location=["plane.toml"])
     project.calculate(verbose=True)
     project.evaluate()
     project.benchmark()
