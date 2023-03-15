@@ -13,7 +13,7 @@ class Project:
         populate_airfoils()
         self.planes = []
         for plane_location in planes_location:
-            self.planes.append(PlaneParser(plane_location).get())
+            self.planes.append(PlaneParser(plane_location).get("Plane"))
 
     def calculate(self, verbose=False):
         planes = []

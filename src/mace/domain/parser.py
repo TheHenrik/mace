@@ -10,13 +10,16 @@ class PlaneParser:
     def __init__(self, path) -> None:
         with open(f"./././data/planes/{path}", "rb") as f:
             self.data = tomllib.load(f)
-        glb = globals()["domain"].__dict__
-        self.classes = {clas: glb[clas] for clas in glb if inspect.isclass(glb[clas])}
+        self.classes = {
+            key: val
+            for key, val in globals()["domain"].__dict__.items()
+            if inspect.isclass(val)
+        }
 
-    def get(self):
-        return self.rec_par("Plane")
+    def get(self, obj):
+        return self._rec_par(obj)
 
-    def rec_par(self, curr):
+    def _rec_par(self, curr):
         sup = self.classes[curr]()
         for obj in self.data[curr]:
             if obj not in sup.__dict__:
@@ -27,15 +30,15 @@ class PlaneParser:
             if type(val) is list:
                 sup.__dict__[obj] = np.array(val)
             elif obj == "segments":
-                sup.__dict__[obj] = self.wing_segments()
+                sup.__dict__[obj] = self._wing_segments()
             elif val in self.classes:
-                sup.__dict__[obj] = self.rec_par(val)
+                sup.__dict__[obj] = self._rec_par(val)
             else:
                 sup.__dict__[obj] = val
         return sup
 
     # Works only if no segments on empenage
-    def wing_segments(self):
+    def _wing_segments(self):
         segments = []
         for segment in self.data["WingSegment"]:
             sup = domain.WingSegment()
@@ -50,7 +53,7 @@ class PlaneParser:
                 elif obj == "segments":
                     sup.__dict__[obj] = self.wing_segments()
                 elif val in self.classes:
-                    sup.__dict__[obj] = self.rec_par(val)
+                    sup.__dict__[obj] = self._rec_par(val)
                 else:
                     sup.__dict__[obj] = val
             segments.append(sup)
