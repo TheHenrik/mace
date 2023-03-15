@@ -1,6 +1,5 @@
 import inspect
 import tomllib
-import xml.etree.ElementTree as ET
 
 import numpy as np
 
@@ -35,6 +34,7 @@ class PlaneParser:
                 sup.__dict__[obj] = val
         return sup
 
+    # Works only if no segments on empenage
     def wing_segments(self):
         segments = []
         for segment in self.data["WingSegment"]:
