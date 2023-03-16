@@ -1,7 +1,7 @@
 from mace.domain.plane import (
     EmpennageType,
-    Hull,
-    HullProfile,
+    Fuselage,
+    FuselageProfile,
     Plane,
     TEmpennage,
     Wing,

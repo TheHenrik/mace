@@ -11,53 +11,222 @@ skinparam linetype ortho
         RoundCorner 10
     }
 </style>
-class EmpennageType {
-typ: TEmpennage | VEmpennage
-}
-TEmpennage <-- EmpennageType
-class Hull {
-lenght: int
-profile: HullProfile
-mass: float
-}
-HullProfile <-- Hull
-class HullProfile {
-hight: int
+class FuselageProfile {
+height: int
 width: int
 position: int
 }
-class Plane {
-name: str
-empennage: EmpennageType
-wing: Wing
-hull: Hull
+class Fuselage {
+profile: FuselageProfile
+length: int
 mass: float
 }
-EmpennageType <-- Plane
-Wing <-- Plane
-Hull <-- Plane
-class TEmpennage {
-elevator: List[WingSegment]
-airfoil_e: str
-rudder: List[WingSegment]
-airfoil_r: str
-mass: float
+FuselageProfile <-- Fuselage
+class Flap {
 }
-WingSegment <-- TEmpennage
-WingSegment <-- TEmpennage
-class Wing {
-segments: List[WingSegment]
-airfoil: str
-mass: float
+class Control {
+c_name: str
+c_gain: float
+x_hinge: float
+sgn_dup: float
 }
-WingSegment <-- Wing
 class WingSegment {
 nose_inner: ndarray
 nose_outer: ndarray
 back_inner: ndarray
 back_outer: ndarray
-mass: float
 area: float
 volume: float
+a_inc: float
+a_inc_outer: float
+n_spanwise: int
+s_space: int
 }
+class Wing {
+segments: list[WingSegment]
+airfoil: str
+mass: float
+n_chordwise: int
+c_space: int
+n_spanwise: int
+s_space: int
+x_scale: float
+y_scale: float
+z_scale: float
+x_translate: float
+y_translate: float
+z_translate: float
+twist_angle: float
+l_comp: float
+}
+WingSegment <-- Wing
+class TEmpennage {
+elevator: list[WingSegment]
+rudder: list[WingSegment]
+mass: float
+}
+WingSegment <-- TEmpennage
+WingSegment <-- TEmpennage
+class VEmpennage {
+segments: list[WingSegment]
+mass: float
+}
+WingSegment <-- VEmpennage
+class EmpennageType {
+typ: TEmpennage | VEmpennage
+}
+TEmpennage <-- EmpennageType
+VEmpennage <-- EmpennageType
+class Propulsion {
+motor: str
+esc: str
+propeller: str
+thrust: ndarray
+mass: float
+}
+class LandingGear {
+my: float
+configuration: str
+mass: float
+}
+class Electronics {
+}
+class ReferenceValues {
+number_of_surfaces: float
+mach: float
+iy_sym: float
+iz_sym: float
+z_sym: float
+s_ref: float
+c_ref: float
+b_ref: float
+x_ref: float
+y_ref: float
+z_ref: float
+h: float
+b: float
+lambd_k: float
+lambd_g: float
+}
+class Cl {
+cl_tot: float
+}
+class Cd {
+cd_tot: float
+cd_vis: float
+cd_ind: float
+cd_viscous: float
+}
+class AeroCoeffs {
+lift_coeff: Cl
+drag_coeff: Cd
+cdp: float
+}
+Cl <-- AeroCoeffs
+Cd <-- AeroCoeffs
+class AvlInputs {
+}
+class AvlOutputs {
+clff: float
+cdff: float
+cyff: float
+oswaldfactor: float
+s_ref: float
+c_ref: float
+b_ref: float
+x_ref: float
+y_ref: float
+z_ref: float
+number_of_strips: int
+number_of_surfaces: int
+number_of_vortices: int
+surface_data: ndarray
+strip_forces: ndarray
+}
+class Avl {
+inputs: AvlInputs
+outputs: AvlOutputs
+}
+AvlInputs <-- Avl
+AvlOutputs <-- Avl
+class TakeOffResults {
+v_max_rolling: float
+v_timer_start: float
+rolling_distance: float
+rolling_time: float
+}
+class TakeOff {
+cl_roll: float
+cd_viscous: float
+cd_induced: float
+phi_a: float
+phi_w: float
+delta_a: float
+delta_w: float
+beta_a: float
+beta_w: float
+results: TakeOffResults
+}
+TakeOffResults <-- TakeOff
+class ClimbResults {
+climb_data: ndarray
+gamma_max: float
+v_vertical_max: float
+}
+class Climb {
+results: ClimbResults
+}
+ClimbResults <-- Climb
+class HorizontalFlightResults {
+thrust_velocity_correlation: ndarray
+minimum_thrust: ndarray
+maximum_flight_velocity: tuple
+}
+class HorizontalFlight {
+results: HorizontalFlightResults
+}
+HorizontalFlightResults <-- HorizontalFlight
+class GlidingFlightResults {
+gliding_data: ndarray
+data_best_glide_ratio: ndarray
+data_smallest_decline: ndarray
+best_glide_ratio: float
+row_index_best_glide_ratio: int
+smallest_decline: float
+row_index_smallest_decline: int
+}
+class GlidingFlight {
+results: GlidingFlightResults
+}
+GlidingFlightResults <-- GlidingFlight
+class FlightConditions {
+takeoff: TakeOff
+climb: Climb
+horizontalflight: HorizontalFlight
+glidingflight: GlidingFlight
+}
+TakeOff <-- FlightConditions
+Climb <-- FlightConditions
+HorizontalFlight <-- FlightConditions
+GlidingFlight <-- FlightConditions
+class Plane {
+name: str
+empennage: EmpennageType
+wing: Wing
+fuselage: Fuselage
+mass: float
+propulsion: Propulsion
+landing_gear: LandingGear
+aero_coeffs: AeroCoeffs
+avl: Avl
+flightconditions: FlightConditions
+}
+EmpennageType <-- Plane
+Wing <-- Plane
+Fuselage <-- Plane
+Propulsion <-- Plane
+LandingGear <-- Plane
+AeroCoeffs <-- Plane
+Avl <-- Plane
+FlightConditions <-- Plane
 @enduml
