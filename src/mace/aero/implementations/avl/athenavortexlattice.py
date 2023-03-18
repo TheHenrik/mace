@@ -4,7 +4,7 @@ from mace.aero.implementations import runsubprocess as runsub
 from mace.aero.implementations.xfoil.xfoilpolars import get_xfoil_polar
 from mace.domain import params, plane, Plane
 
-
+# noch entfernen
 def run_avl(avl_file, mass_file,
             total_forces_file_name="total_forces_avl", strip_forces_file_name="strip_forces_avl",
             angle_of_attack=None, lift_coefficient=None, run_case: int = 1, maschine_readable_file=True):

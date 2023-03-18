@@ -38,14 +38,9 @@ class Fuselage:
 
 
 @dataclass()
-class Flap:
-    pass
-
-
-@dataclass()
 class Naca:
     number_of_naca: int = 0000
-
+    filepath: str = None
 
 @dataclass()
 class AirfoilFile:
@@ -72,7 +67,7 @@ class WingSegment:
     nose_outer: np.ndarray = None
     back_inner: np.ndarray = None
     back_outer: np.ndarray = None
-    mass = MassAndInertia
+    mass: float = 0
     # chord_inner = ((back_inner[0] - nose_inner[0]) ** 2 + (back_inner[1] - nose_inner[1]) ** 2 + (
     #             back_inner[2] - nose_inner[2]) ** 2) ** 0.5
     # chord_outer = ((back_outer[0] - nose_outer[0]) ** 2 + (back_outer[1] - nose_outer[1]) ** 2 + (
@@ -89,21 +84,11 @@ class WingSegment:
     control = Control
 
 
-"""@dataclass()
-class GeometricWingValues:
-    h: float = 0.4  # Height wof WingNP above ground for rolling
-    b: float = 3.0  # Spanwidth
-    s_ref: float = 1.5  # Wing reference area
-    lambd_k: float = 0.4  # Taper ratio (Zuspitzung)
-    lambd_g: float = 11  # Aspect ratio (Streckung)"""
-
-
 @dataclass()
 class Wing:
     segments: List[WingSegment] = None
     airfoil: str = None
-    mass = MassAndInertia
-    geo_wing_values: GeometricWingValues = None
+    mass: float = 0
     # for AVL:
     isactive = False
     name = "Wing"
@@ -114,6 +99,7 @@ class Wing:
     x_scale: float = 0
     y_scale: float = 0
     z_scale: float = 0
+    # scale = np.array([0, 0, 0])
     x_translate: float = 0
     y_translate: float = 0
     z_translate: float = 0
@@ -170,11 +156,11 @@ class Propulsion:
     esc: str = None
     propeller: str = None
     thrust: np.ndarray = None       # [[v0, f0], [v1, f1], [v2, f2], [v3, f3], ...]
-    mass_of_motor = MassAndInertia
-    mass_of_esc = MassAndInertia
-    mass_of_propeller = MassAndInertia
-    mass = MassAndInertia
-    mass.mass = mass_of_motor.mass + mass_of_esc.mass + mass_of_propeller.mass
+    mass_of_motor: float = 0
+    mass_of_esc: float = 0
+    mass_of_propeller: float = 0
+    mass: float = 0
+    # mass = mass_of_motor + mass_of_esc + mass_of_propeller
 
 
 # ---Landing Gear Configuration---
@@ -224,8 +210,8 @@ class ReferenceValues:
     z_ref: float = 0  # must bei CG location for trim calculation
     h: float = 0  # Height wof WingNP above ground for rolling
     b: float = 0  # Spanwidth
-    lambd_k: float = 0.4  # Taper ratio (Zuspitzung)
-    lambd_g: float = 11  # Aspect ratio (Streckung)
+    lambd_k: float = 0  # Taper ratio (Zuspitzung)
+    lambd_g: float = 0  # Aspect ratio (Streckung)
 
 # ---Aerodynamic Coefficients---
 
@@ -373,14 +359,13 @@ class Plane:
     empennage: EmpennageType = None
     wing: Wing = None
     fuselage: Fuselage = None
-    mass: float = 5
+    mass: float = 0
     propulsion: Propulsion = None
     landing_gear: LandingGear = None
     aero_coeffs: AeroCoeffs = None
     parameters = Parameters
     electronics = Electronics
     reference_values = ReferenceValues
-    # list_of_component_names: list = [fuselage, wing, empennage, propulsion, landing_gear, electronics]
     avl: Avl = None
     flightconditions: FlightConditions = None
 
