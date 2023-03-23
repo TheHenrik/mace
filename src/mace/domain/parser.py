@@ -1,12 +1,13 @@
 import inspect
 import tomllib
 
+import xml.etree.ElementTree as ET
 import numpy as np
 
 from mace import domain
 
 
-class PlaneParser:
+class TOMLParser:
     def __init__(self, path) -> None:
         with open(f"./././data/planes/{path}", "rb") as f:
             self.data = tomllib.load(f)
@@ -60,6 +61,18 @@ class PlaneParser:
         return segments
 
 
+class XMLParser:
+    def __init__(self, path) -> None:
+        self.tree = ET.parse(f"./././data/planes/{path}")
+        self.classes = {
+            key: val
+            for key, val in globals()["domain"].__dict__.items()
+            if inspect.isclass(val)
+        }
+
+    def get(self, obj):
+        return self._rec_par(obj)
+
 if __name__ == "__main__":
-    plane = PlaneParser("plane.toml").get()
+    plane = TOMLParser("plane.toml").get()
     print(plane)

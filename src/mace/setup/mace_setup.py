@@ -1,5 +1,5 @@
 from mace.algo.calculate_plane import calculate_plane
-from mace.domain.parser import PlaneParser
+from mace.domain.parser import TOMLParser
 from mace.domain.plane import Plane
 from mace.setup.airfoils import populate_airfoils
 from mace.test import getsize, performance_report, performance_time
@@ -13,7 +13,7 @@ class Project:
         populate_airfoils()
         self.planes = []
         for plane_location in planes_location:
-            self.planes.append(PlaneParser(plane_location).get("Plane"))
+            self.planes.append(TOMLParser(plane_location).get("Plane"))
 
     def calculate(self, verbose=False):
         planes = []
