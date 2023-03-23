@@ -1,5 +1,6 @@
 import os
 from mace.domain import Plane
+from mace.domain.parser import PlaneParser
 
 # ========== Geometry File ==========
 
@@ -174,9 +175,9 @@ class GeometryFile:
         geometry_file.write(f'#Xref\tYref\tZref\n')
         geometry_file.write(f'{self.plane.reference_values.x_ref}\t{self.plane.reference_values.y_ref}\t'
                             f'{self.plane.reference_values.z_ref}\n')
-        if self.plane.aero_coeffs.cdp != 0:
-            geometry_file.write(f'# CDp\n')
-            geometry_file.write(f'{self.plane.aero_coeffs.cdp}\n')
+        # if self.plane.aero_coeffs.cdp != 0:
+        #     geometry_file.write(f'# CDp\n')
+        #     geometry_file.write(f'{self.plane.aero_coeffs.cdp}\n')
 
         """if plane_name is not None:
             geometry_file.write("{0}\n".format(self.plane.name))
@@ -1261,3 +1262,11 @@ class MassFile:
             MassFile.build_mass_table(self, mass_file)
 
         self.plane.avl.inputs.mass_file = "mass_file.avl"
+
+
+# ========== Test ===========
+
+if __name__ == "__main__":
+    plane = PlaneParser("testplane.toml").get("Plane")
+    print(plane)
+    GeometryFile(plane).build_geometry_file(1)

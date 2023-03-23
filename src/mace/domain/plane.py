@@ -79,9 +79,9 @@ class WingSegment:
     a_inc_outer: float = 0
     n_spanwise: int = None
     s_space: int = None
-    inner_airfoil = Airfoil
-    outer_airfoil = Airfoil
-    control = Control
+    inner_airfoil: Airfoil = None
+    outer_airfoil: Airfoil = None
+    control: Control = None
 
 
 @dataclass()
@@ -211,7 +211,7 @@ class ReferenceValues:
     h: float = 0  # Height wof WingNP above ground for rolling
     b: float = 0  # Spanwidth
     lambd_k: float = 0  # Taper ratio (Zuspitzung)
-    lambd_g: float = 0  # Aspect ratio (Streckung)
+    lambd_g: float = 0  # Aspect ratio (Streckung) b^2 / S
 
 # ---Aerodynamic Coefficients---
 
@@ -311,7 +311,7 @@ class TakeOff:
 
 @dataclass()
 class ClimbResults:
-    climb_data = np.array([])
+    climb_data = np.ndarray = None
     gamma_max: float() = 0
     v_vertical_max: float() = 0
 
@@ -322,8 +322,8 @@ class Climb:
 
 @dataclass()
 class HorizontalFlightResults:
-    thrust_velocity_correlation: np.array([])   # [[v1, t1], [v2, t2], [...], ...]
-    minimum_thrust: np.array([])
+    thrust_velocity_correlation: np.ndarray = None  # [[v1, t1], [v2, t2], [...], ...]
+    minimum_thrust: np.ndarray = None
     maximum_flight_velocity: tuple = None
 
 @dataclass()
@@ -332,9 +332,9 @@ class HorizontalFlight:
 
 @dataclass()
 class GlidingFlightResults:
-    gliding_data: np.array([])      # [cl, cd, cd_viscous, cd_induced, velocity, vertical_velocity] in each row
-    data_best_glide_ratio: np.array([])
-    data_smallest_decline: np.array([])
+    gliding_data: np.ndarray = None      # [cl, cd, cd_viscous, cd_induced, velocity, vertical_velocity] in each row
+    data_best_glide_ratio: np.ndarray = None
+    data_smallest_decline: np.ndarray = None
     best_glide_ratio: float = None
     row_index_best_glide_ratio: int = None
     smallest_decline: float = None
@@ -365,7 +365,7 @@ class Plane:
     aero_coeffs: AeroCoeffs = None
     parameters = Parameters
     electronics = Electronics
-    reference_values = ReferenceValues
+    reference_values: ReferenceValues = None
     avl: Avl = None
     flightconditions: FlightConditions = None
 

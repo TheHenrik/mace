@@ -31,9 +31,8 @@ type = "AirfoilFile"
 filepath = "C:/Users/Gregor/Documents/GitHub/mace/data/airfoils/n0012"
 
 [Naca]
-number_of_naca = 0012
+number_of_naca = 12
 filepath = "C:/Users/Gregor/Documents/GitHub/mace/data/airfoils/n0012"
-
 
 [Propulsion]
 thrust = [[0, 20], [5, 19], [10, 18], [15, 16], [20, 14], [30, 10], [50, 5]]
@@ -79,14 +78,10 @@ results = "ClimbResults"
 
 [ClimbResults]
 
-
-
 [HorizontalFlight]
 results = "HorizontalFlightResults"
 
 [HorizontalFlightResults]
-
-
 
 [GlidingFlight]
 results = "GlidingFlightResults"

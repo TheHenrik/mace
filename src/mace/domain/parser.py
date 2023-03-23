@@ -1,53 +1,65 @@
-import xml.etree.ElementTree as ET
+import inspect
+import tomllib
 
 import numpy as np
 
-from mace.domain import Plane, Wing, WingSegment
+from mace.domain import plane
 
 
 class PlaneParser:
-    def __init__(self, file_name):
-        self.plane = Plane()
-        self.tree = ET.parse(f"C:/Users/Gregor/Documents/GitHub/mace/data/planes/{file_name}")
+    def __init__(self, path) -> None:
+        with open(f"C:/Users/Gregor/Documents/GitHub/mace/data/planes/{path}", "rb") as f:
+            self.data = tomllib.load(f)
+        self.classes = {
+            key: val
+            for key, val in globals()["plane"].__dict__.items()
+            if inspect.isclass(val)
+        }
 
-    def build_plane(self):
-        root = self.tree.getroot()
-        self.plane.name = root.attrib["Name"]
-        for element in root:
-            if element.tag == "Fluegel":
-                self.plane.wing = self.build_fluegel(element)
-            elif element.tag == "Leitwerk":
-                self.build_leitwerk(element)
-        return self.plane
+    def get(self, obj):
+        return self._rec_par(obj)
 
-    def build_leitwerk(self, element):
-        pass
+    def _rec_par(self, curr):
+        sup = self.classes[curr]()
+        for obj in self.data[curr]:
+            if obj not in sup.__dict__:
+                raise ValueError(
+                    f"Object {obj!r} not attribute of {self.classes[curr]}"
+                )
+            val = self.data[curr][obj]
+            if type(val) is list:
+                sup.__dict__[obj] = np.array(val)
+            elif obj == "segments":
+                sup.__dict__[obj] = self._wing_segments()
+            elif val in self.classes:
+                sup.__dict__[obj] = self._rec_par(val)
+            else:
+                sup.__dict__[obj] = val
+        return sup
 
-    def build_fluegel(self, tree):
-        wing = Wing()
-        for element in tree:
-            if element.tag == "Airfoil":
-                wing.airfoil = element.text
-            elif element.tag == "Fluegelsegment":
-                if wing.segments is None:
-                    wing.segments = []
-                wing.segments.append(self.build_fluegelsegment(element))
-        return wing
+    # Works only if no segments on empenage
+    def _wing_segments(self):
+        segments = []
+        for segment in self.data["WingSegment"]:
+            sup = plane.WingSegment()
+            for obj in self.data["WingSegment"][segment]:
+                if obj not in sup.__dict__:
+                    raise ValueError(
+                        f'Object {obj!r} not attribute of {self.classes["WingSegment"]}'
+                    )
+                val = self.data["WingSegment"][segment][obj]
+                if type(val) is list:
+                    sup.__dict__[obj] = np.array(val)
+                elif obj == "segments":
+                    sup.__dict__[obj] = self._wing_segments()
+                elif val in self.classes:
+                    sup.__dict__[obj] = self._rec_par(val)
+                else:
+                    sup.__dict__[obj] = val
+            segments.append(sup)
+        return segments
 
-    def build_fluegelsegment(self, tree):
-        segment = WingSegment()
-        for element in tree:
-            if element.tag == "NaseInnen":
-                segment.nose_inner = self.build_vector(element)
-            elif element.tag == "NaseAußen":
-                segment.nose_outer = self.build_vector(element)
-            elif element.tag == "BackInner":
-                segment.back_inner = self.build_vector(element)
-            elif element.tag == "BackOuter":
-                segment.back_outer = self.build_vector(element)
-        return segment
 
-    def build_vector(self, element):
-        return np.array(
-            list(map(float, [element[0].text, element[1].text, element[2].text]))
-        )       # mit map werden alle Werte in floats umgewandelt / float-function wird auf alle Werte angewendet
+if __name__ == "__main__":
+    plane = PlaneParser("testplane.toml").get("Plane")
+    print(plane)

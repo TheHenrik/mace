@@ -1,0 +1,16 @@
+# TOML
+
+[Plane]
+name = "swinger"
+mass = 5
+wing = "Wing"
+
+[Wing]
+airfoil = "n0012"
+segments = "WingSegment"
+
+    [WingSegment.one]
+    nose_inner = [0.0,100.0,0.0]
+    nose_outer = [0.0,100.0,100.0]
+    back_inner = [100.0,100.0,0.0]
+    back_outer = [100.0,100.0,100.0]

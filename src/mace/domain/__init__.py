@@ -6,4 +6,7 @@ from mace.domain.plane import (
     TEmpennage,
     Wing,
     WingSegment,
+    Airfoil,
+    AirfoilFile,
+    ReferenceValues
 )
