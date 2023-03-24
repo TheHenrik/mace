@@ -28,6 +28,8 @@ Zunächst werden wichtige Grundlagen, Organisationen und der Stand der Technik e
 
 ## Grundlagen
 
+Hier sollen alle Grundlagen für die verständniss der folgenden Bachelorarbeit geklärt werden. Zunächst wird der Hintergrund erläutert und danach 
+
 ### ACC
 
 Internationaler Wettbewerb
@@ -66,6 +68,8 @@ Windkanalmessungen
 
 ### Sichere Lasten
 
+Im Modellbau wird meist ein Sicherheitsfaktor von X genutzt.
+Die Sichere Last hängt von der geforderten Flugaufgabe ab. Besonders sind dabei Kurvenflüge und starke sinkflüge für hohe g Lasten verantwortlich. Die maximale g-Last kann aus der v-n Diagramm bestimmt werden. Dabei sind in diesem Diagramm auf der x Achse die Geschindigkeiten und auf der y Achse die Lasten aufgezeichnet. Links der Kurve ist kein Flug möglich, da das Flugzeug eine beschleunigung Richtung boden erfährt. Dabei ist zu beachten, dass die maximale Last hauptsächlich von der maximal Geschwindigkeit abhängt. Diese Last ist im Modellflug auch zu erreichen, da gegebenfalls starke Kurven geflogen werden müssen.
 Sicherheitsfaktor, Lastenbestimmung, v(n)
 
 ### Python
