@@ -106,6 +106,23 @@ Für die Bachelorarbeit wurde hauptsächlich der Parser genutzt. Dabei kann ein 
 
 Im Folgenden werden wichtige Programmschritte anhand von ausgewählten Flowcharts dargestellt und erläutert.
 
+1. Berechnung der Parameter
+
+Zunächst wird der Funktion ein Flugzeug übergeben. Dann muss entschieden werden, ob ein Vollständig definiertes Flugzeug übergeben wurde, oder ob eine bestimmung nach Regression benötigt wird. Zunächst wird hier die Parameterberchnung vorgstellt, danach eine mögliche implementation der Regression.
+
+
+Das Flugzeug wird in seine einzelnen Bestandteile unterteilt, welche dann berechnet werden können. Im Fall der Flügel ist das Flügelsegment, eine Approximation als Trapezflügel, das kleinste finite Objekt. Dieses wird entweder über vier Koordinatenpunkte an seinen Ecken definiert oder über die beiden Nasenpunkte, die Tiefe und den Winkel zur x-z Ebene. Zusätzlich werden Flügelprofile für die Innen- und Außenkannte definiert. Diese können aus NACA berechnet werden, viele Profile von Seliger sind bereits im Paket enthalten oder es könne eigene Profile übergeben werden. Dann wird über eine Koordinatentransformation das Profil auf die Eckpunkte gelegt. Danach werden über die beiden Profile ein Gitternetz gelegt, wobei die kleinste Fläche ein Dreieck bildet. Dieses hat den Vorteil, dass ein Dreieck mithilfe einfachster Algebra berechenbar ist. Es wird über alle Flächen iteriert und so kann die Gesamtfläche berechnet werden als:
+
+$$ A_{Oberfläche} = \sum_i{\frac{|\overline{A_iB_i} \times \overline{A_iC_i}|}{2}} $$
+
+wobei A, B und C die gegebenen Eckpunkte des Dreiecks sind. Hierbei wird nur die Fläche berechnet, die die Flügelhaut bilden, da die Seitenelemente noch nicht benötigt werden. Dieser Prozess wird nun wiederholt um das Gesamtvolumen des Segmentes zu bestimmen. Die Formel hierfür ist: 
+
+$$ V_{Segment} = \sum_i{\frac{(a_i\times b_i)\cdot c_i}{6}} $$
+
+Wobei wieder A, B und C als Eckpunkte des Dreiecks definiert sind. Dabei wieder ausgenutzt, dass das Spatprodukt das Volumen zwischen den Dreien punkten und dem Ursprung einschließt. Außerdem ist das Spatprodukt vorzeichenbehaftet, wodurch sich Flächen, deren Normalenvektor zum Ursprung zeigt und welche mit entgegen gerichteten Normalenvektoren so kürzen, dass nur das Volumen in dem definierten Objekt verbleibt. Hierbei müssen sämtliche Flächen betrachtet werden, das nur geschlossene Volumen berechnet werden können.
+
+
+
 
 
 ### Optimierer
