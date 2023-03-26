@@ -57,6 +57,10 @@ Geringstes Sinken
 
 ### Stand der Technik
 
+Ein Problem der Flugzeugauslegung im Modellbau ist, dass wenig Materialien
+-Wenig Material
+-Daher Akamodell als Beispiel
+
 Der Stand der Technik soll im folgenden Anhand einer Aufgabenstellung der Air-Cargo-Challenge 2022 erklärt werden.
 
 Zu Beginn der Auslegung gibt es oft eine grobe Vorstellung welche Dimensionen der Flieger haben muss und welche Flugaufgaben erfüllt werden müssen und wie diese zu Gewichten sind.
