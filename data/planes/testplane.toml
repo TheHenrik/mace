@@ -3,7 +3,7 @@
 [Plane]
 name = "Gregors Testplane"
 wing = "Wing"
-mass = 7
+mass = [7.0, 20.0, 0, 0]
 propulsion = "Propulsion"
 aero_coeffs = "AeroCoeffs"
 reference_values = "ReferenceValues"
@@ -11,18 +11,28 @@ avl = "Avl"
 flightconditions = "FlightConditions"
 
 [Wing]
-airfoil = "AirfoilFile"
+airfoil = "Airfoil"
 segments = "WingSegment"
 
     [WingSegment.one]
-    nose_inner = [0.0,100.0,0.0]
-    nose_outer = [0.0,100.0,100.0]
-    back_inner = [100.0,100.0,0.0]
-    back_outer = [100.0,100.0,100.0]
+    nose_inner = [0.0,0.0,0.0]
+    nose_outer = [0.0,100.0,2.0]
+    back_inner = [100.0,0.0,0.0]
+    back_outer = [100.0,100.0,2.0]
     a_inc = 0
     a_inc_outer = 0
-    inner_airfoil = "AirfoilFile"
-    outer_airfoil = "AirfoilFile"
+    inner_airfoil = "Airfoil"
+    outer_airfoil = "Airfoil"
+
+    [WingSegment.two]
+    nose_inner = [0.0,100.0,2.0]
+    nose_outer = [10.0,180.0,5.0]
+    back_inner = [100.0,100.0,2.0]
+    back_outer = [95.0,180.0,5.0]
+    a_inc = 0
+    a_inc_outer = 0
+    inner_airfoil = "Airfoil"
+    outer_airfoil = "Airfoil"
 
 [Airfoil]
 type = "AirfoilFile"

@@ -90,7 +90,7 @@ class Wing:
     airfoil: str = None
     mass: float = 0
     # for AVL:
-    isactive = False
+    isactive = True
     name = "Wing"
     n_chordwise: int = 10
     c_space: int = 1  # = cos
@@ -359,7 +359,7 @@ class Plane:
     empennage: EmpennageType = None
     wing: Wing = None
     fuselage: Fuselage = None
-    mass: float = 0
+    mass: np.ndarray = None                 # [mass   x     y     z    [ Ixx     Iyy    Izz     Ixy   Ixz   Iyz ]
     propulsion: Propulsion = None
     landing_gear: LandingGear = None
     aero_coeffs: AeroCoeffs = None

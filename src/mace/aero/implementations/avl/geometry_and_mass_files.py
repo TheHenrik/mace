@@ -1,5 +1,5 @@
 import os
-from mace.domain import Plane
+from mace.domain import Plane, plane as pl
 from mace.domain.parser import PlaneParser
 
 # ========== Geometry File ==========
@@ -417,6 +417,15 @@ class GeometryFile:
             "\t\t\t{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\n".format(
                 c_name, c_gain, x_hinge, x_hinge_vec, y_hinge_vec, z_hinge_vec, sgn_dup))"""
 
+    def get_chord(self, element):
+        chord_inner = ((element.back_inner[0] - element.nose_inner[0]) ** 2 +
+                       (element.back_inner[1] - element.nose_inner[1]) ** 2 + (
+                        element.back_inner[2] - element.nose_inner[2]) ** 2) ** 0.5
+        chord_outer = ((element.back_outer[0] - element.nose_outer[0]) ** 2 +
+                       (element.back_outer[1] - element.nose_outer[1]) ** 2 + (
+                        element.back_outer[2] - element.nose_outer[2]) ** 2) ** 0.5
+        return chord_inner, chord_outer
+
     def build_geo_surface_section(self, geometry_file, element):
         """
         SECTION                             |  (keyword)
@@ -572,39 +581,50 @@ class GeometryFile:
 
         geometry_file.write(f'\t\t#SECTION\n')
         geometry_file.write(f'\t\t#Xle\tYle\tZle\tChord\tAinc\tNspanwise\tSspace\n')
-        for index in element.segments:
+        # print(element.segments)
+        # print(range(len(element.segments)))
+        chord_outer = 0
+        for index in range(len(element.segments)):
+            chord_inner = self.get_chord(element.segments[index])[0]
+            chord_outer = self.get_chord(element.segments[index])[1]
+            # print(chord_inner, chord_outer)
             geometry_file.write(f'\t\t{element.segments[index].nose_inner[0]}\t'
                                 f'{element.segments[index].nose_inner[1]}\t'
-                                f'{element.segments[index].nose_inner[2]}\t{element.segments[index].chord_inner}\t'
+                                f'{element.segments[index].nose_inner[2]}\t{chord_inner}\t'
                                 f'{element.segments[index].a_inc}')
             if element.segments[index].n_spanwise is not None:
                 geometry_file.write(f'\t{element.segments[index].n_spanwise}')
             if element.segments[index].s_space is not None:
                 geometry_file.write(f'\t{element.segments[index].s_space}')
             geometry_file.write(f'\n')
-
-            if element.segments[index].airfoil.type.Naca:
+            # print(type(element.segments[index].inner_airfoil.type))
+            # print(type(pl.AirfoilFile()))
+            # print(type(element.segments[index].inner_airfoil.type) == type(pl.Naca()))
+            # print(isinstance(element.segments[index].inner_airfoil.type, type(pl.Naca())))
+            if isinstance(element.segments[index].inner_airfoil.type, type(pl.Naca())):
                 geometry_file.write(f'\t\tNACA')
-                geometry_file.write(f'\t\t{element.segments[index].airfoil.type.number_of_naca}')
-            if element.segments[index].airfoil.type.AirfoilFile:
+                geometry_file.write(f'\t\t{element.segments[index].inner_airfoil.type.number_of_naca}\n')
+            if isinstance(element.segments[index].inner_airfoil.type, type(pl.AirfoilFile())):
                 geometry_file.write(f'\t\tAFIL\t0.0\t1.0\n')
-                geometry_file.write(f'\t\t{element.segments[index].airfoil.type.AirfoilFile.filepath}')
+                geometry_file.write(f'\t\t{element.segments[index].inner_airfoil.type.filepath}\n')
 
-            GeometryFile.build_geo_surface_section_control(self, geometry_file, element.segments[index])
+            if element.segments[index].control is not None:
+                GeometryFile.build_geo_surface_section_control(self, geometry_file, element.segments[index])
 
         index = len(element.segments)-1
         geometry_file.write(f'\t\t{element.segments[index].nose_outer[0]}\t{element.segments[index].nose_outer[1]}\t'
-                            f'{element.segments[index].nose_outer[2]}\t{element.segments[index].chord_outer}\t'
-                            f'{element.segments[index].a_inc_outer}\t')
+                            f'{element.segments[index].nose_outer[2]}\t{chord_outer}\t'
+                            f'{element.segments[index].a_inc_outer}\t\n')
 
-        if element.segments[index].airfoil.type.Naca:
-            geometry_file.write(f'\t\tNACA')
-            geometry_file.write(f'\t\t{element.segments[index].airfoil.type.number_of_naca}')
-        if element.segments[index].airfoil.type.AirfoilFile:
+        if isinstance(element.segments[index].inner_airfoil.type, type(pl.Naca())):
+            geometry_file.write(f'\t\tNACA\n')
+            geometry_file.write(f'\t\t{element.segments[index].airfoil.type.number_of_naca}\n')
+        if isinstance(element.segments[index].inner_airfoil.type, type(pl.AirfoilFile())):
             geometry_file.write(f'\t\tAFIL\t0.0\t1.0\n')
-            geometry_file.write(f'\t\t{element.segments[index].airfoil.type.AirfoilFile.filepath}')
+            geometry_file.write(f'\t\t{element.segments[index].outer_airfoil.type.filepath}\n')
 
-        GeometryFile.build_geo_surface_section_control(self, geometry_file, element.segments[index])
+        if element.segments[index].control is not None:
+            GeometryFile.build_geo_surface_section_control(self, geometry_file, element.segments[index])
 
         """geometry_file.write("\t\t#SECTION\n")  # minimum of 2 sections required to build surface
     
@@ -1181,11 +1201,20 @@ class MassFile:
         Data lines 1-2 have all their masses scaled up by 1.2, and their locations
         shifted by delta(x) = 0.2.  Data lines 3-5 revert back to the defaults.
         """
-        mass_file.write(f'#  mass   x     y     z    [ Ixx     Iyy    Izz     Ixy   Ixz   Iyz ]')
-        mass_file.write(f'*   1.    1.    1.    1.     1.     1.      1.      1.    1.    1.')
-        mass_file.write(f'+   0.    0.    0.    0.     0.     0.      0.      0.    0.    0.')
-        for name_of_component in self.plane.list_of_component_names:  # self.plane.components is list of components
-            MassFile.build_mass_of_components(self, mass_file, name_of_component)
+        mass_file.write(f'#  mass   x     y     z    [ Ixx     Iyy    Izz     Ixy   Ixz   Iyz ]\n')
+        mass_file.write(f'*   1.    1.    1.    1.     1.     1.      1.      1.    1.    1.\n')
+        mass_file.write(f'+   0.    0.    0.    0.     0.     0.      0.      0.    0.    0.\n')
+        # for component in self.plane:  # self.plane.components is list of components
+        print(hasattr(self.plane, "mass"))
+        if hasattr(self.plane, "mass"):
+            mass_file.write(f'\t{self.plane.mass[0]}\t{self.plane.mass[1]}'
+                            f'\t{self.plane.mass[2]}\t{self.plane.mass[3]}')
+        # print(self.plane.__dict__.items())
+        else:       # noch nicht verwendbar
+            for component in self.plane.__dict__.items():
+                print(hasattr(component, "mass"))
+                if hasattr(component, "mass"):
+                    MassFile.build_mass_of_components(self, mass_file, component)
 
     def build_mass_file(self):
         """
@@ -1253,12 +1282,12 @@ class MassFile:
             os.remove("mass_file.mass")
 
         with open("mass_file.mass", "w") as mass_file:
-            mass_file.write(f'Lunit = {self.plane.parameters.units.l_unit} m')
-            mass_file.write(f'Munit = {self.plane.parameters.units.m_unit} kg')
-            mass_file.write(f'Tunit = {self.plane.parameters.units.t_unit} s')
+            mass_file.write(f'Lunit = {self.plane.parameters.units.l_unit} m\n')
+            mass_file.write(f'Munit = {self.plane.parameters.units.m_unit} kg\n')
+            mass_file.write(f'Tunit = {self.plane.parameters.units.t_unit} s\n')
 
-            mass_file.write(f'g = {self.plane.parameters.constants.g}')
-            mass_file.write(f'rho = {self.plane.parameters.constants.rho}')
+            mass_file.write(f'g = {self.plane.parameters.constants.g}\n')
+            mass_file.write(f'rho = {self.plane.parameters.constants.rho}\n')
             MassFile.build_mass_table(self, mass_file)
 
         self.plane.avl.inputs.mass_file = "mass_file.avl"
@@ -1268,5 +1297,5 @@ class MassFile:
 
 if __name__ == "__main__":
     plane = PlaneParser("testplane.toml").get("Plane")
-    print(plane)
     GeometryFile(plane).build_geometry_file(1)
+    MassFile(plane).build_mass_file()
