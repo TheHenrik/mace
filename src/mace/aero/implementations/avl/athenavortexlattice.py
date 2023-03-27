@@ -1,8 +1,10 @@
 import os  # operation system
 import numpy as np
 from mace.aero.implementations import runsubprocess as runsub
-from mace.aero.implementations.xfoil.xfoilpolars import get_xfoil_polar
-from mace.domain import params, plane, Plane
+from mace.domain import plane, Plane
+from mace.domain.parser import PlaneParser
+from mace.aero.implementations.avl.geometry_and_mass_files import GeometryFile, MassFile
+
 
 # noch entfernen
 def run_avl(avl_file, mass_file,
@@ -88,7 +90,9 @@ class AVL:
 
         # ---Run AVL---
         cmd = "C:/Users/Gregor/Documents/Modellflug/Software/AVL/avl.exe < input_file_avl.in"  # external command to run
-        runsub.run_subprocess(cmd)
+        runsub.run_subprocess(cmd,timeout=15)
+        list_of_process_ids = runsub.find_process_id_by_name("avl")
+        runsub.kill_subprocesses(list_of_process_ids)
 
     def read_total_forces_avl_file(self, lines):
 
@@ -191,16 +195,16 @@ class AVL:
             for line in lines:
                 if strip_number + 1 < 10:
                     if line.startswith("   {0}".format(strip_number + 1)) and "|" not in line:
-                        values = np.fromstring(line, sep=' ')       # np.loadtxt(line)
+                        values = np.fromstring(line, sep=' ')  # np.loadtxt(line)
                 elif strip_number + 1 < 100:
                     if line.startswith("  {0}".format(strip_number + 1)) and "|" not in line:
-                        values = np.fromstring(line, sep=' ')       # np.loadtxt(line)
+                        values = np.fromstring(line, sep=' ')  # np.loadtxt(line)
                 elif strip_number + 1 < 1000:
                     if line.startswith(" {0}".format(strip_number + 1)) and "|" not in line:
-                        values = np.fromstring(line, sep=' ')       # np.loadtxt(line)
+                        values = np.fromstring(line, sep=' ')  # np.loadtxt(line)
                 elif strip_number + 1 < 10000:
                     if line.startswith("{0}".format(strip_number + 1)) and "|" not in line:
-                        values = np.fromstring(line, sep=' ')       # np.loadtxt(line)
+                        values = np.fromstring(line, sep=' ')  # np.loadtxt(line)
                 else:
                     print("No valid data format")
             if strip_number == 0:
@@ -223,12 +227,11 @@ class AVL:
             first_strip = self.plane.avl.outputs.surface_data[i, -1]
             last_strip = first_strip + self.plane.avl.outputs.surface_data[i, -2] - 1
             # print(f'Surface{i} has first strip {first_strip} and last strip {last_strip} with {self.plane.avl.outputs.surface_data[i, -2]} strips\n ')
-            strips = self.plane.avl.outputs.strip_forces[first_strip-1: last_strip, :]
+            strips = self.plane.avl.outputs.strip_forces[first_strip - 1: last_strip, :]
             first_and_last_strip = {'first_strip': first_strip, 'last_strip': last_strip}
             surface_dictionary_data = {'first_strip': first_strip, 'last_strip': last_strip, 'strips': strips}
             self.plane.avl.outputs.first_and_last_strips[i + 1] = {i + 1: first_and_last_strip}
             self.plane.avl.outputs.surface_dictionary[i + 1] = {i + 1: surface_dictionary_data}
-
 
 
 def read_avl_output():
@@ -424,16 +427,27 @@ def read_avl_output():
 
 
 if __name__ == "__main__":
-    avl_file_path = "C:/Users/Gregor/Documents/Modellflug/Software/AVL/runs/supra.avl"
-    mass_file_path = "C:/Users/Gregor/Documents/Modellflug/Software/AVL/runs/supra.mass"
-    run_file_path = "C:/Users/Gregor/Documents/Modellflug/Software/AVL/runs/supra.run"
-    total_forces_file = "total_forces_avl"
-    strip_forces_file = "strip_forces_avl"
+    plane = PlaneParser("testplane.toml").get("Plane")
+    GeometryFile(plane).build_geometry_file(1)
+    MassFile(plane).build_mass_file()
+    AVL(plane).run_avl()
 
-    run_avl(avl_file_path, mass_file_path,
-            angle_of_attack=0, run_case=1, maschine_readable_file=True)
+    AVL(plane).read_avl_output()
+    print(plane.avl.outputs.surface_dictionary)
 
-    airbus = plane.build_plane()
-    AVL(airbus).read_avl_output()
-    print(airbus.avl.outputs.surface_dictionary)
+
+
+
+    # avl_file_path = plane.avl.inputs.avl_file
+    # mass_file_path = plane.avl.inputs.mass_file
+
+    # avl_file_path = "C:/Users/Gregor/Documents/Modellflug/Software/AVL/runs/supra.avl"
+    # mass_file_path = "C:/Users/Gregor/Documents/Modellflug/Software/AVL/runs/supra.mass"
+    # run_file_path = "C:/Users/Gregor/Documents/Modellflug/Software/AVL/runs/supra.run"
+    # total_forces_file = "total_forces_avl"
+    # strip_forces_file = "strip_forces_avl"
+
+
+
+# load C:/Users/Gregor/Documents/GitHub/mace/src/mace/aero/implementations/avl/geometry_file.avl
 

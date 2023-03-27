@@ -3,7 +3,7 @@
 [Plane]
 name = "Gregors Testplane"
 wing = "Wing"
-mass = [7.0, 20.0, 0, 0]
+mass = [7.0, 0.2, 0, 0]
 propulsion = "Propulsion"
 aero_coeffs = "AeroCoeffs"
 reference_values = "ReferenceValues"
@@ -35,14 +35,14 @@ segments = "WingSegment"
     outer_airfoil = "Airfoil"
 
 [Airfoil]
-type = "AirfoilFile"
+type = "Naca"
 
 [AirfoilFile]
-filepath = "C:/Users/Gregor/Documents/GitHub/mace/data/airfoils/n0012"
+filepath = "C:/Users/Gregor/Documents/GitHub/mace/data/airfoils/n0012.dat"
 
 [Naca]
 number_of_naca = 12
-filepath = "C:/Users/Gregor/Documents/GitHub/mace/data/airfoils/n0012"
+filepath = "C:/Users/Gregor/Documents/GitHub/mace/data/airfoils/n0012.dat"
 
 [Propulsion]
 thrust = [[0, 20], [5, 19], [10, 18], [15, 16], [20, 14], [30, 10], [50, 5]]

@@ -5,14 +5,14 @@ import signal
 import os
 
 
-def run_subprocess(cmd):
+def run_subprocess(cmd, timeout=5):
     """
     runs a subprocess with an external command cmd.
     """
     # cmd = "C:/Users/Gregor/Documents/Modellflug/Software/XFOIL/xfoil.exe < input_file.in"
     try:
         p = subprocess.Popen(cmd, shell=True, start_new_session=True)
-        p.wait(timeout=5)
+        p.wait(timeout=timeout)
     except subprocess.TimeoutExpired:
         # print(p.pid)
         pass

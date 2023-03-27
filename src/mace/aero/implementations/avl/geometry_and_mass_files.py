@@ -167,14 +167,17 @@ class GeometryFile:
         geometry_file.write(f'# Mach\n')
         geometry_file.write(f'{self.plane.reference_values.mach}\n')
         geometry_file.write(f'#IYsym\tIZsym\tZsym\n')
-        geometry_file.write(f'{self.plane.reference_values.iy_sym}\t{self.plane.reference_values.iz_sym}\t'
-                            f'{self.plane.reference_values.z_sym}\n')  # iYsym has to be 0 for YDUPLICATE
+        geometry_file.write(f'{self.plane.reference_values.iy_sym:<6}'
+                            f'{self.plane.reference_values.iz_sym:<6}'
+                            f'{self.plane.reference_values.z_sym:<6}\n\n')  # iYsym has to be 0 for YDUPLICATE
         geometry_file.write(f'#Sref\tCref\tBref\n')
-        geometry_file.write(f'{self.plane.reference_values.s_ref}\t{self.plane.reference_values.c_ref}\t'
-                            f'{self.plane.reference_values.b_ref}\n')
+        geometry_file.write(f'{self.plane.reference_values.s_ref:<6}'
+                            f'{self.plane.reference_values.c_ref:<6}'
+                            f'{self.plane.reference_values.b_ref:<6}\n')
         geometry_file.write(f'#Xref\tYref\tZref\n')
-        geometry_file.write(f'{self.plane.reference_values.x_ref}\t{self.plane.reference_values.y_ref}\t'
-                            f'{self.plane.reference_values.z_ref}\n')
+        geometry_file.write(f'{self.plane.reference_values.x_ref:<6}'
+                            f'{self.plane.reference_values.y_ref:<6}'
+                            f'{self.plane.reference_values.z_ref:<6}\n')
         # if self.plane.aero_coeffs.cdp != 0:
         #     geometry_file.write(f'# CDp\n')
         #     geometry_file.write(f'{self.plane.aero_coeffs.cdp}\n')
@@ -579,49 +582,48 @@ class GeometryFile:
         "design mode", such as linear washout, which influences all sections.
         """
 
-        geometry_file.write(f'\t\t#SECTION\n')
-        geometry_file.write(f'\t\t#Xle\tYle\tZle\tChord\tAinc\tNspanwise\tSspace\n')
-        # print(element.segments)
-        # print(range(len(element.segments)))
         chord_outer = 0
         for index in range(len(element.segments)):
+            geometry_file.write(f'SECTION\n')
+            geometry_file.write(f'#Xle\tYle\tZle\tChord\tAinc\tNspanwise\tSspace\n')
             chord_inner = self.get_chord(element.segments[index])[0]
             chord_outer = self.get_chord(element.segments[index])[1]
-            # print(chord_inner, chord_outer)
-            geometry_file.write(f'\t\t{element.segments[index].nose_inner[0]}\t'
-                                f'{element.segments[index].nose_inner[1]}\t'
-                                f'{element.segments[index].nose_inner[2]}\t{chord_inner}\t'
+            geometry_file.write(f'{element.segments[index].nose_inner[0]}  '
+                                f'{element.segments[index].nose_inner[1]}  '
+                                f'{element.segments[index].nose_inner[2]}  '
+                                f'{chord_inner}  '
                                 f'{element.segments[index].a_inc}')
             if element.segments[index].n_spanwise is not None:
-                geometry_file.write(f'\t{element.segments[index].n_spanwise}')
+                geometry_file.write(f'{  element.segments[index].n_spanwise}')
             if element.segments[index].s_space is not None:
-                geometry_file.write(f'\t{element.segments[index].s_space}')
-            geometry_file.write(f'\n')
-            # print(type(element.segments[index].inner_airfoil.type))
-            # print(type(pl.AirfoilFile()))
-            # print(type(element.segments[index].inner_airfoil.type) == type(pl.Naca()))
-            # print(isinstance(element.segments[index].inner_airfoil.type, type(pl.Naca())))
+                geometry_file.write(f'{  element.segments[index].s_space}')
+            geometry_file.write(f'\n\n')
+
             if isinstance(element.segments[index].inner_airfoil.type, type(pl.Naca())):
-                geometry_file.write(f'\t\tNACA')
-                geometry_file.write(f'\t\t{element.segments[index].inner_airfoil.type.number_of_naca}\n')
+                geometry_file.write(f'NACA\n')
+                geometry_file.write(f'{element.segments[index].inner_airfoil.type.number_of_naca:0>4}\n\n')
             if isinstance(element.segments[index].inner_airfoil.type, type(pl.AirfoilFile())):
-                geometry_file.write(f'\t\tAFIL\t0.0\t1.0\n')
-                geometry_file.write(f'\t\t{element.segments[index].inner_airfoil.type.filepath}\n')
+                geometry_file.write(f'AFIL  0.0  1.0\n')
+                geometry_file.write(f'{element.segments[index].inner_airfoil.type.filepath}\n\n')
 
             if element.segments[index].control is not None:
                 GeometryFile.build_geo_surface_section_control(self, geometry_file, element.segments[index])
 
         index = len(element.segments)-1
-        geometry_file.write(f'\t\t{element.segments[index].nose_outer[0]}\t{element.segments[index].nose_outer[1]}\t'
-                            f'{element.segments[index].nose_outer[2]}\t{chord_outer}\t'
-                            f'{element.segments[index].a_inc_outer}\t\n')
+        geometry_file.write(f'SECTION\n')
+        geometry_file.write(f'#Xle\tYle\tZle\tChord\tAinc\tNspanwise\tSspace\n')
+        geometry_file.write(f'{element.segments[index].nose_outer[0]}  '
+                            f'{element.segments[index].nose_outer[1]}  '
+                            f'{element.segments[index].nose_outer[2]}  '
+                            f'{chord_outer}  '
+                            f'{element.segments[index].a_inc_outer}\n\n')
 
         if isinstance(element.segments[index].inner_airfoil.type, type(pl.Naca())):
-            geometry_file.write(f'\t\tNACA\n')
-            geometry_file.write(f'\t\t{element.segments[index].airfoil.type.number_of_naca}\n')
+            geometry_file.write(f'NACA\n')
+            geometry_file.write(f'{element.segments[index].outer_airfoil.type.number_of_naca:0>4}\n\n')
         if isinstance(element.segments[index].inner_airfoil.type, type(pl.AirfoilFile())):
-            geometry_file.write(f'\t\tAFIL\t0.0\t1.0\n')
-            geometry_file.write(f'\t\t{element.segments[index].outer_airfoil.type.filepath}\n')
+            geometry_file.write(f'AFIL  0.0  1.0\n')
+            geometry_file.write(f'{element.segments[index].outer_airfoil.type.filepath}\n\n')
 
         if element.segments[index].control is not None:
             GeometryFile.build_geo_surface_section_control(self, geometry_file, element.segments[index])
@@ -848,22 +850,22 @@ class GeometryFile:
         # surface_name e.g wing or empennage
         for element in [self.plane.wing]:                       # [... , self.plane.empennage]
             if element.isactive:
-                geometry_file.write(f'\t#SURFACE\n')
-                geometry_file.write(f'\t{element.name}\n')          # for example "Main Wing"
-                geometry_file.write(f'\t#Nchordwise\tCspace\tNspanwise\tSspace\n')
-                geometry_file.write(f'\t{element.n_chordwise}\t{element.c_space}\t'
-                                    f'{element.n_spanwise}\t{element.s_space}\n')
-                geometry_file.write(f'\tCOMPONENT\n')
-                geometry_file.write(f'\t{element.l_comp}\n')             # component value/index
-                geometry_file.write(f'\tYDUPLICATE\n')
-                geometry_file.write(f'\t0.0\n')
-                geometry_file.write(f'\tSCALE\n')
-                geometry_file.write(f'\t{element.x_scale}\t{element.y_scale}\t{element.z_scale}\n')
-                geometry_file.write(f'\tTRANSLATE\n')
-                geometry_file.write(f'\t{element.x_translate}\t{element.y_translate}\t{element.z_translate}\n')
-                geometry_file.write(f'\tANGLE\n')
-                geometry_file.write(f'\t{element.twist_angle}\n')
-                geometry_file.write(f'\t#--------------------\n')
+                geometry_file.write(f'SURFACE\n')
+                geometry_file.write(f'{element.name}\n')          # for example "Main Wing"
+                # geometry_file.write(f'#Nchordwise\tCspace\tNspanwise\tSspace\n')
+                geometry_file.write(f'{element.n_chordwise}  {element.c_space}  '
+                                    f'{element.n_spanwise}  {element.s_space}\n\n')
+                geometry_file.write(f'Component\n')
+                geometry_file.write(f'{element.l_comp}\n\n')             # component value/index
+                geometry_file.write(f'YDUPLICATE\n')
+                geometry_file.write(f'0.0\n\n')
+                # geometry_file.write(f'SCALE\n') # macht Probleme
+                # geometry_file.write(f'{element.x_scale}\t{element.y_scale}\t{element.z_scale}\n\n')
+                geometry_file.write(f'TRANSLATE\n')
+                geometry_file.write(f'{element.x_translate}\t{element.y_translate}\t{element.z_translate}\n\n')
+                geometry_file.write(f'ANGLE\n')
+                geometry_file.write(f'{element.twist_angle:.5f}\n\n')
+                geometry_file.write(f'#--------------------\n')
 
                 GeometryFile.build_geo_surface_section(self, geometry_file, element)
 
@@ -899,7 +901,7 @@ class GeometryFile:
 
         with open("geometry_file.avl", "w") as geometry_file:
             GeometryFile.build_geo_header(self, geometry_file)
-            geometry_file.write(f'#======================\n')
+            geometry_file.write(f'\n#======================\n')
             for surface in range(number_of_surfaces):
                 GeometryFile.build_geo_surface(self, geometry_file)
 
@@ -1290,7 +1292,7 @@ class MassFile:
             mass_file.write(f'rho = {self.plane.parameters.constants.rho}\n')
             MassFile.build_mass_table(self, mass_file)
 
-        self.plane.avl.inputs.mass_file = "mass_file.avl"
+        self.plane.avl.inputs.mass_file = "mass_file.mass"
 
 
 # ========== Test ===========
