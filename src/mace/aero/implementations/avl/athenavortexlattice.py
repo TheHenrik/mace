@@ -6,62 +6,24 @@ from mace.domain.parser import PlaneParser
 from mace.aero.implementations.avl.geometry_and_mass_files import GeometryFile, MassFile
 
 
-# noch entfernen
-def run_avl(avl_file, mass_file,
-            total_forces_file_name="total_forces_avl", strip_forces_file_name="strip_forces_avl",
-            angle_of_attack=None, lift_coefficient=None, run_case: int = 1, maschine_readable_file=True):
-    """
-    For run_case != 1 please check if runcase is available! At the time not possible! (maybe in future versions)
-    """
-    if os.path.exists("total_forces_avl"):
-        os.remove("total_forces_avl")
-    if os.path.exists("strip_forces_avl"):
-        os.remove("strip_forces_avl")
-
-    # --- Input file writer---
-    with open("input_file_avl.in", 'w') as input_file:
-        input_file.write(f'LOAD {avl_file}\n')
-        input_file.write(f'MASS {mass_file}\n')
-        # input_file.write(f'CASE {run_file}\n')
-        input_file.write(f'OPER\n')
-        if run_case != 1:  # select run_case
-            input_file.write(f'{run_case}\n')
-        if angle_of_attack is not None:  # set angle of attack in degrees
-            input_file.write(f'A A {angle_of_attack}\n')
-        if lift_coefficient is not None:  # set angle of attack with cl
-            input_file.write(f'A C {lift_coefficient}\n')
-        input_file.write(f'X\n')  # execute runcase, XX executes all runcases but uses last runcase
-        if maschine_readable_file:
-            input_file.write(f'MRF\n')  # maschine readable file
-        input_file.write(f'FT\n')  # write total forces
-        input_file.write(f'{total_forces_file_name}\n')
-        input_file.write(f'FS\n')  # write strip forces
-        input_file.write(f'{strip_forces_file_name}\n')
-        input_file.write("\n")
-        input_file.write("QUIT\n")
-
-    # ---Run AVL---
-    cmd = "C:/Users/Gregor/Documents/Modellflug/Software/AVL/avl.exe < input_file_avl.in"  # external command to run
-    runsub.run_subprocess(cmd)
-
-
 class AVL:
     def __init__(self, plane: Plane):
         self.plane = plane
 
     def run_avl(self, avl_file=None, mass_file=None,
-                total_forces_file_name="total_forces_avl", strip_forces_file_name="strip_forces_avl",
+                total_forces_file_name="C:/Users/Gregor/Documents/GitHub/mace/temporary/total_forces_avl",
+                strip_forces_file_name="C:/Users/Gregor/Documents/GitHub/mace/temporary/strip_forces_avl",
                 angle_of_attack=None, lift_coefficient=None, run_case: int = 1, maschine_readable_file=True):
         """
         For run_case != 1 please check if runcase is available! At the time not possible! (maybe in future versions)
         """
-        if os.path.exists("total_forces_avl"):
-            os.remove("total_forces_avl")
-        if os.path.exists("strip_forces_avl"):
-            os.remove("strip_forces_avl")
+        if os.path.exists("C:/Users/Gregor/Documents/GitHub/mace/temporary/total_forces_avl"):
+            os.remove("C:/Users/Gregor/Documents/GitHub/mace/temporary/total_forces_avl")
+        if os.path.exists("C:/Users/Gregor/Documents/GitHub/mace/temporary/strip_forces_avl"):
+            os.remove("C:/Users/Gregor/Documents/GitHub/mace/temporary/strip_forces_avl")
 
         # --- Input file writer---
-        with open("input_file_avl.in", 'w') as input_file:
+        with open("C:/Users/Gregor/Documents/GitHub/mace/temporary/input_file_avl.in", 'w') as input_file:
             if avl_file:
                 input_file.write(f'LOAD {avl_file}\n')
             else:
@@ -89,7 +51,8 @@ class AVL:
             input_file.write("QUIT\n")
 
         # ---Run AVL---
-        cmd = "C:/Users/Gregor/Documents/Modellflug/Software/AVL/avl.exe < input_file_avl.in"  # external command to run
+        cmd = "C:/Users/Gregor/Documents/Modellflug/Software/AVL/avl.exe <" \
+              "C:/Users/Gregor/Documents/GitHub/mace/temporary/input_file_avl.in"  # external command to run
         runsub.run_subprocess(cmd,timeout=15)
         list_of_process_ids = runsub.find_process_id_by_name("avl")
         runsub.kill_subprocesses(list_of_process_ids)
@@ -214,10 +177,10 @@ class AVL:
         self.plane.avl.outputs.strip_forces = strip_forces
 
     def read_avl_output(self):
-        with open("total_forces_avl") as file:
+        with open("C:/Users/Gregor/Documents/GitHub/mace/temporary/total_forces_avl") as file:
             lines = file.readlines()
             self.read_total_forces_avl_file(lines)
-        with open("strip_forces_avl") as file:
+        with open("C:/Users/Gregor/Documents/GitHub/mace/temporary/strip_forces_avl") as file:
             lines = file.readlines()
             self.read_strip_forces_avl_file(lines)
 
@@ -230,8 +193,8 @@ class AVL:
             strips = self.plane.avl.outputs.strip_forces[first_strip - 1: last_strip, :]
             first_and_last_strip = {'first_strip': first_strip, 'last_strip': last_strip}
             surface_dictionary_data = {'first_strip': first_strip, 'last_strip': last_strip, 'strips': strips}
-            self.plane.avl.outputs.first_and_last_strips[i + 1] = {i + 1: first_and_last_strip}
-            self.plane.avl.outputs.surface_dictionary[i + 1] = {i + 1: surface_dictionary_data}
+            self.plane.avl.outputs.first_and_last_strips[i + 1] = first_and_last_strip
+            self.plane.avl.outputs.surface_dictionary[i + 1] = surface_dictionary_data
 
 
 def read_avl_output():

@@ -628,19 +628,6 @@ class GeometryFile:
         if element.segments[index].control is not None:
             GeometryFile.build_geo_surface_section_control(self, geometry_file, element.segments[index])
 
-        """geometry_file.write("\t\t#SECTION\n")  # minimum of 2 sections required to build surface
-    
-        geometry_file.write("\t\t#Xle\tYle\tZle\tChord\tAinc\tNspanwise\tSspace\n")
-        geometry_file.write(
-            "\t\t{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\n".format(x_le, y_le, z_le, chord, a_inc, n_spanwise, s_space))
-        # -Airfoil Data-
-        if airfoil_data is not Naca:
-            geometry_file.write("\t\tAFIL\t0.0\t1.0\n")  # uses complete chord length of airfoil
-            geometry_file.write("\t\t{0}\n".format(airfoil_path))
-    
-        # build controls
-        build_geo_surface_section_control(geometry_file)"""
-
     def build_geo_surface(self, geometry_file):
         """
         SURFACE              | (keyword)
@@ -869,26 +856,6 @@ class GeometryFile:
 
                 GeometryFile.build_geo_surface_section(self, geometry_file, element)
 
-        """geometry_file.write("\t#SURFACE\n")
-        geometry_file.write("\t{0}\n".format(surface_name))
-    
-        geometry_file.write("\t#Nchordwise\tCspace\tNspanwise\tSspace\n")
-        geometry_file.write("\t{0}\t{1}\t{2}\t{3}\n".format(n_chordwise, c_space, n_spanwise, s_space))
-        geometry_file.write("\tINDEX\n")
-        geometry_file.write("\t{0}\n".format(index))
-        geometry_file.write("\tANGLE\n")
-        geometry_file.write("\t{0}\n".format(twist_angle))  # twist angle bias for whole surface, Anstellwinkel ganze Surface
-        geometry_file.write("\tSCALE\n")
-        geometry_file.write("\t{0}\t{1}\t{2}\n".format(x_scale, y_scale, z_scale))
-        geometry_file.write("\tTRANSLATE\n")
-        geometry_file.write("\t{0}\t{1}\t{2}\n".format(x_translate, y_translate, z_translate))
-        geometry_file.write("\tYDUPLICATE\n")
-        geometry_file.write("\t0.0\n")  # duplicates about x-axis
-    
-        geometry_file.write("#--------------------\n")
-    
-        build_geo_surface_section()"""
-
     def build_geometry_file(self, number_of_surfaces, plane_name=None, cdp=0, mach=0):
         """
         This method creates a geometry file as input for AVL.
@@ -896,23 +863,16 @@ class GeometryFile:
         Coordinate system: X downstream, Y out the right wing, Z up
         """
 
-        if os.path.exists("geometry_file.avl"):
-            os.remove("geometry_file.avl")
+        if os.path.exists("C:/Users/Gregor/Documents/GitHub/mace/temporary/geometry_file.avl"):
+            os.remove("C:/Users/Gregor/Documents/GitHub/mace/temporary/geometry_file.avl")
 
-        with open("geometry_file.avl", "w") as geometry_file:
+        with open("C:/Users/Gregor/Documents/GitHub/mace/temporary/geometry_file.avl", "w") as geometry_file:
             GeometryFile.build_geo_header(self, geometry_file)
             geometry_file.write(f'\n#======================\n')
             for surface in range(number_of_surfaces):
                 GeometryFile.build_geo_surface(self, geometry_file)
 
-        self.plane.avl.inputs.avl_file = "geometry_file.avl"
-
-        """geometry_file = open("geometry_file.avl", 'w')
-        build_geo_header(geometry_file, plane_name, cdp, mach)
-        geometry_file.write("#======================\n")
-        for surface in range(number_of_surfaces):   # or list with all surfaces
-            build_geo_surface(geometry_file)        # surface nr.1 and then more surfaces
-        geometry_file.close()"""
+        self.plane.avl.inputs.avl_file = "C:/Users/Gregor/Documents/GitHub/mace/temporary/geometry_file.avl"
 
 
 # ========== Mass File ==========
@@ -1280,10 +1240,10 @@ class MassFile:
         air density, in the units given above.  If these statements are absent,
         these constants default to 1.0, and will need to be changed manually at runtime.
         """
-        if os.path.exists("mass_file.mass"):
-            os.remove("mass_file.mass")
+        if os.path.exists("C:/Users/Gregor/Documents/GitHub/mace/temporary/mass_file.mass"):
+            os.remove("C:/Users/Gregor/Documents/GitHub/mace/temporary/mass_file.mass")
 
-        with open("mass_file.mass", "w") as mass_file:
+        with open("C:/Users/Gregor/Documents/GitHub/mace/temporary/mass_file.mass", "w") as mass_file:
             mass_file.write(f'Lunit = {self.plane.parameters.units.l_unit} m\n')
             mass_file.write(f'Munit = {self.plane.parameters.units.m_unit} kg\n')
             mass_file.write(f'Tunit = {self.plane.parameters.units.t_unit} s\n')
@@ -1292,7 +1252,7 @@ class MassFile:
             mass_file.write(f'rho = {self.plane.parameters.constants.rho}\n')
             MassFile.build_mass_table(self, mass_file)
 
-        self.plane.avl.inputs.mass_file = "mass_file.mass"
+        self.plane.avl.inputs.mass_file = "C:/Users/Gregor/Documents/GitHub/mace/temporary/mass_file.mass"
 
 
 # ========== Test ===========

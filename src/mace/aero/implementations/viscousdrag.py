@@ -5,7 +5,8 @@ from mace.domain import params, Plane
 from mace.aero.implementations.avl.athenavortexlattice import AVL
 import numpy as np
 import math
-
+from mace.domain.parser import PlaneParser
+from mace.aero.implementations.avl.geometry_and_mass_files import GeometryFile, MassFile
 
 class ViscousDrag:
     def __init__(self, plane: Plane):
@@ -38,6 +39,7 @@ class ViscousDrag:
 
     def get_chord_min_of_surface(self, surface):
         # chord_min = np.min(self.plane.avl.outputs.strip_forces[:, 4])    # (zeile, element)
+        # print(self.plane.avl.outputs.surface_dictionary[surface]["strips"][:, 4])
         chord_min = np.min(self.plane.avl.outputs.surface_dictionary[surface]["strips"][:, 4])
         return chord_min  # außen sollte noch bedacht werden
 
@@ -47,7 +49,7 @@ class ViscousDrag:
         return chord_max  # außen sollte noch bedacht werden
 
     def get_reynolds(self, cl_global):
-        velocity = ((2 * self.plane.mass * params.Constants.g) / (cl_global * params.Constants.rho *
+        velocity = ((2 * self.plane.mass[0] * params.Constants.g) / (cl_global * params.Constants.rho *
                                                                   self.plane.avl.outputs.s_ref)) ** 0.5
         reynolds = generalfunctions.get_reynolds_number(velocity, self.plane.avl.outputs.c_ref)
         return reynolds
@@ -93,7 +95,7 @@ class ViscousDrag:
         viscous_drag = np.zeros(self.plane.avl.outputs.number_of_surfaces)
         overall_viscous_drag = 0
         cl_global = self.plane.aero_coeffs.lift_coeff.cl_tot
-
+        print(f'cl_global ={cl_global}')
         # Compare v_horizontal with new velocity
         if velocity is None:
             v_factor = 1
@@ -106,9 +108,13 @@ class ViscousDrag:
             cl_max = math.ceil(self.get_cl_max_of_surface(surface) * 10) / 10  # aufgerundet [0.1]
             chord_min = math.floor(self.get_chord_min_of_surface(surface) * 1000) / 1000  # abgerundet [mm]
             chord_max = math.ceil(self.get_chord_max_of_surface(surface) * 1000) / 1000  # aufgerundet [mm]
+            print(f'cl_min = {cl_min}, cl_max = {cl_max}, chord_min = {chord_min}, chord_max = {chord_max}')
             reynolds_min = math.floor(v_factor * self.get_local_reynolds(cl_global, chord_min))  # abgerundet [integer]
+            print(f'reynolds_min = {reynolds_min}')
             reynolds_max = math.ceil(v_factor * self.get_local_reynolds(cl_global, chord_max))  # aufgerundet [integer]
+            print(f'reynolds_max = {reynolds_max}')
             reynolds_steps = math.ceil(self.get_reynolds_step(reynolds_min, reynolds_max))  # aufgerundet [integer]
+            print(f'reynolds_steps = {reynolds_steps}')
 
             list_index = int()
             number_of_wing_segments_per_halfspan = len(self.plane.wing.segments)
@@ -118,22 +124,23 @@ class ViscousDrag:
                 list_index = int((surface - 1) / 2)
             elif surface % 2 == 0:  # left wing
                 list_index = int(surface / 2)
-            inner_airfoil = self.plane.wing.segments[list_index].inner_airfoil
-            outer_airfoil = self.plane.wing.segments[list_index].outer_airfoil
 
-            """inner_airfoil = None
-            outer_airfoil = None"""
+            # hier noch unterscheiden zwischen Naca und nicht Naca
+            inner_airfoil = self.plane.wing.segments[list_index].inner_airfoil.type.filepath
+            outer_airfoil = self.plane.wing.segments[list_index].outer_airfoil.type.filepath
 
             alfa_start = [0, 0]  # [inner_airfoil, outer_airfoil]
             alfa_end = [0, 0]  # [inner_airfoil, outer_airfoil]
             alfa_step = 1
             reserve = 2  # degrees
-
+            print(inner_airfoil, outer_airfoil)
             # ---Calculation of alfa_start and alfa_end---
+            i = 0
             for airfoil in [inner_airfoil, outer_airfoil]:
-                i = 0
                 cl_of_alfa_zero = xfoilpolars.get_xfoil_polar(airfoil, reynolds_min, alfa=0)[1]
+                print(f'cl_of_alfa_zero = {cl_of_alfa_zero}')
                 # Auftriebsanstieg: cl = 0.11 * alfa[Grad]
+                print(f'cl_min < cl_of_alfa_zero = {cl_min < cl_of_alfa_zero}')
                 if cl_min < cl_of_alfa_zero:
                     cl_dif_neg = cl_of_alfa_zero - cl_min
                     alfa_start[i] = -(cl_dif_neg / 0.11 + reserve)  # Auftriebsabfall = 0.11 /Grad - Reserve
@@ -142,33 +149,34 @@ class ViscousDrag:
                 cl_dif = cl_max - cl_of_alfa_zero
                 alfa_end[i] = cl_dif / 0.11 + reserve  # Auftriebsanstieg = 0.11 /Grad + Reserve
                 i += 1
+                print(f'alfa_start = {alfa_start}')
+                print(f'alfa_end = {alfa_end}')
 
             # ---Polar calculations---
 
-            i = 0
             inner_polar = []
             outer_polar = []
             list_of_reynolds = range(reynolds_min, reynolds_max, reynolds_steps)
             for reynolds in list_of_reynolds:
-                inner_polar[i] = xfoilpolars.get_xfoil_polar(inner_airfoil, reynolds,
+                inner_polar.append(xfoilpolars.get_xfoil_polar(inner_airfoil, reynolds,
                                                              alfa_start=alfa_start, alfa_end=alfa_end,
-                                                             alfa_step=alfa_step)
-                outer_polar[i] = xfoilpolars.get_xfoil_polar(outer_airfoil, reynolds,
+                                                             alfa_step=alfa_step))
+                outer_polar.append(xfoilpolars.get_xfoil_polar(outer_airfoil, reynolds,
                                                              alfa_start=alfa_start, alfa_end=alfa_end,
-                                                             alfa_step=alfa_step)
+                                                             alfa_step=alfa_step))
                 # oder:
                 """inner_polar[i] = xfoilpolars.get_xfoil_polar(inner_airfoil, reynolds,
                                                              cl_start=cl_min, cl_end=cl_max)
                 outer_polar[i] = xfoilpolars.get_xfoil_polar(outer_airfoil, reynolds,
                                                              cl_start=cl_min, cl_end=cl_max)"""
-                i += 1
 
             # strips = self.plane.avl.outputs.strip_forces[:, 0]
             strips = self.plane.avl.outputs.surface_dictionary[surface]["strips"][:, 0]
+            print(f'strips = {strips}')
             for element in strips:
                 # surface_index = self.mach_strip_to_surface(element)
                 # strip_values = self.plane.avl.outputs.strip_forces[:, element-1]
-                strip_values = self.plane.avl.outputs.surface_dictionary[surface]["strips"][element - 1, :]
+                strip_values = self.plane.avl.outputs.surface_dictionary[surface]["strips"][int(element - 1), :]
 
                 """if element == strips[-1]:
                     strip_values_outer = self.plane.avl.outputs.strip_forces[:, element] # nächstes Element, noch ändern
@@ -213,3 +221,14 @@ class ViscousDrag:
 
 # Tests: veränderung der Größe des viskosen Widerstandes mit Erhöhung von Stripanzahl untersuchen.
 # -> Validierung der Software
+
+
+if __name__ == "__main__":
+    plane = PlaneParser("testplane.toml").get("Plane")
+    GeometryFile(plane).build_geometry_file(1)
+    MassFile(plane).build_mass_file()
+    athenavortexlattice.AVL(plane).run_avl()
+
+    athenavortexlattice.AVL(plane).read_avl_output()
+    #print(plane.avl.outputs.surface_dictionary)
+    ViscousDrag(plane).create_avl_viscous_drag_from_xfoil()

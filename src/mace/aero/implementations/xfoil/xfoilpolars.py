@@ -40,10 +40,10 @@ def get_xfoil_polar(airfoil_name, reynoldsnumber, *,
     """
     # ---Inputfile writer---
 
-    if os.path.exists("polar_file.txt"):
-        os.remove("polar_file.txt")
+    if os.path.exists("C:/Users/Gregor/Documents/GitHub/mace/temporary/polar_file.txt"):
+        os.remove("C:/Users/Gregor/Documents/GitHub/mace/temporary/polar_file.txt")
 
-    with open("input_file.in", 'w') as input_file:
+    with open("C:/Users/Gregor/Documents/GitHub/mace/temporary/input_file_xfoil.in", 'w') as input_file:
         input_file.write(f'LOAD {airfoil_name}\n')
         input_file.write(f'NORM\n')
         input_file.write(f'PANE\n')
@@ -59,9 +59,10 @@ def get_xfoil_polar(airfoil_name, reynoldsnumber, *,
                 input_file.write(f'XTR {x_transition_top/100} {x_transition_bottom/100}\n')
             input_file.write(f'\n')
         input_file.write(f'PACC\n')
-        input_file.write(f'polar_file.txt\n\n')
+        input_file.write(f'C:/Users/Gregor/Documents/GitHub/mace/temporary/polar_file.txt\n\n')
+        # input_file.write(f'polar_file.txt\n\n')
         input_file.write(f'ITER {n_iter}\n')
-        if alfa:
+        if alfa is not None:
             input_file.write(f'Alfa {alfa}\n')
         elif alfa_start is not None and alfa_end is not None:
             input_file.write(f'ASeq {alfa_start} {alfa_end} {alfa_step}\n')
@@ -77,10 +78,12 @@ def get_xfoil_polar(airfoil_name, reynoldsnumber, *,
 
     # ---Run XFOIL---
 
-    cmd = "C:/Users/Gregor/Documents/Modellflug/Software/XFOIL/xfoil.exe < input_file.in"   # external command to run
+    cmd = "C:/Users/Gregor/Documents/Modellflug/Software/XFOIL/xfoil.exe <" \
+          "C:/Users/Gregor/Documents/GitHub/mace/temporary/input_file_xfoil.in"   # external command to run
     runsub.run_subprocess(cmd)
 
-    polar_data = np.loadtxt("polar_file.txt", skiprows=12)      # max_rows ist Parameter für Anzahl Zeilen
+    polar_data = np.loadtxt("/Users/Gregor/Documents/GitHub/mace/temporary/polar_file.txt", skiprows=12)
+    # polar_data = np.loadtxt("polar_file.txt", skiprows=12)      # max_rows ist Parameter für Anzahl Zeilen
 
     # Find all PIDs of all the running instances of process that contains "xfoil" in its name
     list_of_process_ids = runsub.find_process_id_by_name("xfoil")
