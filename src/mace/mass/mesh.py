@@ -4,11 +4,11 @@ from functools import cache
 import numpy as np
 
 
-def tri_area(first, second, third):
+def tri_area(first: np.ndarray, second: np.ndarray, third: np.ndarray):
     return np.sum(np.linalg.norm(np.cross(second - first, third - first), axis=1)) / 2
 
 
-def tri_volume(first, second, third):
+def tri_volume(first: np.ndarray, second: np.ndarray, third: np.ndarray):
     return np.sum(np.cross(first, second) * third) / 6
 
 
