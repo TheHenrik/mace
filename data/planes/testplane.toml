@@ -3,7 +3,7 @@
 [Plane]
 name = "Gregors Testplane"
 wing = "Wing"
-mass = [7.0, 0.2, 0, 0]
+mass = [6.0, 0.2, 0, 0]
 propulsion = "Propulsion"
 aero_coeffs = "AeroCoeffs"
 reference_values = "ReferenceValues"
@@ -48,9 +48,9 @@ filepath = "C:/Users/Gregor/Documents/GitHub/mace/data/airfoils/n0012.dat"
 thrust = [[0, 20], [5, 19], [10, 18], [15, 16], [20, 14], [30, 10], [50, 5]]
 
 [ReferenceValues]
-s_ref = 0.6
-c_ref = 0.3
-b_ref = 2
+s_ref = 0.08
+c_ref = 0.28
+b_ref = 3.6
 h = 0.2
 b = 2
 lambd_k = 1

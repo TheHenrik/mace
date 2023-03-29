@@ -8,6 +8,8 @@ import math
 from mace.domain.parser import PlaneParser
 from mace.aero.implementations.avl.geometry_and_mass_files import GeometryFile, MassFile
 
+
+
 class ViscousDrag:
     def __init__(self, plane: Plane):
         self.plane = plane
@@ -50,7 +52,7 @@ class ViscousDrag:
 
     def get_reynolds(self, cl_global):
         velocity = ((2 * self.plane.mass[0] * params.Constants.g) / (cl_global * params.Constants.rho *
-                                                                  self.plane.avl.outputs.s_ref)) ** 0.5
+                                                                     self.plane.avl.outputs.s_ref)) ** 0.5
         reynolds = generalfunctions.get_reynolds_number(velocity, self.plane.avl.outputs.c_ref)
         return reynolds
 
@@ -104,14 +106,17 @@ class ViscousDrag:
             v_factor = velocity / v_horizontal
 
         for surface in range(1, self.plane.avl.outputs.number_of_surfaces + 1):  # 1, 2, 3, ... , last surface
+            if surface % 2 == 0:
+                surface -= 1
             cl_min = math.floor(self.get_cl_min_of_surface(surface) * 10) / 10  # abgerundet [0.1]
             cl_max = math.ceil(self.get_cl_max_of_surface(surface) * 10) / 10  # aufgerundet [0.1]
             chord_min = math.floor(self.get_chord_min_of_surface(surface) * 1000) / 1000  # abgerundet [mm]
             chord_max = math.ceil(self.get_chord_max_of_surface(surface) * 1000) / 1000  # aufgerundet [mm]
             print(f'cl_min = {cl_min}, cl_max = {cl_max}, chord_min = {chord_min}, chord_max = {chord_max}')
-            reynolds_min = math.floor(v_factor * self.get_local_reynolds(cl_global, chord_min))  # abgerundet [integer]
+            reynolds_min = math.floor((v_factor * self.get_local_reynolds(cl_global, chord_min))/1000)*1000
+            # abgerundet auf 1000 [integer]
             print(f'reynolds_min = {reynolds_min}')
-            reynolds_max = math.ceil(v_factor * self.get_local_reynolds(cl_global, chord_max))  # aufgerundet [integer]
+            reynolds_max = math.ceil((v_factor * self.get_local_reynolds(cl_global, chord_max))/1000)*1000  # aufgerundet [integer]
             print(f'reynolds_max = {reynolds_max}')
             reynolds_steps = math.ceil(self.get_reynolds_step(reynolds_min, reynolds_max))  # aufgerundet [integer]
             print(f'reynolds_steps = {reynolds_steps}')
@@ -147,23 +152,54 @@ class ViscousDrag:
                 else:
                     alfa_start[i] = 0  # für bessere Konvergenz
                 cl_dif = cl_max - cl_of_alfa_zero
-                alfa_end[i] = cl_dif / 0.11 + reserve  # Auftriebsanstieg = 0.11 /Grad + Reserve
+                alfa_end[i] = math.ceil(cl_dif / 0.11 + reserve)  # Auftriebsanstieg = 0.11 /Grad + Reserve
                 i += 1
                 print(f'alfa_start = {alfa_start}')
-                print(f'alfa_end = {alfa_end}')
+                print(f'alfa_end = {alfa_end}')  # eventuell noch aufrunden, aber alfa step geht eh höher
 
             # ---Polar calculations---
 
-            inner_polar = []
-            outer_polar = []
-            list_of_reynolds = range(reynolds_min, reynolds_max, reynolds_steps)
+            inner_polar = np.ndarray
+            outer_polar = np.ndarray
+            # list_of_reynolds = range(reynolds_min, reynolds_max, reynolds_steps)
+            list_of_reynolds = np.linspace(reynolds_min, reynolds_max, 5)
+            first_iteration = True
+            print(f'alfa_start = {alfa_start}, alfa_end = {alfa_end}, alfa_step = {alfa_step}')
+            print(f'list_of_reynolds = {list_of_reynolds}')
             for reynolds in list_of_reynolds:
-                inner_polar.append(xfoilpolars.get_xfoil_polar(inner_airfoil, reynolds,
-                                                             alfa_start=alfa_start, alfa_end=alfa_end,
-                                                             alfa_step=alfa_step))
-                outer_polar.append(xfoilpolars.get_xfoil_polar(outer_airfoil, reynolds,
-                                                             alfa_start=alfa_start, alfa_end=alfa_end,
-                                                             alfa_step=alfa_step))
+                if first_iteration:
+                    inner_polar = xfoilpolars.get_xfoil_polar(inner_airfoil, reynolds,
+                                                              alfa_start=alfa_start[0], alfa_end=alfa_end[0],
+                                                              alfa_step=alfa_step)
+                    outer_polar = xfoilpolars.get_xfoil_polar(outer_airfoil, reynolds,
+                                                              alfa_start=alfa_start[1], alfa_end=alfa_end[1],
+                                                              alfa_step=alfa_step)
+                    print(f'################################################'
+                          f'inner_polar(first iteration) = {inner_polar}')
+                else:
+                    new_inner_values = xfoilpolars.get_xfoil_polar(inner_airfoil, reynolds,
+                                                                   alfa_start=alfa_start[0], alfa_end=alfa_end[0],
+                                                                   alfa_step=alfa_step)
+                    print('##############################################################################')
+                    print(f'shape_new_inner = {new_inner_values.shape}, shape_inner = {inner_polar.shape}')
+                    print(f'inner_polar = {inner_polar}')
+                    print(f'new_inner_values = {new_inner_values}')
+                    inner_polar = np.dstack((inner_polar, new_inner_values))
+
+                    new_outer_values = xfoilpolars.get_xfoil_polar(outer_airfoil, reynolds,
+                                                                   alfa_start=alfa_start[1], alfa_end=alfa_end[1],
+                                                                   alfa_step=alfa_step)
+                    outer_polar = np.dstack((outer_polar, new_outer_values))
+
+                    print(f'#####################################################'
+                          f'inner_polar(other iterations) = {inner_polar}')
+                    # inner_polar = xfoilpolars.get_xfoil_polar(inner_airfoil, reynolds,
+                    #                                          alfa_start=alfa_start[0], alfa_end=alfa_end[0],
+                    #                                          alfa_step=alfa_step)
+                    # outer_polar = xfoilpolars.get_xfoil_polar(outer_airfoil, reynolds,
+                    #                                          alfa_start=alfa_start[1], alfa_end=alfa_end[1],
+                    #                                          alfa_step=alfa_step)
+                first_iteration = False
                 # oder:
                 """inner_polar[i] = xfoilpolars.get_xfoil_polar(inner_airfoil, reynolds,
                                                              cl_start=cl_min, cl_end=cl_max)
@@ -189,14 +225,49 @@ class ViscousDrag:
                 local_reynolds = v_factor * self.get_local_reynolds(global_cl, chord)
                 # lokales cl, anstatt auf globales.
 
+                # inner_polar: (alfa, polar_data, reynoldsnumber)
+
+                print(f'local_reynolds = {local_reynolds}, list_of_reynolds = {list_of_reynolds},'
+                      f'inner_polar = {inner_polar}')
+                print(f'inner_polar = {inner_polar}')
+                print()
                 # interpolate polar for inner_airfoil (with local_reynolds)
-                new_inner_polar = np.interp(local_reynolds, list_of_reynolds, inner_polar)
+                shape = np.shape(inner_polar)
+                print(f'shape = {shape}')
+                new_inner_polar = np.zeros((shape[0], shape[1]))
+                print(f'new_inner_polar = {new_inner_polar}')
+                for i in range(shape[0]):          # Reduzierung um Anstellwinkel auf (Re-Zahl, Polarendaten)
+                    alfa_polar = inner_polar[i, :, :]
+                    print(f'alfa_polar = {alfa_polar}')
+                    for j in range(shape[1]):                  # Reduzierung um Polarendaten auf (Re-Zahl-Abhängigkeit)
+                        polar_data = np.interp(local_reynolds, list_of_reynolds, inner_polar[i, j, :])
+                        new_inner_polar[i, j] = polar_data
+                        print(f'polar_data = {polar_data}')
+                print(f'new_inner_polar = {new_inner_polar}') # new_inner_polar: (Alfa, Polarendaten)
+
                 #       interpolate cd for given cl for inner_airfoil
-                cd_new_inner = np.interp(local_cl, new_inner_polar[1, :], new_inner_polar[2, :])  # cl_new, cl, cd
+                cd_new_inner = np.interp(local_cl, new_inner_polar[:, 1], new_inner_polar[:, 2])  # cl_new, cl, cd
+                print(f'local_cl = {local_cl}')
+                print(f'cd_new_inner = {cd_new_inner}')
+
                 # interpolate polar for outer_airfoil (with local_reynolds)
-                new_outer_polar = np.interp(local_reynolds, list_of_reynolds, outer_polar)
+                shape_outer = np.shape(outer_polar)
+                print(f'shape = {shape_outer}')
+                new_outer_polar = np.zeros((shape_outer[0], shape_outer[1]))
+                print(f'new_inner_polar = {new_outer_polar}')
+                for i in range(shape_outer[0]):  # Reduzierung um Anstellwinkel auf (Re-Zahl, Polarendaten)
+                    alfa_polar_outer = outer_polar[i, :, :]
+                    print(f'alfa_polar = {alfa_polar_outer}')
+                    for j in range(shape[1]):  # Reduzierung um Polarendaten auf (Re-Zahl-Abhängigkeit)
+                        polar_data = np.interp(local_reynolds, list_of_reynolds, outer_polar[i, j, :])
+                        new_outer_polar[i, j] = polar_data
+                        print(f'polar_data = {polar_data}')
+                print(f'new_outer_polar = {new_outer_polar}')  # new_inner_polar: (Alfa, Polarendaten)
+
                 #       interpolate cd for given cl for outer_airfoil
-                cd_new_outer = np.interp(local_cl, new_outer_polar[1, :], new_outer_polar[2, :])  # cl_new, cl, cd
+                cd_new_outer = np.interp(local_cl, new_outer_polar[:, 1], new_inner_polar[:, 2])  # cl_new, cl, cd
+                print(f'local_cl = {local_cl}')
+                print(f'cd_new_inner = {cd_new_inner}')
 
                 # interpolate profile_cd for position between inner and outer strip.
                 y_le_inner = float()
@@ -214,10 +285,11 @@ class ViscousDrag:
                 area = strip_values[5]
                 cd_local_to_global = cd_local * area / self.plane.avl.outputs.s_ref
 
-            viscous_drag[surface] += cd_local_to_global
+            viscous_drag[surface-1] += cd_local_to_global       # noch mit surface Dopplung schauen
             overall_viscous_drag += viscous_drag[surface]
 
         return overall_viscous_drag, viscous_drag
+
 
 # Tests: veränderung der Größe des viskosen Widerstandes mit Erhöhung von Stripanzahl untersuchen.
 # -> Validierung der Software
@@ -230,5 +302,6 @@ if __name__ == "__main__":
     athenavortexlattice.AVL(plane).run_avl()
 
     athenavortexlattice.AVL(plane).read_avl_output()
-    #print(plane.avl.outputs.surface_dictionary)
-    ViscousDrag(plane).create_avl_viscous_drag_from_xfoil()
+    # print(plane.avl.outputs.surface_dictionary)
+    result = ViscousDrag(plane).create_avl_viscous_drag_from_xfoil()
+    print(f'overall_viscous_drag = {result[0]}, viscous_drag = {result[1]}')

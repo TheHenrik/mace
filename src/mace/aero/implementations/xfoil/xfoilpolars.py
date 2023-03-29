@@ -82,7 +82,7 @@ def get_xfoil_polar(airfoil_name, reynoldsnumber, *,
           "C:/Users/Gregor/Documents/GitHub/mace/temporary/input_file_xfoil.in"   # external command to run
     runsub.run_subprocess(cmd)
 
-    polar_data = np.loadtxt("/Users/Gregor/Documents/GitHub/mace/temporary/polar_file.txt", skiprows=12)
+    polar_data = np.loadtxt("C:/Users/Gregor/Documents/GitHub/mace/temporary/polar_file.txt", skiprows=12)
     # polar_data = np.loadtxt("polar_file.txt", skiprows=12)      # max_rows ist Parameter für Anzahl Zeilen
 
     # Find all PIDs of all the running instances of process that contains "xfoil" in its name
