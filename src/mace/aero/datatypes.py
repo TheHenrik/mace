@@ -64,3 +64,5 @@ array_sort = np.argsort(array[:, 2])
 array = array[array_sort]
 # array[:, 2].argsort()
 print(array)
+
+print(np.linspace(0, 10, 11))

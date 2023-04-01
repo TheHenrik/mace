@@ -45,7 +45,7 @@ number_of_naca = 12
 filepath = "C:/Users/Gregor/Documents/GitHub/mace/data/airfoils/clarky.dat"
 
 [Propulsion]
-thrust = [[0, 20], [5, 19], [10, 18], [15, 16], [20, 14], [30, 10], [50, 5]]
+thrust = [[0, 15], [5, 14], [10, 13], [15, 12], [20, 11], [30, 10], [50, 5]]
 
 [ReferenceValues]
 s_ref = 1.022
@@ -61,7 +61,7 @@ lift_coeff = "Cl"
 drag_coeff = "Cd"
 
 [Cl]
-cl_roll = 0.8
+cl_roll = 0.4
 
 [Cd]
 
@@ -80,7 +80,7 @@ horizontalflight = "HorizontalFlight"
 glidingflight = "GlidingFlight"
 
 [TakeOff]
-my = 0.05
+my = 0.16
 results = "TakeOffResults"
 
 [TakeOffResults]

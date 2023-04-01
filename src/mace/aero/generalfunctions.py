@@ -77,8 +77,9 @@ class GeneralFunctions:
         """
         Returns thrust in Newton related to a current velocity of the plane.
         """
-        velocity_arr = self.plane.propulsion.thrust[0, :]
-        thrust_arr = self.plane.propulsion.thrust[1, :]
+        velocity_arr = self.plane.propulsion.thrust[:, 0]
+        thrust_arr = self.plane.propulsion.thrust[:, 1]
+        print(f'velocity_array: {velocity_arr}, thrust_array: {thrust_arr}')
         thrust = np.interp(current_velocity, velocity_arr, thrust_arr)
         return thrust
 

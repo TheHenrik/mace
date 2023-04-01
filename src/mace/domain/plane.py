@@ -298,7 +298,7 @@ class TakeOffResults:
 @dataclass()
 class TakeOff:
     my: float = 0
-    cl_roll: float = 0
+    # cl_roll: float = 0
     cd_viscous: float = 0
     cd_induced: float = 0
     phi_a: float = 0
