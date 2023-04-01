@@ -10,7 +10,7 @@ class Constants:
 
 @dataclass()
 class Units():
-    l_unit: float = 0.001   # m -> mm   LengthUnit
+    l_unit: float = 1   # m (-> mm)   LengthUnit
     m_unit: float = 1       # kg        MassUnit
     t_unit: float = 1       # s         TimeUnit
 

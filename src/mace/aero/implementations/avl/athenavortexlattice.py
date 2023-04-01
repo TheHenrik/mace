@@ -127,15 +127,15 @@ class AVL:
                 string = line.split("|")
                 value_string = string[0]
                 values = value_string.split()
-                self.plane.aero_coeffs.lift_coeff.cd_tot = float(values[0])
+                self.plane.aero_coeffs.drag_coeff.cd_tot = float(values[0])
 
         for line in lines:
-            if line.endswith("|| CDvis, CDind\n"):
+            if line.endswith("| CDvis, CDind\n"):
                 string = line.split("|")
                 value_string = string[0]
                 values = value_string.split()
-                self.plane.aero_coeffs.lift_coeff.cd_vis = float(values[0])
-                self.plane.aero_coeffs.lift_coeff.cd_ind = float(values[0])
+                self.plane.aero_coeffs.drag_coeff.cd_vis = float(values[0])
+                self.plane.aero_coeffs.drag_coeff.cd_ind = float(values[1])
 
     def read_strip_forces_avl_file(self, lines):
         # ---Surface Data---

@@ -167,17 +167,17 @@ class GeometryFile:
         geometry_file.write(f'# Mach\n')
         geometry_file.write(f'{self.plane.reference_values.mach}\n')
         geometry_file.write(f'#IYsym\tIZsym\tZsym\n')
-        geometry_file.write(f'{self.plane.reference_values.iy_sym:<6}'
-                            f'{self.plane.reference_values.iz_sym:<6}'
-                            f'{self.plane.reference_values.z_sym:<6}\n\n')  # iYsym has to be 0 for YDUPLICATE
+        geometry_file.write(f'{self.plane.reference_values.iy_sym:<10}'
+                            f'{self.plane.reference_values.iz_sym:<10}'
+                            f'{self.plane.reference_values.z_sym:<10}\n\n')  # iYsym has to be 0 for YDUPLICATE
         geometry_file.write(f'#Sref\tCref\tBref\n')
-        geometry_file.write(f'{self.plane.reference_values.s_ref:<6}'
-                            f'{self.plane.reference_values.c_ref:<6}'
-                            f'{self.plane.reference_values.b_ref:<6}\n')
+        geometry_file.write(f'{self.plane.reference_values.s_ref:<10}'
+                            f'{self.plane.reference_values.c_ref:<10}'
+                            f'{self.plane.reference_values.b_ref:<10}\n')
         geometry_file.write(f'#Xref\tYref\tZref\n')
-        geometry_file.write(f'{self.plane.reference_values.x_ref:<6}'
-                            f'{self.plane.reference_values.y_ref:<6}'
-                            f'{self.plane.reference_values.z_ref:<6}\n')
+        geometry_file.write(f'{self.plane.reference_values.x_ref:<10}'
+                            f'{self.plane.reference_values.y_ref:<10}'
+                            f'{self.plane.reference_values.z_ref:<10}\n')
         # if self.plane.aero_coeffs.cdp != 0:
         #     geometry_file.write(f'# CDp\n')
         #     geometry_file.write(f'{self.plane.aero_coeffs.cdp}\n')
@@ -600,8 +600,10 @@ class GeometryFile:
             geometry_file.write(f'\n\n')
 
             if isinstance(element.segments[index].inner_airfoil.type, type(pl.Naca())):
-                geometry_file.write(f'NACA\n')
-                geometry_file.write(f'{element.segments[index].inner_airfoil.type.number_of_naca:0>4}\n\n')
+                # geometry_file.write(f'NACA\n')
+                # geometry_file.write(f'{element.segments[index].inner_airfoil.type.number_of_naca:0>4}\n\n')
+                geometry_file.write(f'AFIL  0.0  1.0\n')
+                geometry_file.write(f'{element.segments[index].inner_airfoil.type.filepath}\n\n')
             if isinstance(element.segments[index].inner_airfoil.type, type(pl.AirfoilFile())):
                 geometry_file.write(f'AFIL  0.0  1.0\n')
                 geometry_file.write(f'{element.segments[index].inner_airfoil.type.filepath}\n\n')

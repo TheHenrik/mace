@@ -8,7 +8,7 @@ from mace.aero.implementations import runsubprocess as runsub
 
 def get_xfoil_polar(airfoil_name, reynoldsnumber, *,
                     alfa=None, alfa_start=None, alfa_end=None, cl=None, cl_start=None, cl_end=None,
-                    alfa_step: float = 0.5, cl_step: float = 0.05, n_iter=80,
+                    alfa_step: float = 0.5, cl_step: float = 0.05, n_iter=100,
                     mach: float = 0, n_crit: float = 9, x_transition_top=100, x_transition_bottom=100):
     """
     returns a numpy array with all polar data:
