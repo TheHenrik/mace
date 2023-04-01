@@ -219,7 +219,7 @@ class ReferenceValues:
 @dataclass()
 class Cl:
     # cl: float = None
-    # cl_roll: float = None
+    cl_roll: float = None
     # cl_take_off: float = None
     # --- from AVL:
     cl_tot: float = None
@@ -297,6 +297,7 @@ class TakeOffResults:
 
 @dataclass()
 class TakeOff:
+    my: float = 0
     cl_roll: float = 0
     cd_viscous: float = 0
     cd_induced: float = 0

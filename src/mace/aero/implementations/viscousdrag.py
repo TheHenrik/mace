@@ -88,7 +88,7 @@ class ViscousDrag:
             else:
                 return surface_index
 
-    def create_avl_viscous_drag_from_xfoil(self, *, velocity=None):
+    def create_avl_viscous_drag_from_xfoil(self, *, velocity=None, alfa_step=1):
         """
         This is written for stationary horizontal flight.
         For other velocities please intput them. The function will compare it with horizontal flight and
@@ -119,11 +119,11 @@ class ViscousDrag:
             chord_min = math.floor(self.get_chord_min_of_surface(surface) * 1000) / 1000  # abgerundet [mm]
             chord_max = math.ceil(self.get_chord_max_of_surface(surface) * 1000) / 1000  # aufgerundet [mm]
             logfile.write(f'cl_min = {cl_min}, cl_max = {cl_max}, chord_min = {chord_min}, chord_max = {chord_max}\n')
-            reynolds_min = math.floor((v_factor * self.get_local_reynolds(cl_global, chord_min)) / 1000) * 1000
+            reynolds_min = math.floor((v_factor * self.get_local_reynolds(cl_global, chord_min)) / 10000) * 10000
             # abgerundet auf 1000 [integer]
             logfile.write(f'reynolds_min = {reynolds_min}\n')
             reynolds_max = math.ceil(
-                (v_factor * self.get_local_reynolds(cl_global, chord_max)) / 1000) * 1000  # aufgerundet [integer]
+                (v_factor * self.get_local_reynolds(cl_global, chord_max)) / 10000) * 10000  # aufgerundet [integer]
             logfile.write(f'reynolds_max = {reynolds_max}\n')
             reynolds_steps = math.ceil(self.get_reynolds_step(reynolds_min, reynolds_max))  # aufgerundet [integer]
             logfile.write(f'reynolds_steps = {reynolds_steps}\n')
@@ -146,7 +146,7 @@ class ViscousDrag:
 
             alfa_min = [0, 0]  # [inner_airfoil, outer_airfoil]
             alfa_max = [0, 0]  # [inner_airfoil, outer_airfoil]
-            alfa_step = 1
+            # alfa_step = 1
             reserve = 1  # degrees
             cl_below_zero = False
             logfile.write(f'inner_airfoil: {inner_airfoil}, outer_airfoil: {outer_airfoil}\n')
@@ -338,7 +338,7 @@ class ViscousDrag:
                 # adapt profile_cd to s_ref with CD = profile_cd*strip_area/s_ref
                 area = strip_values[5]
                 cd_local_to_global = cd_local * area / self.plane.avl.outputs.s_ref
-                logfile.write(f'strip_area = {area}, reference_wing_area = {self.plane.avl.outputs.s_ref}\n,'
+                logfile.write(f'strip_area = {area}, reference_wing_area = {self.plane.avl.outputs.s_ref},\n'
                               f'cd_local_to_global = {cd_local_to_global}\n')
 
                 viscous_drag[surface_original - 1] += cd_local_to_global  # noch mit surface Dopplung schauen
@@ -356,7 +356,7 @@ if __name__ == "__main__":
     plane = PlaneParser("testplane.toml").get("Plane")
     GeometryFile(plane).build_geometry_file(1)
     MassFile(plane).build_mass_file()
-    athenavortexlattice.AVL(plane).run_avl(angle_of_attack=10)
+    athenavortexlattice.AVL(plane).run_avl(lift_coefficient=1)
 
     athenavortexlattice.AVL(plane).read_avl_output()
     # print(plane.avl.outputs.surface_dictionary)
@@ -364,3 +364,4 @@ if __name__ == "__main__":
     print(f'overall_viscous_drag = {result[0]}, viscous_drag = {result[1]}')
     print(f'induced_drag = {plane.aero_coeffs.drag_coeff.cd_ind}')
     print(f'cd_overall = {plane.aero_coeffs.drag_coeff.cd_viscous + plane.aero_coeffs.drag_coeff.cd_ind}')
+    print(f'cl_tot = {plane.aero_coeffs.lift_coeff.cl_tot}')

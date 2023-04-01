@@ -5,6 +5,7 @@ import math
 # from mace.domain import plane as pl
 from mace.domain import params, Plane
 from mace.aero.generalfunctions import GeneralFunctions
+from mace.aero.implementations.avl.athenavortexlattice import AVL
 
 
 class Takeoff:
@@ -17,20 +18,27 @@ class Takeoff:
         self.lambda_g = self.plane.reference_values.lambd_g
         self.h = self.plane.reference_values.h      # Höhe des FlügelNPs über Boden
         self.b = self.plane.reference_values.b      # Spannweite
-        self.my = ...                               # Rollreibungskoeffizient
+        self.my = self.plane.flightconditions.takeoff.my                               # Rollreibungskoeffizient
         self.delta_a()
         self.delta_a = self.plane.flightconditions.takeoff.delta_a
+        print(self.delta_a)
         self.delta_w()
         self.delta_w = self.plane.flightconditions.takeoff.delta_w
-        self.cl_roll = ...          # initialisieren mit höherer Geschwindigkeit, cl sollte sich ja nicht ändern
+        print(self.delta_w)
+        self.cl_roll = self.plane.aero_coeffs.lift_coeff.cl_roll          # initialisieren mit höherer Geschwindigkeit, cl sollte sich ja nicht ändern
+        print(self.cl_roll)
         self.beta_a(self.cl_roll)
         self.beta_a = self.plane.flightconditions.takeoff.beta_a
+        print(self.beta_a)
         self.beta_w(self.cl_roll)
         self.beta_w = self.plane.flightconditions.takeoff.beta_w
+        print(self.beta_w)
         self.phi_a()
         self.phi_a = self.plane.flightconditions.takeoff.phi_a
+        print(self.phi_a)
         self.phi_w()
         self.phi_w = self.plane.flightconditions.takeoff.phi_w
+        print(self.phi_w)
 
         """self.plane.propulsion.thrust[0, :]
         self.plane.propulsion.thrust[1, :]"""   # initialisieren
@@ -38,11 +46,11 @@ class Takeoff:
     # ---Strecken- und Zeitinkremente---
 
     def delta_x(self, v1, v2, f, w, r):                        # Masse, Start-, Endgeschwindigkeit, F(V), W(V), R(V)
-        del_x = (self.mass * (v2**2 - v1**2)) / (2 * (f - w - r))
+        del_x = (self.mass[0] * (v2**2 - v1**2)) / (2 * (f - w - r))
         return del_x
 
     def delta_t(self, v1, v2, f, w, r):                        # Masse, Start-, Endgeschwindigkeit, F(V), W(V), R(V)
-        del_t = (self.mass * (v2 - v1)) / (f - w - r)
+        del_t = (self.mass[0] * (v2 - v1)) / (f - w - r)
         return del_t
 
     # ---Kräfte---
@@ -64,8 +72,9 @@ class Takeoff:
         """
         Returns the drag !coefficient! while given plane is rolling on the ground.
         """
-        viscous_drag = self.plane.flightconditions.takeoff.cd_viscous
-        induced_drag = self.plane.flightconditions.takeoff.cd_induced
+        # viscous_drag = self.plane.flightconditions.takeoff.cd_viscous
+        viscous_drag = self.plane.aero_coeffs.drag_coeff.cd_viscous
+        induced_drag = self.plane.aero_coeffs.drag_coeff.cd_ind
         cd_roll = viscous_drag + induced_drag + self.phi_a**2 * self.phi_w
         # cd_roll = cw_profil + cwi * phi_a**2 * phi_w
         return cd_roll
@@ -85,7 +94,7 @@ class Takeoff:
         Returns the rolling friction dependent on the current lift.
         """
         gravitational_constant = params.Constants.g
-        r = rolling_friction_coefficient * (self.mass * gravitational_constant - lift)
+        r = rolling_friction_coefficient * (self.mass[0] * gravitational_constant - lift)
         return r
 
     # ---Bodeneffekt---
@@ -174,9 +183,16 @@ class Takeoff:
             # delta, beta und phi sind bereits in __init__ berechnet
 
             # AVL bei aktueller Geschwindigkeit durchlaufen lassen
+            AVL(self.plane).run_avl(lift_coefficient=self.cl_roll)
+            AVL(self.plane).read_avl_output()
+            # eventuell noch viscous_drag, wenn Performance erhöht
+
             w = self.drag_rolling(v)    # Widerstand
             a = self.lift_rolling(v)    # Auftrieb
             r = self.rollreibung(self.my, a)     # Rollreibungswiderstand
+
+            print(v1, v2, f, w, r)
+            print(self.delta_x(v1, v2, f, w, r))
 
             if self.delta_x(v1, v2, f, w, r) <= 0:
                 self.plane.flightconditions.takeoff.results.v_max_rolling = v1
