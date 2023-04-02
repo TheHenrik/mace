@@ -105,7 +105,7 @@ class ViscousDrag:
             v_factor = 1
             logfile.write(f'v_factor = {v_factor}\n')
         else:
-            v_horizontal = ((2 * self.mass * self.g) / (cl_global * self.rho * self.s_ref)) ** 0.5
+            v_horizontal = ((2 * self.mass[0] * self.g) / (cl_global * self.rho * self.s_ref)) ** 0.5
             v_factor = velocity / v_horizontal
             logfile.write(f'v_horizontal = {v_horizontal}, v_factor = {v_factor}\n')
 

@@ -61,7 +61,7 @@ lift_coeff = "Cl"
 drag_coeff = "Cd"
 
 [Cl]
-cl_roll = 0.4
+cl_roll = 0.7
 
 [Cd]
 
@@ -81,6 +81,7 @@ glidingflight = "GlidingFlight"
 
 [TakeOff]
 my = 0.16
+cd_viscous = 0.02
 results = "TakeOffResults"
 
 [TakeOffResults]

@@ -72,8 +72,8 @@ class Takeoff:
         """
         Returns the drag !coefficient! while given plane is rolling on the ground.
         """
-        # viscous_drag = self.plane.flightconditions.takeoff.cd_viscous
-        viscous_drag = self.plane.aero_coeffs.drag_coeff.cd_viscous
+        viscous_drag = self.plane.flightconditions.takeoff.cd_viscous
+        # viscous_drag = self.plane.aero_coeffs.drag_coeff.cd_viscous
         induced_drag = self.plane.aero_coeffs.drag_coeff.cd_ind
         cd_roll = viscous_drag + induced_drag * self.phi_a**2 * self.phi_w
         print(f'cd_visc = {viscous_drag}, cd_ind = {induced_drag}, cd_roll = {cd_roll}')
