@@ -155,6 +155,8 @@ class Climb:
             cl += cl_step
 
         self.plane.flightconditions.climb.results.climb_data = climb_data
+        self.steepest_climb()
+        self.fastest_climb()
         return climb_data
 
     # ---Auswertung---

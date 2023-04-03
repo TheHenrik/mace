@@ -11,6 +11,7 @@ class BuildMission:
         self.plane = plane
 
     def build_mission(self):
+        # Takeoff
 
         berechnung_takeoff = input('Berechnung Takeoff? (Ja/Nein)')
         if berechnung_takeoff == 'Ja':
@@ -19,6 +20,8 @@ class BuildMission:
             v_timer_start = float(input('Bitte Startgeschwindigkeit für Timer angeben:\n'))
             takeoff.Takeoff(self.plane).takeoff(v_min, step, v_timer_start=v_timer_start)
             print(self.plane.flightconditions.takeoff.results)
+
+        # Climb
 
         berechnung_climb = input('Berechnung Climb? (Ja/Nein)')
         if berechnung_climb == 'Ja':
@@ -33,9 +36,41 @@ class BuildMission:
                   f' cos = {self.plane.flightconditions.climb.results.climb_data[:, 4]},\n'
                   f' gamma1 ={self.plane.flightconditions.climb.results.climb_data[:, 5]},\n'
                   f' gamma2 = {self.plane.flightconditions.climb.results.climb_data[:, 6]},\n'
-                  f' current_thrust = {self.plane.flightconditions.climb.results.climb_data[:, 7]}\n')
+                  f' current_thrust = {self.plane.flightconditions.climb.results.climb_data[:, 7]},\n')
+            print(f'steepest_climb = {self.plane.flightconditions.climb.results.gamma_max},\n'
+                  f'fastest_climb = {self.plane.flightconditions.climb.results.v_vertical_max}\n')
+            # gained height and distance
 
+        # Horizontal Flight
 
+        berechnung_horizontal = input('Berechnung Horizontal Flight? (Ja/Nein)')
+        if berechnung_horizontal == 'Ja':
+            horizontalflight.HorizontalFlight(self.plane).fv_diagramm(0.3, 0.5)
+            print(f'velocity, needed_thrust = '
+                  f'{self.plane.flightconditions.horizontalflight.results.thrust_velocity_correlation}')
+            print(f'minimum_thrust = {self.plane.flightconditions.horizontalflight.results.minimum_thrust}')
+            print(f'maximum_flight_velocity = '
+                  f'{self.plane.flightconditions.horizontalflight.results.maximum_flight_velocity}')
+            accel = horizontalflight.HorizontalFlight(self.plane).acceleration(10, 20, 0.1)
+            print(f'Acceleration time = {accel[0]}, distance = {accel[1]}')
+
+        # Turning Flight
+
+        berechnung_turning = input('Berechnung Turning Flight? (Ja/Nein)')
+        if berechnung_turning == 'Ja':
+            pass
+
+        # Gliding Flight
+
+        berechnung_gliding = input('Berechnung Gliding Flight? (Ja/Nein)')
+        if berechnung_gliding == 'Ja':
+            pass
+
+        # Landing
+
+        berechnung_landing = input('Berechnung Landing? (Ja/Nein)')
+        if berechnung_landing == 'Ja':
+            pass
 
 
 if __name__ == "__main__":
