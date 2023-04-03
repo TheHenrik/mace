@@ -40,6 +40,13 @@ class Climb:
         v_square = (-b + (b**2 - 4 * a * c)**0.5) / (2 * a)
         v = v_square**0.5
 
+        # Annahme cd^2 = 0
+        """v_square = (2 / (self.rho * self.s_ref * cl)) * ((self.mass * self.g)**2 - current_thrust**2)**0.5
+        v = v_square ** 0.5"""
+
+        print(f'rho = {self.rho}, s_ref = {self.s_ref}, g = {self.g}, cl = {cl},\n'
+              f'v_square = {v_square}, velocity = {v}')
+
         return v, v_square                        # gibt als Tupel V und V^2 zurück
 
     def sin_gamma(self, current_thrust, v_square, cd):         # v_square = V^2
@@ -63,7 +70,10 @@ class Climb:
         Returns the climbing/descent angle gamma in degrees if sin and cos are given.
         """
         gamma1 = math.degrees(np.arcsin(sin))
-        gamma2 = math.degrees(np.arccos(cos))
+        if cos >= 1:
+            gamma2 = 0
+        else:
+            gamma2 = math.degrees(np.arccos(cos))
         return gamma1, gamma2           # wird als Tupel übergeben
 
     def v_vertical(self, velocity, sin_gam):                # sin_gamma bereits vorher berechnen, ist übersichtlicher
@@ -118,7 +128,7 @@ class Climb:
                       f' cd_ind = {self.plane.aero_coeffs.drag_coeff.cd_ind}')
                 current_thrust = GeneralFunctions(self.plane).current_thrust(v_iteration)
                 print(f'current_thrust = {current_thrust}')
-                velocity = self.v_climb(current_thrust, cd, cl)
+                velocity = self.v_climb(current_thrust, cl, cd)
                 i += 1
                 not_in_tolerance = abs(v_iteration - velocity[0]) >= v_tolerance
                 print(f'v_iteration = {v_iteration}, velocity = {velocity}')
