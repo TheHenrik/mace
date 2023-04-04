@@ -66,7 +66,7 @@ def get_reynolds_number(v, length):              # neuer Name
 class GeneralFunctions:
     def __init__(self, plane: Plane):
         self.plane = plane
-        self.mass = self.plane.mass
+        self.mass = self.plane.mass[0]
         self.s_ref = self.plane.reference_values.s_ref
         self.g = params.Constants.g
         self.rho = params.Constants.rho
@@ -88,6 +88,7 @@ class GeneralFunctions:
         return thrust
 
     def excess_power(self, cd, cl, thrust):
+        print(f'thrust_supply = {self.thrust_supply(cd, cl)}')
         excess_power = thrust - self.thrust_supply(cd, cl)
         return excess_power
 
@@ -104,16 +105,16 @@ class GeneralFunctions:
 
     def calcualate_drag(self, lift_coefficient, *, velocity):
         # AVL
-        geometry_and_mass_files.GeometryFile(self.plane).build_geometry_file(
-            self.plane.reference_values.number_of_surfaces)
+        print(f'lift_Coefficient in calculate drag = {lift_coefficient}')
+        geometry_and_mass_files.GeometryFile(self.plane).build_geometry_file(1)
         geometry_and_mass_files.MassFile(self.plane).build_mass_file()
         athenavortexlattice.AVL(self.plane).run_avl(lift_coefficient=lift_coefficient)
         athenavortexlattice.AVL(self.plane).read_avl_output()
         # Viscous drag
-        if velocity:
+        """if velocity:
             ViscousDrag(self.plane).create_avl_viscous_drag_from_xfoil(velocity=velocity)
         else:
-            ViscousDrag(self.plane).create_avl_viscous_drag_from_xfoil()
+            ViscousDrag(self.plane).create_avl_viscous_drag_from_xfoil()"""
         cd = self.plane.aero_coeffs.drag_coeff.cd_viscous + self.plane.aero_coeffs.drag_coeff.cd_ind
         return cd
 

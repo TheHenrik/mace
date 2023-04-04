@@ -7,11 +7,10 @@ from mace.domain import params, Plane
 from mace.aero import generalfunctions
 
 
-
 class TurningFlight:
     def __init__(self, plane: Plane):
         self.plane = plane
-        self.mass = self.plane.mass
+        self.mass = self.plane.mass[0]
         self.s_ref = self.plane.reference_values.s_ref
         self.g = params.Constants.g
         self.rho = params.Constants.rho
@@ -45,7 +44,8 @@ class TurningFlight:
     # ---Kurvenradius---
 
     def turn_radius(self, *, v=None, r_k=None, cl=None, n=None, phi=None) -> (float, float, float, float, float):
-        """This fuction recieves 2 input parameters (not n and phi, either or) and returns a tupel with all 5 turning flight defining parameters.
+        """This fucntion recieves 2 input parameters (not n and phi, either or) and returns a tupel with all 5 turning
+        flight defining parameters.
         (velocity, radius of turning flight, lift coefficient, load faktor, rolling angle, turning_velocity chi_dot)
 
         phi in degrees
@@ -58,11 +58,12 @@ class TurningFlight:
             n = ((v**2) / (self.g * r_k))**2 + 1
             phi = math.degrees(math.acos(1/n))
             cl = (2 * m) / (self.rho * self.s_ref * r_k * (1/n) * (n**2 - 1)**0.5)
-            return v, r_k, cl, n, phi
+            return v, r_k, cl, n, phi, self.turning_velocity(v, r_k)
 
         elif v and cl:                         # v, ca
 
             n = (cl * self.rho/2 * v**2 * self.s_ref) / (self.mass * self.g)
+            print(f'n = {n}')
             phi = math.degrees(math.acos(1 / n))
             r_k = (v**2) / (self.g * (n**2 - 1)**0.5)
             return v, r_k, cl, n, phi, self.turning_velocity(v, r_k)
@@ -165,7 +166,8 @@ class TurningFlight:
         chi_increment in degrees
         """
         delta = (r_k * self.mass / excess_power) * (
-                    (v_0 / r_k) ** 2 + 2 * math.radians(chi_inkrement) * excess_power / (r_k * self.mass) ** 0.5 - v_0 / r_k)
+                ((v_0 / r_k) ** 2 + 2 * math.radians(chi_inkrement) * excess_power / (r_k * self.mass)) ** 0.5 - v_0 / r_k)
+        print(f'delta = {delta},')
         v_0_neu = excess_power / self.mass * delta + v_0
         return delta, v_0_neu
 
@@ -180,16 +182,19 @@ class TurningFlight:
         duration = 0
         distance1 = 0
         distance2 = 0
+        print(f'v_start = {v_start}')
         current_velocity = v_start
+        print(f'velocity = {current_velocity}')
         cl = float()
         r_k = float()
-        number_of_steps = (turn_angle / chi_inkrement) + 1
+        number_of_steps = int((turn_angle // chi_inkrement) + 1)
         for angle in np.linspace(0, turn_angle, number_of_steps):
             thrust = generalfunctions.GeneralFunctions(self.plane).current_thrust(current_velocity)
             if lift_coefficient:
                 cl = lift_coefficient
                 r_k = self.turn_radius(v=current_velocity, cl=cl)
             if turn_radius:
+                print(f'velocity = {current_velocity}, turn_radius = {turn_radius}')
                 cl = self.turn_radius(v=current_velocity, r_k=turn_radius)[2]
                 r_k = turn_radius
             elif phi:
@@ -203,12 +208,16 @@ class TurningFlight:
             # drag estimation
             cd = generalfunctions.GeneralFunctions(self.plane).calcualate_drag(cl, velocity=current_velocity)
 
+            print(f'cd = {cd}, cl = {cl}, thrust = {thrust}')
             excess_power = generalfunctions.GeneralFunctions(self.plane).excess_power(cd, cl, thrust)
+            print(f'excess_power = {excess_power}')
             delta_time = self.delta_t(r_k, excess_power, current_velocity, chi_inkrement)
-            duration += delta_time[1]
-            distance1 += delta_time[1] * current_velocity
-            current_velocity = delta_time[2]
-            distance2 += delta_time[1] * current_velocity
+            duration += delta_time[0]
+            distance1 += delta_time[0] * current_velocity
+            print(f'velocity = {current_velocity}')
+            current_velocity = delta_time[1]
+            print(f'velocity = {current_velocity}')
+            distance2 += delta_time[0] * current_velocity
         distance = (distance1 + distance2) / 2
         finish_velocity = current_velocity
         return finish_velocity, duration, distance

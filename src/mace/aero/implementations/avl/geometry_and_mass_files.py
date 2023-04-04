@@ -621,8 +621,10 @@ class GeometryFile:
                             f'{element.segments[index].a_inc_outer}\n\n')
 
         if isinstance(element.segments[index].inner_airfoil.type, type(pl.Naca())):
-            geometry_file.write(f'NACA\n')
-            geometry_file.write(f'{element.segments[index].outer_airfoil.type.number_of_naca:0>4}\n\n')
+            # geometry_file.write(f'NACA\n')
+            # geometry_file.write(f'{element.segments[index].outer_airfoil.type.number_of_naca:0>4}\n\n')
+            geometry_file.write(f'AFIL  0.0  1.0\n')
+            geometry_file.write(f'{element.segments[index].inner_airfoil.type.filepath}\n\n')
         if isinstance(element.segments[index].inner_airfoil.type, type(pl.AirfoilFile())):
             geometry_file.write(f'AFIL  0.0  1.0\n')
             geometry_file.write(f'{element.segments[index].outer_airfoil.type.filepath}\n\n')

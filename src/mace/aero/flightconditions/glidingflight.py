@@ -8,7 +8,7 @@ from mace.domain import params, Plane
 class GlidingFlight:
     def __init__(self, plane: Plane):
         self.plane = plane
-        self.mass = self.plane.mass
+        self.mass = self.plane.mass[0]
         self.s_ref = self.plane.reference_values.s_ref
         self.g = params.Constants.g
         self.rho = params.Constants.rho

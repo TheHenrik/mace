@@ -58,7 +58,18 @@ class BuildMission:
 
         berechnung_turning = input('Berechnung Turning Flight? (Ja/Nein)')
         if berechnung_turning == 'Ja':
-            pass
+            result_turning = turningflight.TurningFlight(self.plane).turn_radius(v=10, r_k=25)
+            print(f'velocity = {result_turning[0]}')
+            print(f'radius of turning flight = {result_turning[1]}')
+            print(f'lift coefficient = {result_turning[2]}')
+            print(f'load faktor = {result_turning[3]}')
+            print(f'rolling angel = {result_turning[4]}')
+            print(f'turning velocity chi_dot = {result_turning[5]}')
+            print(f'turning time for 180deg = '
+                  f'{turningflight.TurningFlight(self.plane).turning_time(180, result_turning[5])}')
+            print(f'needed_thrust = '
+                  f'{turningflight.TurningFlight(self.plane).needed_thrust_for_turn(0.05, result_turning[2], n=result_turning[3])}')
+            print(f'turn_acceleration = {turningflight.TurningFlight(self.plane).turn_acceleration(10, 180, 5, turn_radius=25)}')
 
         # Gliding Flight
 
