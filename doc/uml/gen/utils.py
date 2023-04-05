@@ -97,10 +97,10 @@ def write_uml_file(filename, classes):
 
 
 if __name__ == "__main__":
-    from mace.domain import plane
+    from mace import domain
 
     classes = []
-    for attr, value in plane.__dict__.items():
+    for attr, value in domain.__dict__.items():
         if not is_valid_class(value):
             continue
         classes.append(value)
