@@ -15,7 +15,7 @@ class BuildMission:
 
         berechnung_takeoff = input('Berechnung Takeoff? (Ja/Nein)')
         if berechnung_takeoff == 'Ja':
-            v_min = float(input('Bitte Abhebegeschwindigkeit angeben:\n'))
+            v_min = float(input('Bitte minimale Fluggeschwindigkeit angeben:\n'))
             step = float(input('Bitte Schrittweite der Iterationsschritte angeben:\n'))
             v_timer_start = float(input('Bitte Startgeschwindigkeit für Timer angeben:\n'))
             takeoff.Takeoff(self.plane).takeoff(v_min, step, v_timer_start=v_timer_start)
@@ -45,20 +45,20 @@ class BuildMission:
 
         berechnung_horizontal = input('Berechnung Horizontal Flight? (Ja/Nein)')
         if berechnung_horizontal == 'Ja':
-            horizontalflight.HorizontalFlight(self.plane).fv_diagramm(0.3, 0.5)
+            horizontalflight.HorizontalFlight(self.plane).fv_diagramm(0.6, 0.8)
             print(f'velocity, needed_thrust = '
                   f'{self.plane.flightconditions.horizontalflight.results.thrust_velocity_correlation}')
             print(f'minimum_thrust = {self.plane.flightconditions.horizontalflight.results.minimum_thrust}')
             print(f'maximum_flight_velocity = '
                   f'{self.plane.flightconditions.horizontalflight.results.maximum_flight_velocity}')
-            accel = horizontalflight.HorizontalFlight(self.plane).acceleration(10, 20, 0.1)
-            print(f'Acceleration time = {accel[0]}, distance = {accel[1]}')
+            # accel = horizontalflight.HorizontalFlight(self.plane).acceleration(10, 20, 0.1)
+            # print(f'Acceleration time = {accel[0]}, distance = {accel[1]}')
 
         # Turning Flight
 
         berechnung_turning = input('Berechnung Turning Flight? (Ja/Nein)')
         if berechnung_turning == 'Ja':
-            result_turning = turningflight.TurningFlight(self.plane).turn_radius(v=10, r_k=25)
+            result_turning = turningflight.TurningFlight(self.plane).turn_radius(v=10, r_k=1)
             print(f'velocity = {result_turning[0]}')
             print(f'radius of turning flight = {result_turning[1]}')
             print(f'lift coefficient = {result_turning[2]}')
@@ -87,7 +87,7 @@ class BuildMission:
 
 
 if __name__ == "__main__":
-    testplane = PlaneParser("testplane.toml").get("Plane")
+    testplane = PlaneParser("aachen.toml").get("Plane")
     GeometryFile(testplane).build_geometry_file(1)
     MassFile(testplane).build_mass_file()
     # athenavortexlattice.AVL(testplane).run_avl(lift_coefficient=testplane.aero_coeffs.lift_coeff.cl_roll)

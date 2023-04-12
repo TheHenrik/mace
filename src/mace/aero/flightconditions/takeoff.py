@@ -196,6 +196,8 @@ class Takeoff:
             w = self.drag_rolling(v)    # Widerstand
             a = self.lift_rolling(v)    # Auftrieb
             r = self.rollreibung(self.my, a)     # Rollreibungswiderstand
+            if r < 0:
+                r = 0
 
             print(f'v1 = {v1}, v2 = {v2}, f = {f}, w = {w}, a = {a}, G = {9.81 * self.mass[0]},r = {r}')
             print(f'delta_x = {self.delta_x(v1, v2, f, w, r)}')

@@ -94,7 +94,7 @@ class Wing:
     name = "Wing"
     n_chordwise: int = 10
     c_space: int = 1  # = cos
-    n_spanwise: int = 40
+    n_spanwise: int = 20
     s_space: int = -2  # = -sin, good for straight, elliptical or slightly tapered wings, in other cases cos (1)
     x_scale: float = 0
     y_scale: float = 0
