@@ -49,7 +49,7 @@ class GlidingFlight:
         gliding_data = np.array([])
         self.plane.aero_coeffs.drag_coeff.cd_viscous = 0
 
-        num = int(((cl_end - cl_start) / cl_step) + 2)
+        num = int(((cl_end - cl_start) / cl_step) + 1)
         print(f'num = {num}, cl_start = {cl_start}, cl_end = {cl_end}')
         print(np.linspace(cl_start, cl_end, num))
         for cl in np.linspace(cl_start, cl_end, num):
@@ -64,7 +64,7 @@ class GlidingFlight:
             # ViscousDrag -> cd_vis: Iteration: v_glidingflight ausrechnen, ViscousDrag, dann neu
             cd = self.plane.aero_coeffs.drag_coeff.cd_viscous + self.plane.aero_coeffs.drag_coeff.cd_ind
             velocity_init = self.v_gliding_flight(cd, cl)
-            ViscousDrag(self.plane).create_avl_viscous_drag_from_xfoil(velocity=velocity_init)
+            # ViscousDrag(self.plane).create_avl_viscous_drag_from_xfoil(velocity=velocity_init)
             cd = self.plane.aero_coeffs.drag_coeff.cd_viscous + self.plane.aero_coeffs.drag_coeff.cd_ind
             velocity = self.v_gliding_flight(cd, cl)
             i = 0
@@ -75,8 +75,9 @@ class GlidingFlight:
                 velocity = self.v_gliding_flight(cd, cl)
                 i += 1
 
+            gamma = self.gamma(cd, cl)[0]
             results = np.array([cl, cd, self.plane.aero_coeffs.drag_coeff.cd_viscous,
-                                self.plane.aero_coeffs.drag_coeff.cd_ind, velocity, self.v_vertical(velocity, cd)])
+                                self.plane.aero_coeffs.drag_coeff.cd_ind, velocity, self.v_vertical(velocity, cd), gamma])
 
             if cl == cl_start:
                 gliding_data = results

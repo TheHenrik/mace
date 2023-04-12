@@ -46,7 +46,7 @@ def get_xfoil_polar(airfoil_name, reynoldsnumber, *,
     with open("C:/Users/Gregor/Documents/GitHub/mace/temporary/input_file_xfoil.in", 'w') as input_file:
         input_file.write(f'LOAD {airfoil_name}\n')
         input_file.write(f'NORM\n')
-#        input_file.write(f'PANE\n')
+        input_file.write(f'PANE\n')
         input_file.write(f'OPER\n')
         input_file.write(f'Visc {reynoldsnumber}\n')
         if mach != 0:

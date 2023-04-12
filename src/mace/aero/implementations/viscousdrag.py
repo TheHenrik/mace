@@ -88,7 +88,7 @@ class ViscousDrag:
             else:
                 return surface_index
 
-    def create_avl_viscous_drag_from_xfoil(self, *, velocity=None, alfa_step=1):
+    def create_avl_viscous_drag_from_xfoil(self, *, velocity=None, alfa_step=0.9):
         """
         This is written for stationary horizontal flight.
         For other velocities please intput them. The function will compare it with horizontal flight and
