@@ -44,16 +44,17 @@ class GlidingFlight:
         [cl, cd, cd_viscous, cd_induced, velocity, vertical_velocity]
 
         cl_start has to be higher than 0 because of calculation of viscous drag and AVL.
-        cl_end has be be higher than cl_start.
+        cl_end has to be higher than cl_start.
         """
         gliding_data = np.array([])
         self.plane.aero_coeffs.drag_coeff.cd_viscous = 0
 
-        num = cl_end - cl_start / cl_step
+        num = int(((cl_end - cl_start) / cl_step) + 2)
+        print(f'num = {num}, cl_start = {cl_start}, cl_end = {cl_end}')
+        print(np.linspace(cl_start, cl_end, num))
         for cl in np.linspace(cl_start, cl_end, num):
             # AVL -> cd_ind
-            geometry_and_mass_files.GeometryFile(self.plane).build_geometry_file(
-                self.plane.reference_values.number_of_surfaces)
+            geometry_and_mass_files.GeometryFile(self.plane).build_geometry_file(1)
             geometry_and_mass_files.MassFile(self.plane).build_mass_file()
             athenavortexlattice.AVL(self.plane).run_avl(lift_coefficient=cl)
             athenavortexlattice.AVL(self.plane).read_avl_output()

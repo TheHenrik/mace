@@ -75,7 +75,9 @@ class BuildMission:
 
         berechnung_gliding = input('Berechnung Gliding Flight? (Ja/Nein)')
         if berechnung_gliding == 'Ja':
-            pass
+            gliding_data = glidingflight.GlidingFlight(self.plane).v_glide_iteration(0.5, cl_start=0.2, cl_step=0.1, velocity_tolerance=1, it_max=5)
+            print(f'[cl, cd, cd_viscous, cd_induced, velocity, vertical_velocity]')
+            print(gliding_data)
 
         # Landing
 

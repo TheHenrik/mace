@@ -32,12 +32,12 @@ class ViscousDrag:
 
     def get_cl_min_of_surface(self, surface):
         # cl_min = np.min(self.plane.avl.outputs.strip_forces[:, 6])    # (zeile, element) von allen Reihen 6. Element
-        cl_min = np.min(self.plane.avl.outputs.surface_dictionary[surface]["strips"][:, 6])
+        cl_min = np.min(self.plane.avl.outputs.surface_dictionary[surface]["strips"][:, 9])  # 9 und nicht 6 (cl)
         return cl_min
 
     def get_cl_max_of_surface(self, surface):
         # cl_max = np.max(self.plane.avl.outputs.strip_forces[:, 6])    # (zeile, element)
-        cl_max = np.max(self.plane.avl.outputs.surface_dictionary[surface]["strips"][:, 6])
+        cl_max = np.max(self.plane.avl.outputs.surface_dictionary[surface]["strips"][:, 9])  # 9 und nicht 6 (cl)
         return cl_max
 
     def get_chord_min_of_surface(self, surface):
@@ -63,7 +63,7 @@ class ViscousDrag:
         return local_reynolds
 
     def get_reynolds_step(self, reynolds_min, reynolds_max):
-        reynolds_st = (reynolds_max - reynolds_min) / 4
+        reynolds_st = (reynolds_max - reynolds_min) / 8
         return reynolds_st
 
     def in_between_calculation_for_y_le_mac(self, yi, ya, li, la, y):
@@ -98,6 +98,7 @@ class ViscousDrag:
         cd_local_to_global = 0
         viscous_drag = np.zeros(self.plane.avl.outputs.number_of_surfaces)
         overall_viscous_drag = 0
+        area_for_reference = 0
         cl_global = self.plane.aero_coeffs.lift_coeff.cl_tot
         logfile.write(f'cl_global ={cl_global}\n')
         # Compare v_horizontal with new velocity
@@ -147,7 +148,7 @@ class ViscousDrag:
             alfa_min = [0, 0]  # [inner_airfoil, outer_airfoil]
             alfa_max = [0, 0]  # [inner_airfoil, outer_airfoil]
             # alfa_step = 1
-            reserve = 1  # degrees
+            reserve = 0  # degrees
             cl_below_zero = False
             logfile.write(f'inner_airfoil: {inner_airfoil}, outer_airfoil: {outer_airfoil}\n')
             # ---Calculation of alfa_start and alfa_end---
@@ -275,7 +276,7 @@ class ViscousDrag:
                     strip_values_outer = None"""
 
                 chord = strip_values[4]
-                local_cl = strip_values[6]
+                local_cl = strip_values[9]  # 9 und nicht 6 (cl_norm)
                 global_cl = self.plane.aero_coeffs.lift_coeff.cl_tot
                 local_reynolds = v_factor * self.get_local_reynolds(global_cl, chord)
                 logfile.write(f'local_chord = {chord}, local_cl = {local_cl},'
@@ -338,7 +339,9 @@ class ViscousDrag:
                 # adapt profile_cd to s_ref with CD = profile_cd*strip_area/s_ref
                 area = strip_values[5]
                 cd_local_to_global = cd_local * area / self.plane.avl.outputs.s_ref
+                area_for_reference += area
                 logfile.write(f'strip_area = {area}, reference_wing_area = {self.plane.avl.outputs.s_ref},\n'
+                              f'area_for_reference  = {area_for_reference},\n'
                               f'cd_local_to_global = {cd_local_to_global}\n')
 
                 viscous_drag[surface_original - 1] += cd_local_to_global  # noch mit surface Dopplung schauen
@@ -353,10 +356,10 @@ class ViscousDrag:
 
 
 if __name__ == "__main__":
-    plane = PlaneParser("testplane.toml").get("Plane")
+    plane = PlaneParser("aachen.toml").get("Plane")
     GeometryFile(plane).build_geometry_file(1)
     MassFile(plane).build_mass_file()
-    athenavortexlattice.AVL(plane).run_avl(lift_coefficient=1)
+    athenavortexlattice.AVL(plane).run_avl(lift_coefficient=0.7)
 
     athenavortexlattice.AVL(plane).read_avl_output()
     # print(plane.avl.outputs.surface_dictionary)
