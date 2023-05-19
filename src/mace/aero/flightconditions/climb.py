@@ -122,7 +122,7 @@ class Climb:
 
             while not_in_tolerance and i < it_max:
                 print(f'---------------------------------------------------------------------')
-                # ViscousDrag(self.plane).create_avl_viscous_drag_from_xfoil(velocity=v_iteration, alfa_step=1)
+                ViscousDrag(self.plane).create_avl_viscous_drag_from_xfoil(velocity=v_iteration, alfa_step=1)
                 cd = self.plane.aero_coeffs.drag_coeff.cd_viscous + self.plane.aero_coeffs.drag_coeff.cd_ind
                 print(f'cd = {cd}, cd_viscous = {self.plane.aero_coeffs.drag_coeff.cd_viscous},'
                       f' cd_ind = {self.plane.aero_coeffs.drag_coeff.cd_ind}')

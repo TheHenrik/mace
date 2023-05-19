@@ -88,7 +88,7 @@ class ViscousDrag:
             else:
                 return surface_index
 
-    def create_avl_viscous_drag_from_xfoil(self, *, velocity=None, alfa_step=0.9):
+    def create_avl_viscous_drag_from_xfoil(self, *, velocity=None, alfa_step=1):
         """
         This is written for stationary horizontal flight.
         For other velocities please intput them. The function will compare it with horizontal flight and
@@ -327,8 +327,10 @@ class ViscousDrag:
                 if surface > number_of_wing_segments_per_halfspan * 2:
                     pass  # skip to empennage, implemented later
                 else:
-                    y_le_inner = self.plane.wing.segments[surface].nose_inner[1]
-                    y_le_outer = self.plane.wing.segments[surface].nose_outer[1]
+                    # print(surface)
+                    # print(list_index)
+                    y_le_inner = self.plane.wing.segments[list_index].nose_inner[1]     # davor surface
+                    y_le_outer = self.plane.wing.segments[list_index].nose_outer[1]     # davor surface
                 interp = np.array([y_le_inner, y_le_outer])
                 cd_list = np.array([cd_new_inner, cd_new_outer])
                 cd_local = np.interp(strip_values[2], interp, cd_list)  # (y_le, interp, cd_list)
@@ -359,7 +361,7 @@ if __name__ == "__main__":
     plane = PlaneParser("aachen.toml").get("Plane")
     GeometryFile(plane).build_geometry_file(1)
     MassFile(plane).build_mass_file()
-    athenavortexlattice.AVL(plane).run_avl(lift_coefficient=0.7)
+    athenavortexlattice.AVL(plane).run_avl(lift_coefficient=0.8)
 
     athenavortexlattice.AVL(plane).read_avl_output()
     # print(plane.avl.outputs.surface_dictionary)
