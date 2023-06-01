@@ -48,11 +48,11 @@ segments = "WingSegment"
 type = "Naca"
 
 [AirfoilFile]
-filepath = "C:/Users/Gregor/Documents/GitHub/mace/data/airfoils/ag19.dat"
+filepath = "/Users/jannik/Documents/GitHub/mace/data/airfoils/ag19.dat"
 
 [Naca]
 number_of_naca = 12
-filepath = "C:/Users/Gregor/Documents/GitHub/mace/data/airfoils/ag19.dat"
+filepath = "/Users/jannik/Documents/GitHub/mace/data/airfoils/ag19.dat"
 
 [Propulsion]
 thrust = [[0, 16.7], [8, 15.2], [12, 14.1], [16, 12.4], [20, 11], [30, 9], [50, 5]]

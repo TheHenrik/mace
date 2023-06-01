@@ -1,6 +1,7 @@
 import os
 from mace.domain import Plane, plane as pl
 from mace.domain.parser import PlaneParser
+from pathlib import Path
 
 # ========== Geometry File ==========
 
@@ -866,17 +867,18 @@ class GeometryFile:
 
         Coordinate system: X downstream, Y out the right wing, Z up
         """
+        tool_path = Path(__file__).resolve().parents[5]
+        file_path = os.path.join(tool_path, "temporary/geometry_file.avl")
+        if os.path.exists(file_path):
+            os.remove(file_path)
 
-        if os.path.exists("C:/Users/Gregor/Documents/GitHub/mace/temporary/geometry_file.avl"):
-            os.remove("C:/Users/Gregor/Documents/GitHub/mace/temporary/geometry_file.avl")
-
-        with open("C:/Users/Gregor/Documents/GitHub/mace/temporary/geometry_file.avl", "w") as geometry_file:
+        with open(file_path, "w") as geometry_file:
             GeometryFile.build_geo_header(self, geometry_file)
             geometry_file.write(f'\n#======================\n')
             for surface in range(number_of_surfaces):
                 GeometryFile.build_geo_surface(self, geometry_file)
 
-        self.plane.avl.inputs.avl_file = "C:/Users/Gregor/Documents/GitHub/mace/temporary/geometry_file.avl"
+        self.plane.avl.inputs.avl_file = file_path
 
 
 # ========== Mass File ==========
@@ -1244,10 +1246,12 @@ class MassFile:
         air density, in the units given above.  If these statements are absent,
         these constants default to 1.0, and will need to be changed manually at runtime.
         """
-        if os.path.exists("C:/Users/Gregor/Documents/GitHub/mace/temporary/mass_file.mass"):
-            os.remove("C:/Users/Gregor/Documents/GitHub/mace/temporary/mass_file.mass")
+        tool_path = Path(__file__).resolve().parents[5]
+        file_path = os.path.join(tool_path, "temporary/mass_file.mass")
+        if os.path.exists(file_path):
+            os.remove(file_path)
 
-        with open("C:/Users/Gregor/Documents/GitHub/mace/temporary/mass_file.mass", "w") as mass_file:
+        with open(file_path, "w") as mass_file:
             mass_file.write(f'Lunit = {self.plane.parameters.units.l_unit} m\n')
             mass_file.write(f'Munit = {self.plane.parameters.units.m_unit} kg\n')
             mass_file.write(f'Tunit = {self.plane.parameters.units.t_unit} s\n')
@@ -1256,7 +1260,7 @@ class MassFile:
             mass_file.write(f'rho = {self.plane.parameters.constants.rho}\n')
             MassFile.build_mass_table(self, mass_file)
 
-        self.plane.avl.inputs.mass_file = "C:/Users/Gregor/Documents/GitHub/mace/temporary/mass_file.mass"
+        self.plane.avl.inputs.mass_file = file_path
 
 
 # ========== Test ===========

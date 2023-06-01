@@ -1,0 +1,57 @@
+Gregors Testplane
+# Mach
+0
+#IYsym	IZsym	Zsym
+0         0         0         
+
+#Sref	Cref	Bref
+0.53      0.268     2.064     
+#Xref	Yref	Zref
+0         0         0         
+
+#======================
+SURFACE
+Wing
+10  1  20  -2
+
+Component
+1
+
+YDUPLICATE
+0.0
+
+TRANSLATE
+0	0	0
+
+ANGLE
+0.00000
+
+#--------------------
+SECTION
+#Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
+0.0  0.0  0.0  0.292  0
+
+AFIL  0.0  1.0
+/Users/jannik/Documents/GitHub/mace/data/airfoils/ag19.dat
+
+SECTION
+#Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
+0.002  0.52  0.0  0.29  0
+
+AFIL  0.0  1.0
+/Users/jannik/Documents/GitHub/mace/data/airfoils/ag19.dat
+
+SECTION
+#Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
+0.045  0.84  0.0  0.23000000000000004  0
+
+AFIL  0.0  1.0
+/Users/jannik/Documents/GitHub/mace/data/airfoils/ag19.dat
+
+SECTION
+#Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
+0.15  1.032  0.0  0.08000000000000002  0
+
+AFIL  0.0  1.0
+/Users/jannik/Documents/GitHub/mace/data/airfoils/ag19.dat
+

@@ -9,6 +9,8 @@ import numpy as np
 import math
 from mace.domain.parser import PlaneParser
 from mace.aero.implementations.avl.geometry_and_mass_files import GeometryFile, MassFile
+from pathlib import Path
+import os
 
 
 class ViscousDrag:
@@ -94,7 +96,10 @@ class ViscousDrag:
         For other velocities please intput them. The function will compare it with horizontal flight and
         will use an optimized reynoldsnumber. (Therefore cl has to be higher than 0.)
         """
-        logfile = open("C:/Users/Gregor/Documents/GitHub/mace/temporary/logfile.txt", 'w')
+        tool_path = Path(__file__).resolve().parents[4]
+        logfile_path = os.path.join(tool_path, "temporary", "logfile.txt")
+
+        logfile = open(logfile_path, 'w')
         cd_local_to_global = 0
         viscous_drag = np.zeros(self.plane.avl.outputs.number_of_surfaces)
         overall_viscous_drag = 0

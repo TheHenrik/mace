@@ -1,6 +1,7 @@
 import inspect
 import tomllib
-
+from pathlib import Path
+import os
 import numpy as np
 
 from mace.domain import plane
@@ -8,7 +9,9 @@ from mace.domain import plane
 
 class PlaneParser:
     def __init__(self, path) -> None:
-        with open(f"C:/Users/Gregor/Documents/GitHub/mace/data/planes/{path}", "rb") as f:
+        tool_path = Path(__file__).resolve().parents[3]
+        file_path = os.path.join(tool_path, "data/planes", path)
+        with open(file_path, "rb") as f:
             self.data = tomllib.load(f)
         self.classes = {
             key: val

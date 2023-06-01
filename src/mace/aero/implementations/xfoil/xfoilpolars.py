@@ -1,7 +1,7 @@
 import os                       # operation system
 import numpy as np
 from mace.aero.implementations import runsubprocess as runsub
-
+from pathlib import Path
 
 # ---Inputs---
 
@@ -40,10 +40,15 @@ def get_xfoil_polar(airfoil_name, reynoldsnumber, *,
     """
     # ---Inputfile writer---
 
-    if os.path.exists("C:/Users/Gregor/Documents/GitHub/mace/temporary/polar_file.txt"):
-        os.remove("C:/Users/Gregor/Documents/GitHub/mace/temporary/polar_file.txt")
+    tool_path = Path(__file__).resolve().parents[5]
+    polar_file_path = os.path.join(tool_path, "temporary/polar_file.txt")
+    input_file_path = os.path.join(tool_path, "temporary/input_file_xfoil.in")
+    xfoil_path = os.path.join(tool_path, "Xfoil-for-Mac-main/bin/xfoil")
 
-    with open("C:/Users/Gregor/Documents/GitHub/mace/temporary/input_file_xfoil.in", 'w') as input_file:
+    if os.path.exists(polar_file_path):
+        os.remove(polar_file_path)
+
+    with open(input_file_path, 'w') as input_file:
         input_file.write(f'LOAD {airfoil_name}\n')
         input_file.write(f'NORM\n')
 #        input_file.write(f'PANE\n')
@@ -59,7 +64,7 @@ def get_xfoil_polar(airfoil_name, reynoldsnumber, *,
                 input_file.write(f'XTR {x_transition_top/100} {x_transition_bottom/100}\n')
             input_file.write(f'\n')
         input_file.write(f'PACC\n')
-        input_file.write(f'C:/Users/Gregor/Documents/GitHub/mace/temporary/polar_file.txt\n\n')
+        input_file.write(polar_file_path + '\n\n')
         # input_file.write(f'polar_file.txt\n\n')
         input_file.write(f'ITER {n_iter}\n')
         if alfa is not None:
@@ -78,11 +83,11 @@ def get_xfoil_polar(airfoil_name, reynoldsnumber, *,
 
     # ---Run XFOIL---
 
-    cmd = "C:/Users/Gregor/Documents/Modellflug/Software/XFOIL/xfoil.exe <" \
-          "C:/Users/Gregor/Documents/GitHub/mace/temporary/input_file_xfoil.in"   # external command to run
+    cmd = xfoil_path + \
+          input_file_path  # external command to run
     runsub.run_subprocess(cmd)
 
-    polar_data = np.loadtxt("C:/Users/Gregor/Documents/GitHub/mace/temporary/polar_file.txt", skiprows=12)
+    polar_data = np.loadtxt(polar_file_path, skiprows=12)
     # polar_data = np.loadtxt("polar_file.txt", skiprows=12)      # max_rows ist Parameter für Anzahl Zeilen
 
     # Find all PIDs of all the running instances of process that contains "xfoil" in its name
@@ -95,8 +100,8 @@ def get_xfoil_polar(airfoil_name, reynoldsnumber, *,
 # ---Test---
 
 if __name__ == "__main__":
-
-    airfoil_name = "C:/Users/Gregor/Documents/GitHub/mace/data/airfoils/n0012.dat"
+    tool_path = Path(__file__).resolve().parents[3]
+    airfoil_name = os.path.join(tool_path, "data/airfoils/n0012.dat")
     alfa_start = 0
     alfa_end = 20
     alfa_step = 0.25
