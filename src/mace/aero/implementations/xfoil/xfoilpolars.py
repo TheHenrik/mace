@@ -43,7 +43,7 @@ def get_xfoil_polar(airfoil_name, reynoldsnumber, *,
     tool_path = Path(__file__).resolve().parents[5]
     polar_file_path = os.path.join(tool_path, "temporary/polar_file.txt")
     input_file_path = os.path.join(tool_path, "temporary/input_file_xfoil.in")
-    xfoil_path = os.path.join(tool_path, "Xfoil-for-Mac-main/bin/xfoil")
+    xfoil_path = os.path.join(tool_path, "Xfoil/bin/xfoil")
 
     if os.path.exists(polar_file_path):
         os.remove(polar_file_path)
