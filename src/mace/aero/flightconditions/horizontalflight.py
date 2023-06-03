@@ -36,47 +36,38 @@ class HorizontalFlight:
         Returns an array with the correlation between velocity and needed thrust supply in horizontal flight.
         [[v1, t1], [v2, t2], [...], ...]
         """
-        cl = cl_start
+        # Initialize vectors
+        cl_list = np.arange(cl_start, cl_end, step)
+        results = []
 
-        results = np.array([])
-        error = False
+        # Build AVL input files
+        geometry_and_mass_files.GeometryFile(self.plane).build_geometry_file(1)
+        geometry_and_mass_files.MassFile(self.plane).build_mass_file()
 
-        while cl <= cl_end and error is False:
+        # Evaluate required thrust in cl range
+        for cl in cl_list:
+            # Fluggeschwindigkeit ermitteln
+            v = self.flight_velocity(cl)
 
-            # ---Widerstand ermitteln---
-            # AVL mit cl ausführen. -> cd_induced.
-            geometry_and_mass_files.GeometryFile(self.plane).build_geometry_file(1)
-            geometry_and_mass_files.MassFile(self.plane).build_mass_file()
+            # --- Evaluate Drag ---
+            # Run AVL with given cl -> cd_induced
             athenavortexlattice.AVL(self.plane).run_avl(lift_coefficient=cl)
             athenavortexlattice.AVL(self.plane).read_avl_output()
-            # if Fehler:
-            #     error = False
-
-            # Fluggeschwindigkeit ermitteln
-            velocity = self.flight_velocity(cl)
 
             # cd_viscous mit XFOIL ermitteln
-            # ViscousDrag(self.plane).create_avl_viscous_drag_from_xfoil()
+            ViscousDrag(self.plane).create_avl_viscous_drag_from_xfoil()
             cd = self.plane.aero_coeffs.drag_coeff.cd_viscous + self.plane.aero_coeffs.drag_coeff.cd_ind
-            # if Fehler:
-            #     error = False
 
             # Calculate needed thrust for cl
-            needed_thrust = self.thrust_supply(cd, cl)
+            thrust = self.thrust_supply(cd, cl)
 
-            res = velocity, needed_thrust
+            results.append([v, thrust])
 
-            if cl == cl_start:
-                results = res
-            else:
-                results = np.vstack((results, res))
-
-            cl += step
-        self.plane.flightconditions.horizontalflight.results.thrust_velocity_correlation = results
-        self.plane.flightconditions.horizontalflight.results.minimum_thrust = self.min_thrust()
-        if self.plane.propulsion.thrust is not None and not np.array([]):
-            print(f'in Schleife für max_flight_velocity')
-            self.plane.flightconditions.horizontalflight.results.maximum_flight_velocity = self.max_flight_velocity()
+        # self.plane.flightconditions.horizontalflight.results.thrust_velocity_correlation = results
+        # self.plane.flightconditions.horizontalflight.results.minimum_thrust = self.min_thrust()
+        # if self.plane.propulsion.thrust is not None and not np.array([]):
+        #     print(f'in Schleife für max_flight_velocity')
+        #     self.plane.flightconditions.horizontalflight.results.maximum_flight_velocity = self.max_flight_velocity()
         return results
 
     # ---Auswertung---

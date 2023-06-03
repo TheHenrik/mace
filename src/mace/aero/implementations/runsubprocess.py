@@ -11,8 +11,9 @@ def run_subprocess(cmd, timeout=5):
     """
     # cmd = "C:/Users/Gregor/Documents/Modellflug/Software/XFOIL/xfoil.exe < input_file.in"
     try:
-        p = subprocess.Popen(cmd, shell=True, start_new_session=True)
-        p.wait(timeout=timeout)
+        with open(os.devnull, 'w') as devnull:
+            p = subprocess.Popen(cmd, shell=True, start_new_session=True, stdout=devnull)
+            p.wait(timeout=timeout)
     except subprocess.TimeoutExpired:
         # print(p.pid)
         pass
@@ -66,4 +67,5 @@ def kill_subprocesses(list_of_process_ids):
             print((process_id, process_name, process_creation_time))
             os.kill(process_id, signal.SIGTERM)
     else:
-        print("No running process found with given text")
+        pass
+        #print("No running process found with given text")

@@ -879,6 +879,7 @@ class GeometryFile:
                 GeometryFile.build_geo_surface(self, geometry_file)
 
         self.plane.avl.inputs.avl_file = file_path
+        print('AVL Geometry File built successfully')
 
 
 # ========== Mass File ==========
@@ -1173,7 +1174,7 @@ class MassFile:
         mass_file.write(f'*   1.    1.    1.    1.     1.     1.      1.      1.    1.    1.\n')
         mass_file.write(f'+   0.    0.    0.    0.     0.     0.      0.      0.    0.    0.\n')
         # for component in self.plane:  # self.plane.components is list of components
-        print(hasattr(self.plane, "mass"))
+        # print(hasattr(self.plane, "mass"))
         if hasattr(self.plane, "mass"):
             mass_file.write(f'\t{self.plane.mass[0]}\t{self.plane.mass[1]}'
                             f'\t{self.plane.mass[2]}\t{self.plane.mass[3]}')
@@ -1261,6 +1262,7 @@ class MassFile:
             MassFile.build_mass_table(self, mass_file)
 
         self.plane.avl.inputs.mass_file = file_path
+        print('AVL Mass File built successfully')
 
 
 # ========== Test ===========

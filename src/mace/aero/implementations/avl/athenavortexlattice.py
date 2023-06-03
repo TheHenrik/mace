@@ -11,7 +11,7 @@ class AVL:
     def __init__(self, plane: Plane):
         self.plane = plane
         tool_path = Path(__file__).resolve().parents[5]
-        self.avl_path = os.path.join(tool_path, "avl")
+        self.avl_path = os.path.join(tool_path, "avl.exe")
         self.total_forces_file_name = os.path.join(tool_path, "temporary/total_forces.avl")
         self.strip_forces_file_name = os.path.join(tool_path, "temporary/strip_forces.avl")
         self.input_file_name = os.path.join(tool_path, "temporary/input_file_avl.in")

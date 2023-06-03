@@ -82,9 +82,8 @@ def get_xfoil_polar(airfoil_name, reynoldsnumber, *,
         input_file.write(f'quit \n')
 
     # ---Run XFOIL---
-
-    cmd = xfoil_path + \
-          input_file_path  # external command to run
+    cmd = xfoil_path + " <" + \
+         input_file_path  # external command to run
     runsub.run_subprocess(cmd)
 
     polar_data = np.loadtxt(polar_file_path, skiprows=12)
@@ -95,7 +94,6 @@ def get_xfoil_polar(airfoil_name, reynoldsnumber, *,
 
     runsub.kill_subprocesses(list_of_process_ids)
     return polar_data
-
 
 # ---Test---
 
