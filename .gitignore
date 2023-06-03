@@ -171,3 +171,7 @@ data/Airfoils/*.dat
 
 #Markdownlint
 .markdownlint.json
+*.avl
+*.in
+temporary/logfile.txt
+temporary/polar_file.txt

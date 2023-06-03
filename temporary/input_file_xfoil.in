@@ -1,28 +1,12 @@
-<<<<<<< Updated upstream
-LOAD /Users/jannik/Documents/GitHub/mace/src/mace/data/airfoils/n0012.dat
+LOAD /Users/jannik/Documents/GitHub/mace/data/airfoils/ag19.dat
 NORM
 OPER
-Visc 200000
-Mach 0.6
-VPAR
-N 5.794
-XTR 0.54 1.0
-
-=======
-LOAD C:/IFB/mace/data/airfoils/ag19.dat
-NORM
-OPER
-Visc 290000.0
->>>>>>> Stashed changes
+Visc 660000.0
 PACC
-C:\IFB\mace\temporary/polar_file.txt
+/Users/jannik/Documents/GitHub/mace/temporary/polar_file.txt
 
 ITER 100
-<<<<<<< Updated upstream
-CSeq -0.1 0.5 0.05
-=======
-ASeq 0 -1 1
->>>>>>> Stashed changes
+ASeq 0 -3 1
 
 
 quit 

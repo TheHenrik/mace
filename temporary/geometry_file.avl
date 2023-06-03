@@ -32,26 +32,26 @@ SECTION
 0.0  0.0  0.0  0.292  0
 
 AFIL  0.0  1.0
-C:/IFB/mace/data/airfoils/ag19.dat
+/Users/jannik/Documents/GitHub/mace/data/airfoils/ag19.dat
 
 SECTION
 #Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
 0.002  0.52  0.0  0.29  0
 
 AFIL  0.0  1.0
-C:/IFB/mace/data/airfoils/ag19.dat
+/Users/jannik/Documents/GitHub/mace/data/airfoils/ag19.dat
 
 SECTION
 #Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
 0.045  0.84  0.0  0.23000000000000004  0
 
 AFIL  0.0  1.0
-C:/IFB/mace/data/airfoils/ag19.dat
+/Users/jannik/Documents/GitHub/mace/data/airfoils/ag19.dat
 
 SECTION
 #Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
 0.15  1.032  0.0  0.08000000000000002  0
 
 AFIL  0.0  1.0
-C:/IFB/mace/data/airfoils/ag19.dat
+/Users/jannik/Documents/GitHub/mace/data/airfoils/ag19.dat
 

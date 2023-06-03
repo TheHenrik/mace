@@ -1,12 +1,12 @@
-LOAD C:\IFB\mace\temporary/geometry_file.avl
-MASS C:\IFB\mace\temporary/mass_file.mass
+LOAD /Users/jannik/Documents/GitHub/mace/temporary/geometry_file.avl
+MASS /Users/jannik/Documents/GitHub/mace/temporary/mass_file.mass
 OPER
-A C 0.8
+A C 0.1
 X
 MRF
 FT
-C:\IFB\mace\temporary/total_forces.avl
+/Users/jannik/Documents/GitHub/mace/temporary/total_forces.avl
 FS
-C:\IFB\mace\temporary/strip_forces.avl
+/Users/jannik/Documents/GitHub/mace/temporary/strip_forces.avl
 
 QUIT
