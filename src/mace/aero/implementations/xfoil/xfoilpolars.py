@@ -87,19 +87,17 @@ def get_xfoil_polar(airfoil_name, reynoldsnumber, *,
     runsub.run_subprocess(cmd)
 
     polar_data = np.loadtxt(polar_file_path, skiprows=12)
-    # polar_data = np.loadtxt("polar_file.txt", skiprows=12)      # max_rows ist Parameter für Anzahl Zeilen
-
-    # Find all PIDs of all the running instances of process that contains "xfoil" in its name
+    
     list_of_process_ids = runsub.find_process_id_by_name("xfoil")
+    runsub.kill_subprocesses(list_of_process_ids) 
 
-    runsub.kill_subprocesses(list_of_process_ids)
-    return polar_data
+    return polar_data #   alpha    CL        CD       CDp       CM     Top_Xtr  Bot_Xtr
 
 # ---Test---
 
 if __name__ == "__main__":
-    tool_path = Path(__file__).resolve().parents[3]
-    airfoil_name = os.path.join(tool_path, "data/airfoils/n0012.dat")
+    tool_path = Path(__file__).resolve().parents[5]
+    airfoil_name = os.path.join(tool_path, "data/airfoils/ag19.dat")
     alfa_start = 0
     alfa_end = 20
     alfa_step = 0.25
@@ -107,7 +105,5 @@ if __name__ == "__main__":
     n_iter = 80            # wenn keine Konvergenz reduzieren, Ergebnisse scheinen annähernd gleich zu bleiben
 
     polar_daten = get_xfoil_polar(airfoil_name, reynolds,
-                                  cl_start=-0.1, cl_end=0.5,
-                                  # alfa_start=alfa_start, alfa_end=alfa_end, alfa_step=alfa_step, n_iter=n_iter,
-                                  n_crit=5.794, x_transition_top=54, mach=0.6)
+                                  cl = 0.5)
     print(polar_daten)

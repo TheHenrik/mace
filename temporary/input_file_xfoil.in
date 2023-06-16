@@ -1,12 +1,12 @@
 LOAD /Users/jannik/Documents/GitHub/mace/data/airfoils/ag19.dat
 NORM
 OPER
-Visc 660000.0
+Visc 470000.0
 PACC
 /Users/jannik/Documents/GitHub/mace/temporary/polar_file.txt
 
 ITER 100
-ASeq 0 -3 1
+ASeq 0 10 0.1
 
 
 quit 

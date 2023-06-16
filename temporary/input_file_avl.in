@@ -1,7 +1,6 @@
 LOAD /Users/jannik/Documents/GitHub/mace/temporary/geometry_file.avl
 MASS /Users/jannik/Documents/GitHub/mace/temporary/mass_file.mass
 OPER
-A C 0.1
 X
 MRF
 FT

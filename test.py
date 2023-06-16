@@ -1,4 +1,5 @@
 from pathlib import Path
+import scipy
+import matplotlib.pyplot as plt
 
-p = Path(__file__).resolve().parents[1]
-print(p)
+print(scipy.__version__)
