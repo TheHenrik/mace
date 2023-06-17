@@ -46,6 +46,7 @@ segments = "WingSegment"
 
 [Airfoil]
 type = "Naca"
+name = "ag19"
 
 [AirfoilFile]
 filepath = "/Users/jannik/Documents/GitHub/mace/data/airfoils/ag19.dat"

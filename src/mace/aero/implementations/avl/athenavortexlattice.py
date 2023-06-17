@@ -17,8 +17,6 @@ class AVL:
         self.input_file_name = os.path.join(tool_path, "temporary/input_file_avl.in")
 
     def run_avl(self, avl_file=None, mass_file=None,
-                #total_forces_file_name="C:/Users/Gregor/Documents/GitHub/mace/temporary/total_forces_avl",
-                #strip_forces_file_name="C:/Users/Gregor/Documents/GitHub/mace/temporary/strip_forces_avl",
                 angle_of_attack=None, lift_coefficient=None, run_case: int = 1, maschine_readable_file=True):
         """
         For run_case != 1 please check if runcase is available! At the time not possible! (maybe in future versions)

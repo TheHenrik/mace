@@ -50,6 +50,7 @@ class AirfoilFile:
 @dataclass()
 class Airfoil:
     type: Naca | AirfoilFile = None
+    name: str = None
 
 
 @dataclass()
@@ -233,8 +234,6 @@ class Cd:
     cd_tot: float = 0
     cd_vis: float = 0
     cd_ind: float = 0
-    # from viscousdrag
-    cd_viscous: float = 0
 
 
 @dataclass()
@@ -312,7 +311,7 @@ class TakeOff:
 
 @dataclass()
 class ClimbResults:
-    climb_data = np.ndarray = None
+    climb_data: np.ndarray = None
     gamma_max: float() = 0
     v_vertical_max: float() = 0
 

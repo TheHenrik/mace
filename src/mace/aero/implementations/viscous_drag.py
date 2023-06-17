@@ -1,16 +1,13 @@
-import numpy.ma
 
-from mace.aero.implementations.avl import athenavortexlattice
-from mace.aero import generalfunctions
-from mace.aero.implementations.xfoil import xfoilpolars
-from mace.domain import params, Plane
-from mace.aero.implementations.avl.athenavortexlattice import AVL
-import numpy as np
-import math
 from mace.domain.parser import PlaneParser
 from mace.aero.implementations.avl.geometry_and_mass_files import GeometryFile, MassFile
+from mace.domain import params, Plane
+from mace.aero.implementations.avl.athenavortexlattice import AVL
 from pathlib import Path
 import os
+import numpy as np
+from mace.aero.implementations.airfoil_analyses import Airfoil
+from mace.aero.generalfunctions import get_reynolds_number
 
 
 class ViscousDrag:
@@ -34,10 +31,38 @@ class ViscousDrag:
                 return surface_index
 
     def evaluate(self, V):
-        for surface in range(1, self.plane.avl.outputs.number_of_surfaces + 1):
-            print("Surface: ", surface)
+
+        S_ref = self.plane.avl.outputs.s_ref
+        S_sum = 0.
+        CD = 0.
+
+        for surface in range(1, self.plane.avl.outputs.number_of_surfaces + 1, 2):
             strips = self.plane.avl.outputs.surface_dictionary[surface]["strips"][:, 0]
-            print(strips)
+            for element in strips:
+                # initialize strip values
+                strip_values = self.plane.avl.outputs.surface_dictionary[surface]["strips"][int(element - 1), :]
+
+                # get local reynolds
+                c   = strip_values[4]
+                cl  = strip_values[9]  # 9 und nicht 6 (cl_norm)
+                re = get_reynolds_number(V, c)
+                
+                airfoil = Airfoil("ag19") # TODO: get airfoil from plane
+                cd = airfoil.get_cd(re, cl)
+
+                S = strip_values[5]
+
+                CD += 2 * cd * S / S_ref
+                S_sum += 2 * S
+
+        plane.aero_coeffs.drag_coeff.cd_visc = CD
+        plane.aero_coeffs.drag_coeff.cd_tot = CD + plane.aero_coeffs.drag_coeff.cd_ind
+
+        return CD
+
+
+
+
         
 if __name__ == "__main__":
     # Initialize aircraft
@@ -46,14 +71,25 @@ if __name__ == "__main__":
     MassFile(plane).build_mass_file()
 
     # Define Analysis
-    CL = 0.8
-    V = 10
+    V = 10.
+    W = plane.mass[0]
+    CL = 0.5
 
     # Run AVL
     inviscid_analysis = AVL(plane)
-    inviscid_analysis.run_avl()
+    inviscid_analysis.run_avl(lift_coefficient=CL)
     inviscid_analysis.read_avl_output()
 
     # Run Xfoil
     viscous_analysis = ViscousDrag(plane)
-    viscous_analysis.evaluate(V)
+
+    CDv = viscous_analysis.evaluate(V)
+    CDi = plane.aero_coeffs.drag_coeff.cd_ind
+    CD = CDv + CDi
+    L_D = CL / CD
+
+    print("V:  ", V)
+    print("CL:  %.4f" % CL)
+    print("CDv: %.4f" % CDv)
+    print("CDi: %.4f" % CDi)
+    print("L/D: %.4f" % L_D)

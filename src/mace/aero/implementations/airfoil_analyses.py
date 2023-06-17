@@ -12,9 +12,10 @@ class Airfoil:
         self.surrogate_path = os.path.join(tool_path, "data", "surrogates", foil_name+".csv")
         self.foil_name = foil_name
 
-        self.re_min = 5e4
+        self.re_min = 3e4
         self.re_max = 1e6
         self.re_step = 5e4
+        self.re_list = np.arange(self.re_min, self.re_max, self.re_step)
 
         self.alpha_min = -10
         self.alpha_max = 15
@@ -30,7 +31,7 @@ class Airfoil:
 
     def build_surrogate(self):
         # This function builds a surrogate model for the airfoil
-        re_list = np.arange(self.re_min, self.re_max, self.re_step)
+        re_list = self.re_list
 
         alpha_min = self.alpha_min
         alpha_max = self.alpha_max
@@ -140,16 +141,10 @@ if __name__ == "__main__":
 
     ag19 = Airfoil("ag19")
 
-    ag19.re_min = 20000.
-    ag19.re_max = 500000.
-    ag19.re_step = 30000.
+    ag19.must_rebuild_surrogate = True
 
-    ag19.alpha_min = -5
-    ag19.alpha_max = 10
-    ag19.alpha_step = 0.1
-
-    CD = ag19.get_cd(100000, 1.0)
-    CL_max = ag19.get_cl_max(100000)
+    CD = ag19.get_cd(136000, 1.0)
+    CL_max = ag19.get_cl_max(20000)
 
     print('CL_max: %.3e' % CL_max)
     print('CD:     %.3e' % CD)
