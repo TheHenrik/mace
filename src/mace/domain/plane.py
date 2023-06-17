@@ -238,6 +238,7 @@ class Cd:
 
 @dataclass()
 class AeroCoeffs:
+    velocity: float = None
     lift_coeff: Cl = None
     drag_coeff: Cd = None
     # for AVL
@@ -312,8 +313,8 @@ class TakeOff:
 @dataclass()
 class ClimbResults:
     climb_data: np.ndarray = None
-    gamma_max: float() = 0
-    v_vertical_max: float() = 0
+    gamma_max: float() = None
+    v_vertical_max: float() = None
 
 
 @dataclass()
@@ -356,7 +357,6 @@ class FlightConditions:
 @dataclass()
 class Plane:
     name: str = None
-    empennage: EmpennageType = None
     wing: Wing = None
     fuselage: Fuselage = None
     mass: np.ndarray = None                 # [mass   x     y     z    [ Ixx     Iyy    Izz     Ixy   Ixz   Iyz ]

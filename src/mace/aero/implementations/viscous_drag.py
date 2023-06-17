@@ -19,19 +19,8 @@ class ViscousDrag:
         self.rho = params.Constants.rho
         AVL(self.plane).read_avl_output()
         
-    def mach_strip_to_surface(self, strip):
-        """
-        returns surface_index, equals (number_of_surface - 1)
-        """
-        first_strip_of_surface = self.plane.avl.outputs.surface_data[:, 3]
-        for surface_index in range(self.plane.avl.outputs.number_of_surfaces):
-            if first_strip_of_surface[surface_index] < strip:
-                continue
-            else:
-                return surface_index
-
-    def evaluate(self, V):
-
+    def evaluate(self):
+        V = self.plane.aero_coeffs.velocity
         S_ref = self.plane.avl.outputs.s_ref
         S_sum = 0.
         CD = 0.
@@ -55,8 +44,8 @@ class ViscousDrag:
                 CD += 2 * cd * S / S_ref
                 S_sum += 2 * S
 
-        plane.aero_coeffs.drag_coeff.cd_visc = CD
-        plane.aero_coeffs.drag_coeff.cd_tot = CD + plane.aero_coeffs.drag_coeff.cd_ind
+        self.plane.aero_coeffs.drag_coeff.cd_visc = CD
+        self.plane.aero_coeffs.drag_coeff.cd_tot = CD + self.plane.aero_coeffs.drag_coeff.cd_ind
 
         return CD
 

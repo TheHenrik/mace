@@ -2,6 +2,7 @@ from mace.domain import params, Plane
 from mace.aero.implementations.avl import athenavortexlattice, geometry_and_mass_files
 from mace.aero.implementations.viscousdrag import ViscousDrag
 import numpy as np
+from scipy.interpolate import interp1d
 
 
 # ---lineare Interpolation---
@@ -73,14 +74,14 @@ class GeneralFunctions:
 
     # ---Thrust in Newton---
 
-    def current_thrust(self, current_velocity):
+    def current_thrust(self, V):
         """
         Returns thrust in Newton related to a current velocity of the plane.
         """
-        velocity_arr = self.plane.propulsion.thrust[:, 0]
-        thrust_arr = self.plane.propulsion.thrust[:, 1]
-        print(f'velocity_array: {velocity_arr}, thrust_array: {thrust_arr}')
-        thrust = np.interp(current_velocity, velocity_arr, thrust_arr)
+        thrust_array = self.plane.propulsion.thrust
+        interp = interp1d(thrust_array[:, 0], thrust_array[:, 1], kind="quadratic",
+                          fill_value=0, bounds_error=False)
+        thrust = interp(V)
         return thrust
 
     def thrust_supply(self, cd, cl):  # Schubbedarf

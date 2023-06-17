@@ -1,9 +1,9 @@
 import numpy as np
-
+from scipy.interpolate import interp1d
+from scipy.optimize import bisect
 from mace.domain import params, Plane
-from mace.aero.implementations.avl import athenavortexlattice, geometry_and_mass_files
-from mace.aero import generalfunctions
-from mace.aero.implementations.viscousdrag import ViscousDrag
+from mace.aero.implementations.aero import Aerodynamics
+from mace.aero.generalfunctions import GeneralFunctions
 
 
 class HorizontalFlight:
@@ -13,233 +13,91 @@ class HorizontalFlight:
         self.s_ref = self.plane.reference_values.s_ref
         self.g = params.Constants.g
         self.rho = params.Constants.rho
+        self.CL_start = 0.05
+        self.CL_end = 1.
+        self.CL_step = 0.05
 
-    def flight_velocity(self, cl):
-        velocity = ((2 * self.mass * self.g)/(cl * self.rho * self.s_ref))**0.5
-        return velocity
+    def get_drag_force(self, V):
+        plane = self.plane
+        S_ref = self.s_ref
+        CD = plane.aero_coeffs.drag_coeff.cd_tot
+        D = CD * 0.5 * self.rho * V**2 * S_ref
+        return D
 
-    def lift_coefficient(self, velocity):
-        cl = (2 * self.mass * self.g)/(velocity**2 * self.rho * self.s_ref)
-        return cl
+    def flight_velocity(self, CL):
+        V = ((2 * self.mass * self.g)/(CL * self.rho * self.s_ref))**0.5
+        return V
 
-    def min_flight_velocity(self, cl_max):      # nicht wirklich nötig / identisch zu flight_velocity
-        v_min = self.flight_velocity(cl_max)
-        return v_min
-
-    def thrust_supply(self, cd, cl):            # Schubbedarf
-        thrust = cd / cl * self.mass * self.g
-        return thrust
-
-    def fv_diagramm(self, cl_start, cl_end, step=0.1):
+    def fv_diagramm(self):
         """
         cl_start has to be above 0. If not, no horizontal flight is possible.
         Returns an array with the correlation between velocity and needed thrust supply in horizontal flight.
-        [[v1, t1], [v2, t2], [...], ...]
+        [[v1, d1, t1], [v2, d2, t2], [...], ...]
         """
         # Initialize vectors
-        cl_list = np.arange(cl_start, cl_end, step)
+        CL_list = np.arange(self.CL_start, self.CL_end, self.CL_step)
         results = []
-
-        # Build AVL input files
-        geometry_and_mass_files.GeometryFile(self.plane).build_geometry_file(1)
-        geometry_and_mass_files.MassFile(self.plane).build_mass_file()
+        Aero = Aerodynamics(self.plane)
+        thrust = GeneralFunctions(self.plane).current_thrust
 
         # Evaluate required thrust in cl range
-        for cl in cl_list:
-            # Fluggeschwindigkeit ermitteln
-            v = self.flight_velocity(cl)
+        for CL in CL_list:
+            V = self.flight_velocity(CL)
 
-            # --- Evaluate Drag ---
-            # Run AVL with given cl -> cd_induced
-            athenavortexlattice.AVL(self.plane).run_avl(lift_coefficient=cl)
-            athenavortexlattice.AVL(self.plane).read_avl_output()
+            Aero.evaluate(CL=CL, V=V)
+            
+            # Calculate total drag force
+            D = self.get_drag_force(V)
+            
+            # --- Evaluate Thrust ---
+            T = thrust(V)
 
-            # cd_viscous mit XFOIL ermitteln
-            ViscousDrag(self.plane).create_avl_viscous_drag_from_xfoil()
-            cd = self.plane.aero_coeffs.drag_coeff.cd_viscous + self.plane.aero_coeffs.drag_coeff.cd_ind
+            results.append([V, D, T])
 
-            # Calculate needed thrust for cl
-            thrust = self.thrust_supply(cd, cl)
+        self.plane.flightconditions.horizontalflight.results.thrust_velocity_correlation = np.array(results)
 
-            results.append([v, thrust])
-
-        # self.plane.flightconditions.horizontalflight.results.thrust_velocity_correlation = results
-        # self.plane.flightconditions.horizontalflight.results.minimum_thrust = self.min_thrust()
-        # if self.plane.propulsion.thrust is not None and not np.array([]):
-        #     print(f'in Schleife für max_flight_velocity')
-        #     self.plane.flightconditions.horizontalflight.results.maximum_flight_velocity = self.max_flight_velocity()
-        return results
-
-    # ---Auswertung---
-
-    def min_thrust(self):
+    def get_maximum_velocity(self):
         """
-        Returns a tuple with (minimum thrust, corresponding velocity, row_index in thrust_velocity_correlation).
+        Returns the maximum velocity in horizontal flight.
         """
-        min_index = np.argmin(self.plane.flightconditions.horizontalflight.results.thrust_velocity_correlation[:, 1])
-        minimum_thrust = self.plane.flightconditions.horizontalflight.results.thrust_velocity_correlation[min_index, 1]
-        min_thrust_velocity = \
-            self.plane.flightconditions.horizontalflight.results.thrust_velocity_correlation[min_index, 0]
-        return minimum_thrust, min_thrust_velocity, min_index
+        results = self.plane.flightconditions.horizontalflight.results.thrust_velocity_correlation
+        if results is None:
+            self.fv_diagramm()
+            results = self.plane.flightconditions.horizontalflight.results.thrust_velocity_correlation
 
-    def max_flight_velocity(self):
+        V = results[:, 0]
+        D = results[:, 1]
+        T = results[:, 2]
+        
+        # Get maximum velocity
+        f_drag = interp1d(V, D, kind="quadratic", fill_value="extrapolate", bounds_error=False)
+        f_thrust = interp1d(V, T, kind="quadratic", fill_value=0, bounds_error=False)
+        
+        def objective(V):
+            return f_drag(V) - f_thrust(V)
+        
+        V_max = bisect(objective, min(V), max(V))
+        return V_max
+    
+    def plot_fv_diagramm(self):
         """
-        Returns the point of max_flight_velocity as a tupel:
-        (max_flight_velocity, thrust)
+        Plots the thrust-velocity correlation.
         """
-        length_of_array = len(self.plane.flightconditions.horizontalflight.results.thrust_velocity_correlation[:, 0])
-        print(f'length of array = {length_of_array}')
-        velocity = 0
+        import matplotlib.pyplot as plt
+        results = self.plane.flightconditions.horizontalflight.results.thrust_velocity_correlation
+        if results is None:
+            self.fv_diagramm()
+            results = self.plane.flightconditions.horizontalflight.results.thrust_velocity_correlation
 
-        for row_index in range(length_of_array):
-            current_velocity = \
-                self.plane.flightconditions.horizontalflight.results.thrust_velocity_correlation[row_index, 0]
-            current_thrust = \
-                generalfunctions.GeneralFunctions(self.plane).current_thrust(current_velocity)
-            needed_thrust = \
-                self.plane.flightconditions.horizontalflight.results.thrust_velocity_correlation[row_index, 1]
-            if current_velocity > velocity and current_thrust > needed_thrust:
-                velocity = self.plane.flightconditions.horizontalflight.results.thrust_velocity_correlation[row_index, 0]
+        V = results[:, 0]
+        D = results[:, 1]
+        T = results[:, 2]
 
-        return velocity
-
-    def max_flight_velocity_old(self):
-        """
-        Returns the point of max_flight_velocity as a tupel:
-        (max_flight_velocity, thrust)
-        """
-        # vielleicht besser, aber noch nicht funktionsfähig
-
-        # von vorne nach hinten (schnell nach langsam) iterieren in thrust velocity correlation
-        # propulsion.thrust nach v interpolieren
-        # needed_thrust(v) mit propulsion.thrust vergleichen.
-        # wenn kleiner (erst ab Element 2 ([1])), dann Schnittpunkt zwischen needed_thrust und propulsion.thrust
-        length_of_array = len(self.plane.flightconditions.horizontalflight.results.thrust_velocity_correlation[:, 0])
-        print(f'length of array = {length_of_array}')
-        i = 0
-        for row_index in range(length_of_array):
-            print(f'row_index = {row_index}')
-            velocity = self.plane.flightconditions.horizontalflight.results.thrust_velocity_correlation[row_index, 0]
-            print(f'velocity = {velocity}')
-            needed_thrust = \
-                self.plane.flightconditions.horizontalflight.results.thrust_velocity_correlation[row_index, 1]
-            print(f'needed_thrust = {needed_thrust}')
-            thrust = generalfunctions.GeneralFunctions(self.plane).current_thrust(velocity)
-            print(f'current_thrust = {thrust}')
-            if needed_thrust <= thrust and i != 0:
-                v_a1 = \
-                    self.plane.flightconditions.horizontalflight.results.thrust_velocity_correlation[row_index - 1, 0]
-                t_a1 = \
-                    self.plane.flightconditions.horizontalflight.results.thrust_velocity_correlation[row_index - 1, 1]
-                a1 = [v_a1, t_a1]
-                v_a2 = velocity
-                t_a2 = needed_thrust
-                a2 = [v_a2, t_a2]
-                # b1 und b2 in propulsion.thrust finden. Punkt1 velocity kleiner, Punkt2 velocity größer
-                row_index_thrust = 0
-                for row_index_thrust in range(len(self.plane.propulsion.thrust[:, 0])):    # v ansteigend
-                    if self.plane.propulsion.thrust[row_index, 0] >= velocity and row_index_thrust != 0:
-                        print(f'break')
-                        break
-                    else:
-                        continue
-                v_b1 = self.plane.propulsion.thrust[row_index_thrust - 1, 0]
-                t_b1 = self.plane.propulsion.thrust[row_index_thrust - 1, 1]
-                b1 = [v_b1, t_b1]
-                v_b2 = self.plane.propulsion.thrust[row_index_thrust, 0]
-                t_b2 = self.plane.propulsion.thrust[row_index_thrust, 1]
-                b2 = [v_b2, t_b2]
-                point_of_intersection = generalfunctions.get_intersect(a1, a2, b1, b2)
-                # max_velocity = np.array([point_of_intersection(0), point_of_intersection(1)])
-                return point_of_intersection
-            else:
-                i += 1
-
-    def flight_distance(self, velocity, time):
-        distance = velocity * time
-        return distance
-
-    # ---Beschleunigung---
-
-    def excess_power(self, cd, cl, thrust):
-        excess_power = thrust - self.thrust_supply(cd, cl)
-        return excess_power
-
-    def delta_t(self, v2, v1, excess_power):
-        del_t = self.mass / excess_power * (v2 - v1)
-        return del_t
-
-    def zwischenschritt(self, cl, thrust):
-        # ---Widerstand ermitteln---
-        # AVL mit cl ausführen. -> cd_induced.
-        geometry_and_mass_files.GeometryFile(self.plane).build_geometry_file(1)
-        geometry_and_mass_files.MassFile(self.plane).build_mass_file()
-        athenavortexlattice.AVL(self.plane).run_avl(lift_coefficient=cl)
-        athenavortexlattice.AVL(self.plane).read_avl_output()
-        # if Fehler:
-        #     error = False
-
-        # cd_viscous mit XFOIL ermitteln
-        # ViscousDrag(self.plane).create_avl_viscous_drag_from_xfoil()
-        cd = self.plane.aero_coeffs.drag_coeff.cd_viscous + self.plane.aero_coeffs.drag_coeff.cd_ind
-        # if Fehler:
-        #     error = False
-
-        # ---Calculating excess power---
-        excess = self.excess_power(cd, cl, thrust)
-
-        return cd, excess
-
-    def acceleration(self, v_begin, v_end, v_step):     # nochmal genau überprüfen
-        time = 0
-        distance = 0
-        distance1 = 0
-        distance2 = 0
-
-        if v_begin < v_end:
-            velocity = v_begin
-            cl = self.lift_coefficient(velocity)
-            thrust = generalfunctions.GeneralFunctions(self.plane).current_thrust(velocity)
-            res = self.zwischenschritt(cl, thrust)
-            excess = res[1]
-
-            if excess < 0:
-                print("error")
-            else:
-                while velocity <= v_end:
-                    cl = self.lift_coefficient(velocity)
-                    thrust = generalfunctions.GeneralFunctions(self.plane).current_thrust(velocity)
-                    res = self.zwischenschritt(cl, thrust)
-                    excess = res[1]
-
-                    delta_t = self.delta_t(velocity + v_step, velocity, excess)
-                    distance1 += delta_t * velocity
-                    distance2 += delta_t * (velocity + v_step)
-                    time += delta_t
-                    velocity += v_step
-                distance = (distance1 + distance2) / 2
-                return time, distance
-        elif v_end < v_begin:
-            velocity = v_begin
-            cl = self.lift_coefficient(velocity)
-            thrust = generalfunctions.GeneralFunctions(self.plane).current_thrust(velocity)
-            res = self.zwischenschritt(cl, thrust)
-            excess = res[1]
-            if excess > 0:
-                print("error")
-            else:
-                while velocity <= v_end:
-                    cl = self.lift_coefficient(velocity)
-                    thrust = generalfunctions.GeneralFunctions(self.plane).current_thrust(velocity)
-                    res = self.zwischenschritt(cl, thrust)
-                    excess = res[1]
-
-                    delta_t = self.delta_t(velocity + v_step, velocity, excess)
-                    distance1 += delta_t * velocity
-                    distance2 += delta_t * (velocity + v_step)
-                    time += delta_t
-                    velocity -= v_step
-                distance = (distance1 + distance2) / 2
-                return time, distance
-        else:
-            return time, distance
+        plt.plot(V, D, label="Drag")
+        plt.plot(V, T, label="Thrust")
+        plt.xlabel("Velocity [m/s]")
+        plt.ylabel("Force [N]")
+        plt.legend()
+        plt.grid()
+        plt.title("Horizontal Flight")
+        plt.show()

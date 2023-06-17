@@ -175,3 +175,7 @@ data/Airfoils/*.dat
 *.in
 temporary/logfile.txt
 temporary/polar_file.txt
+temporary/input_file_avl.in
+temporary/input_file_avl.in
+temporary/strip_forces.avl
+temporary/total_forces.avl
