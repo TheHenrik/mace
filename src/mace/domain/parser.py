@@ -72,6 +72,22 @@ class XMLParser:
 
     def get(self, obj):
         return self._rec_par(obj)
+    
+    def _rec_par(self, curr):
+        sup = self.classes[curr]()
+        for obj in self.data[curr]:
+            if obj not in sup.__dict__:
+                raise ValueError(
+                    f"Object {obj!r} not attribute of {self.classes[curr]}"
+                )
+            val = self.data[curr][obj]
+            if type(val) is list:
+                sup.__dict__[obj] = np.array(val)
+            elif val in self.classes:
+                sup.__dict__[obj] = self._rec_par(val)
+            else:
+                sup.__dict__[obj] = val
+        return sup
 
 if __name__ == "__main__":
     plane = TOMLParser("plane.toml").get()
