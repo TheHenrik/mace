@@ -104,7 +104,7 @@ class Airfoil:
         re_list = np.unique(polar_data[:, 0])
         
         if re > re_list[-1]:
-            print("Warning: Airfoil: %s -> Re=%f.0f above max Re in surrogate model" % (self.foil_name, re))
+            print("Warning: Airfoil: %s -> Re=%.0f above max Re in surrogate model" % (self.foil_name, re))
             re = re_list[-1]
         upper_re = re_list[np.where(re_list >= re)[0][0]]
         if np.where(re_list >= re)[0][0] == 0:
@@ -135,7 +135,7 @@ class Airfoil:
         re_list = np.unique(polar_data[:, 0])
 
         if re > re_list[-1]:
-            print("Warning: Airfoil: %s -> Re=%f.0f above max Re in surrogate model" % (self.foil_name, re))
+            print("Warning: Airfoil: %s -> Re=%.0f above max Re in surrogate model" % (self.foil_name, re))
             re = re_list[-1]
         upper_re = re_list[np.where(re_list >= re)[0][0]]
         if np.where(re_list >= re)[0][0] == 0:

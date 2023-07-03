@@ -75,7 +75,7 @@ class GeometryFile:
         geometry_file.write(f'{round(wing.segments[index].nose_outer[0],5)}  '
                             f'{round(wing.segments[index].nose_outer[1],5)}  '
                             f'{round(wing.segments[index].nose_outer[2],5)}  '
-                            f'{round(chord_outer,5)}  '
+                            f'{round(wing.segments[index].outer_chord,5)}  '
                             f'{round(wing.segments[index].outer_twist,5)}\n\n')
 
         geometry_file.write(f'AFIL  0.0  1.0\n')
@@ -85,211 +85,6 @@ class GeometryFile:
             GeometryFile.build_geo_surface_section_control(self, geometry_file, segment)
 
     def build_geo_surface(self, geometry_file):
-        """
-        SURFACE              | (keyword)
-        Main Wing            | surface name string
-        12   1.0  20  -1.5   | Nchord  Cspace   [ Nspan Sspace ]
-
-        The SURFACE keyword declares that a surface is being defined until
-        the next SURFACE or BODY keyword, or the end of file is reached.
-        A surface does not really have any significance to the underlying
-        AVL vortex lattice solver, which only recognizes the overall
-        collection of all the individual horseshoe vortices.  SURFACE
-        is provided only as a configuration-defining device, and also
-        as a means of defining individual surface forces.  This is
-        necessary for structural load calculations, for example.
-
-          Nchord =  number of chordwise horseshoe vortices placed on the surface
-          Cspace =  chordwise vortex spacing parameter (described later)
-
-          Nspan  =  number of spanwise horseshoe vortices placed on the surface [optional]
-          Sspace =  spanwise vortex spacing parameter (described later)         [optional]
-
-        If Nspan and Sspace are omitted (i.e. only Nchord and Cspace are present on line),
-        then the Nspan and Sspace parameters will be expected for each section interval,
-        as described later.
-
-        Note: Nchord, Cspace, Nspan and Sspace are explained in the docstring of the class GeometryFile.
-
-
-
-        *****
-
-        COMPONENT       | (keyword) or INDEX
-        3               | Lcomp
-
-        This optional keywords COMPONENT (or INDEX for backward compatibility)
-        allows multiple input SURFACEs to be grouped together into a composite
-        virtual surface, by assigning each of the constituent surfaces the same
-        Lcomp value.  Application examples are:
-        - A wing component made up of a wing SURFACE and a winglet SURFACE
-        - A T-tail component made up of horizontal and vertical tail SURFACEs.
-
-        A common Lcomp value instructs AVL to _not_ use a finite-core model
-        for the influence of a horseshoe vortex and a control point which lies
-        on the same component, as this would seriously corrupt the calculation.
-
-        If each COMPONENT is specified via only a single SURFACE block,
-        then the COMPONENT (or INDEX) declaration is unnecessary.
-
-        *****
-
-        YDUPLICATE      | (keyword)
-        0.0             | Ydupl
-
-        The YDUPLICATE keyword is a convenient shorthand device for creating
-        another surface which is a geometric mirror image of the one
-        being defined.  The duplicated surface is _not_ assumed to be
-        an aerodynamic image or anti-image, but is truly independent.
-        A typical application would be for cases which have geometric
-        symmetry, but not aerodynamic symmetry, such as a wing in yaw.
-        Defining the right wing together with YDUPLICATE will conveniently
-        create the entire wing.
-
-        The YDUPLICATE keyword can _only_ be used if iYsym = 0 is specified.
-        Otherwise, the duplicated real surface will be identical to the
-        implied aerodynamic image surface, and velocities will be computed
-        directly on the line-vortex segments of the images. This will
-        almost certainly produce an arithmetic fault.
-
-        The duplicated surface gets the same Lcomp value as the parent surface,
-        so they are considered to be the same COMPONENT.  There is no significant
-        effect on the results if they are in reality two physically-separate surfaces.
-
-
-        Ydupl =  Y position of X-Z plane about which the current surface is
-                    reflected to make the duplicate geometric-image surface.
-
-        *****
-
-        SCALE            |  (keyword)
-        1.0  1.0  0.8    | Xscale  Yscale  Zscale
-
-        The SCALE allows convenient rescaling for the entire surface.
-        The scaling is applied before the TRANSLATE operation described below.
-
-        Xscale,Yscale,Zscale  =  scaling factors applied to all x,y,z coordinates
-                           (chords are also scaled by Xscale)
-
-        *****
-
-        TRANSLATE         |  (keyword)
-        10.0  0.0  0.5    | dX  dY  dZ
-
-        The TRANSLATE keyword allows convenient relocation of the entire
-        surface without the need to change the Xle,Yle,Zle locations
-        for all the defining sections.  A body can be translated without
-        the need to modify the body shape coordinates.
-
-        dX,dY,dZ =  offset added on to all X,Y,Z values in this surface.
-
-        *****
-
-        ANGLE       |  (keyword)
-        2.0         | dAinc
-
-        or
-
-        AINC        |  (keyword)
-        2.0         | dAinc
-
-        The ANGLE keyword allows convenient changing of the incidence angle
-        of the entire surface without the need to change the Ainc values
-        for all the defining sections.  The rotation is performed about
-        the spanwise axis projected onto the y-z plane.
-
-          dAinc =  offset added on to the Ainc values for all the defining sections
-                   in this surface
-
-        #############################################################
-        not implemented/used yet:
-        #############################################################
-
-        NOWAKE     |  (keyword)
-
-        The NOWAKE keyword specifies that this surface is to NOT shed a wake,
-        so that its strips will not have their Kutta conditions imposed.
-        Such a surface will have a near-zero net lift, but it will still
-        generate a nonzero moment.
-
-        *****
-
-        NOALBE    |  (keyword)
-
-        The NOALBE keyword specifies that this surface is unaffected by
-        freestream direction changes specified by the alpha,beta angles
-        and p,q,r rotation rates.  This surface then reacts to only to
-        the perturbation velocities of all the horseshoe vortices and
-        sources and doublets in the flow.
-        This allows the SURFACE/NOALBE object to model fixed surfaces such
-        as a ground plane, wind tunnel walls, or a nearby other aircraft
-        which is at a fixed flight condition.
-
-        *****
-
-        NOLOAD    |  (keyword)
-
-        The NOLOAD keyword specifies that the force and moment on this surface
-        is to NOT be included in the overall forces and moments of the configuration.
-        This is typically used together with NOALBE, since the force on a ground
-        plane or wind tunnel walls certainly is not to be considered as part
-        of the aircraft force of interest.
-
-        *****
-        The following keyword declarations would be used in envisioned applications.
-
-        1) Non-lifting fuselage modeled by its side-view and top-view profiles.
-        This will capture the moment of the fuselage reasonably well.
-        NOWAKE
-
-        2) Another nearby aircraft, with both aircraft maneuvering together.
-        This would be for trim calculation in formation flight.
-        NOALBE
-        NOLOAD
-
-        3) Another nearby aircraft, with only the primary aircraft maneuvering.
-        This would be for a flight-dynamics analysis in formation flight.
-        NOLOAD
-
-        4) Nearby wind tunnel walls or ground plane.
-        NOALBE
-        NOLOAD
-
-        *****
-
-        CDCL                         |  (keyword)
-        CL1 CD1  CL2 CD2  CL3 CD3    |  CD(CL) function parameters
-
-
-        The CDCL keyword placed in the SURFACE options specifies a simple
-        profile-drag CD(CL) function for all sections in this SURFACE.
-        The function is parabolic between CL1..CL2 and
-        CL2..CL3, with rapid increases in CD below CL1 and above CL3.
-
-        The CD-CL polar is based on a simple interpolation with four CL regions:
-         1) negative stall region
-         2) parabolic CD(CL) region between negative stall and the drag minimum
-         3) parabolic CD(CL) region between the drag minimum and positive stall
-         4) positive stall region
-
-                 CLpos,CDpos       <-  Region 4 (quadratic above CLpos)
-        CL |   pt3--------
-           |    /
-           |   |                   <-  Region 3 (quadratic above CLcdmin)
-           | pt2 CLcdmin,CDmin
-           |   |
-           |    \                  <-  Region 2 (quadratic below CLcdmin)
-           |   pt1_________
-           |     CLneg,CDneg       <-  Region 1 (quadratic below CLneg)
-           |
-           -------------------------
-                           CD
-
-        See the SUBROUTINE CDCL header (in cdcl.f) for more details.
-
-        The CD(CL) function is interpolated for stations in between
-        defining sections.
-        """
         # surface_name e.g wing or empennage
         for i, wing in enumerate(self.plane.wings.values()):                       # [... , self.plane.empennage]
             geometry_file.write(f'SURFACE\n')
@@ -302,7 +97,7 @@ class GeometryFile:
                 geometry_file.write(f'YDUPLICATE\n')
                 geometry_file.write(f'0.0\n\n')
             geometry_file.write(f'TRANSLATE\n')
-            geometry_file.write(f'{wing.origin[0]}\t{wing.origin[1]}\t{wing.origin[2]}\n\n')
+            geometry_file.write(f'{0}\t{0}\t{0}\n\n')
             geometry_file.write(f'ANGLE\n')
             geometry_file.write(f'{wing.angle:.5f}\n\n')
             geometry_file.write(f'#--------------------\n')

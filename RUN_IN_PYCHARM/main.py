@@ -29,7 +29,7 @@ if __name__ == '__main__':
 
     # Run Cruise Analysis
     cruise_analysis = HorizontalFlight(Aircraft)
-    cruise_analysis.CL_start = 0.06
+    cruise_analysis.CL_start = 0.07
     V_max = cruise_analysis.get_maximum_velocity()
     print("Maximum Velocity: %.1f m/s" %  V_max)
     cruise_analysis.plot_fv_diagramm()

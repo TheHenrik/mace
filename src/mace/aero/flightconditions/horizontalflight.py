@@ -94,11 +94,15 @@ class HorizontalFlight:
         D = results[:, 1]
         T = results[:, 2]
 
-        plt.plot(V, D, label="Drag")
-        plt.plot(V, T, label="Thrust")
-        plt.xlabel("Velocity [m/s]")
-        plt.ylabel("Force [N]")
+        fig = plt.figure(dpi=400)
+        ax = fig.add_subplot(111)
+        ax.plot(V, D, label="Drag")
+        ax.plot(V, T, label="Thrust")
+        ax.set_xlabel("Velocity [m/s]")
+        ax.set_ylabel("Force [N]")
         plt.legend()
         plt.grid()
-        plt.title("Horizontal Flight")
+        plt.tick_params(which='major', labelsize=6)
+
+        plt.title("Horizontal Flight", fontsize=10)
         plt.show()

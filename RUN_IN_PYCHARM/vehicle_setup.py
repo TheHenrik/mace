@@ -45,6 +45,7 @@ def vehicle_setup() -> Vehicle:
 
     # Resize Wing
     main_wing.hinge_angle = 0.
+    #main_wing.aspect_ratio = 4.
     main_wing.build()
 
     # Get wing properties
@@ -59,7 +60,7 @@ def vehicle_setup() -> Vehicle:
     horizontal_stabilizer = Wing()
     horizontal_stabilizer.tag = "horizontal_stabilizer"
     horizontal_stabilizer.origin = [0.8, 0, 0]
-    horizontal_stabilizer.airfoil = "n0012"
+    horizontal_stabilizer.airfoil = "ht14"
 
     # Segment
     segment = WingSegment()
@@ -83,7 +84,7 @@ def vehicle_setup() -> Vehicle:
     vertical_stabilizer.origin = [1., 0, 0]
     vertical_stabilizer.vertical = True
     vertical_stabilizer.symmetric = False
-    vertical_stabilizer.airfoil = "n0012"
+    vertical_stabilizer.airfoil = "ht14"
     vertical_stabilizer.hinge_angle = 0
 
     # Segment
@@ -109,7 +110,7 @@ def vehicle_setup() -> Vehicle:
         print("%s %.1f sqdm" % (wing.tag, S*100))
 
     #vehicle.plot_vehicle(azim=180, elev=0)
-    #vehicle.plot_vehicle(azim=230, elev=30)
+    vehicle.plot_vehicle(azim=230, elev=30)
     #vehicle.plot_vehicle(azim=0, elev=90)
     #vehicle.plot_vehicle(azim=90, elev=0)
 

@@ -50,7 +50,7 @@ AFIL  0.0  1.0
 
 SECTION
 #Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
-0.15019  1.03059  0.0488  0  0
+0.15019  1.03059  0.0488  0.08  0
 
 AFIL  0.0  1.0
 /Users/jannik/Documents/GitHub/mace/data/airfoils/ag19.dat
@@ -66,7 +66,7 @@ YDUPLICATE
 0.0
 
 TRANSLATE
-0.8	0	0
+0	0	0
 
 ANGLE
 0.00000
@@ -77,14 +77,14 @@ SECTION
 0.8  0.0  0.0  0.17574  0.020-2
 
 AFIL  0.0  1.0
-/Users/jannik/Documents/GitHub/mace/data/airfoils/n0012.dat
+/Users/jannik/Documents/GitHub/mace/data/airfoils/ht14.dat
 
 SECTION
 #Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
-0.84218  0.28118  0.0  0  0.0
+0.84218  0.28118  0.0  0.10544  0.0
 
 AFIL  0.0  1.0
-/Users/jannik/Documents/GitHub/mace/data/airfoils/n0012.dat
+/Users/jannik/Documents/GitHub/mace/data/airfoils/ht14.dat
 
 SURFACE
 vertical_stabilizer
@@ -94,7 +94,7 @@ Component
 3
 
 TRANSLATE
-1.0	0	0
+0	0	0
 
 ANGLE
 0.00000
@@ -105,12 +105,12 @@ SECTION
 1.0  0.0  0.0  0.25426  0.020-2
 
 AFIL  0.0  1.0
-/Users/jannik/Documents/GitHub/mace/data/airfoils/n0012.dat
+/Users/jannik/Documents/GitHub/mace/data/airfoils/ht14.dat
 
 SECTION
 #Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
-1.07628  0.0  0.28604  0  0.0
+1.07628  0.0  0.28604  0.12713  0.0
 
 AFIL  0.0  1.0
-/Users/jannik/Documents/GitHub/mace/data/airfoils/n0012.dat
+/Users/jannik/Documents/GitHub/mace/data/airfoils/ht14.dat
 
