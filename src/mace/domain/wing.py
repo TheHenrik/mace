@@ -1,6 +1,7 @@
 import math
 import matplotlib.pyplot as plt
 import numpy as np
+from mace.domain.general_functions import rotate_vector
 
 rad = np.pi / 180
 class WingSegment:
@@ -24,10 +25,18 @@ class WingSegment:
         self.outer_x_offset = 0.
         self.outer_twist = 0.
 
-        self.nose_inner = [0., 0., 0.]
-        self.nose_outer = [0., 0., 0.]
-        self.back_inner = [0., 0., 0.]
-        self.back_outer = [0., 0., 0.]
+        self.nose_inner = np.array([0., 0., 0.])
+        self.nose_outer = np.array([0., 0., 0.])
+        self.back_inner = np.array([0., 0., 0.])
+        self.back_outer = np.array([0., 0., 0.])
+        
+        self.n_spanwise = 20 # TODO
+        self.s_space = -2 # TODO
+        
+        self.inner_airfoil = None
+        self.outer_airfoil = None
+        
+        self.control = None # TODO
 
     def get_area(self) -> float:
         """
@@ -49,12 +58,12 @@ class Wing:
         self.segments = [] # List of wing segments
         self.symmetric = True # True if wing is symmetric
         self.vertical = False # True if wing is vertical (eg vertical stabilizer)
-        self.origin = [0., 0., 0.] # Origin of the wing (x,y,z) (most forward point of root chord)
+        self.origin = np.array([0., 0., 0.]) # Origin of the wing (x,y,z) (most forward point of root chord)
         self.span = None # Wing span
         self.reference_area = None # Wing reference area
         self.aspect_ratio = None # Wing aspect ratio
         self.mean_aerodynamic_chord = None # Wing mean aerodynamic chord
-        self.neutral_point = [0., 0., 0.] # Wing neutral point (x,y,z) in local coordinates
+        self.neutral_point = np.array([0., 0., 0.]) # Wing neutral point (x,y,z) in local coordinates
         self.hinge_angle = 0. # Wing hinge angle (in degrees). Positive means towards leading edge 
         self.volume_coefficient = None # Stabilizer volume coefficient
         self.airfoil = None # Wing airfoil
@@ -243,11 +252,9 @@ class Wing:
             segment.back_inner[2] = segment.nose_inner[2] - segment.inner_chord*np.sin(segment.inner_twist*rad)
 
             if self.vertical == False:
-                y += np.cos(segment.dihedral*rad)*segment.span
-                z += np.sin(segment.dihedral*rad)*segment.span
+                y += segment.span
             else:
-                z += np.cos(segment.dihedral * rad) * segment.span
-                y += np.sin(segment.dihedral * rad) * segment.span
+                z += segment.span
 
             segment.nose_outer[0] = self.origin[0] + segment.outer_x_offset
             segment.nose_outer[1] = self.origin[1] + y
@@ -257,12 +264,42 @@ class Wing:
             segment.back_outer[1] = segment.nose_outer[1]
             segment.back_outer[2] = segment.nose_outer[2] - segment.outer_chord*np.sin(segment.outer_twist*rad)
 
+
+        # Dihedral rotation
+        overall_translation = np.array([0, 0, 0])
+        for i, segment in enumerate(self.segments):
+            reference_point = segment.nose_outer
+
+            segment.nose_inner = segment.nose_inner + overall_translation
+            segment.nose_outer = segment.nose_outer + overall_translation
+            segment.back_inner = segment.back_inner + overall_translation
+            segment.back_outer = segment.back_outer + overall_translation
+
+            segment.nose_inner = segment.nose_inner + rotate_vector(segment.nose_inner - segment.nose_inner, segment.dihedral, 0, 0)
+            segment.nose_outer = segment.nose_inner + rotate_vector(segment.nose_outer - segment.nose_inner, segment.dihedral, 0, 0)
+            segment.back_inner = segment.nose_inner + rotate_vector(segment.back_inner - segment.nose_inner, segment.dihedral, 0, 0)
+            segment.back_outer = segment.nose_inner + rotate_vector(segment.back_outer - segment.nose_inner, segment.dihedral, 0, 0)
+
+            overall_translation = segment.nose_outer - reference_point
+
+        # Angle of attack rotation
+        for i, segment in enumerate(self.segments):
+            segment.nose_inner = self.origin + rotate_vector(segment.nose_inner - self.origin, 0, self.angle, 0)
+            segment.nose_outer = self.origin + rotate_vector(segment.nose_outer - self.origin, 0, self.angle, 0)
+            segment.back_inner = self.origin + rotate_vector(segment.back_inner - self.origin, 0, self.angle, 0)
+            segment.back_outer = self.origin + rotate_vector(segment.back_outer - self.origin, 0, self.angle, 0)
+
     def build(self) -> None:
         """
         Builds the wing by calculating the wing geometry.
         """
         self.resize_wing(new_span=self.span, new_aspect_ratio=self.aspect_ratio, new_area=self.reference_area)
         self.resize_sweep_to_constant_flap_chord_ratio(self.hinge_angle)
+        
+        for segment in self.segments:
+            segment.inner_airfoil = self.airfoil
+            segment.outer_airfoil = self.airfoil
+        
         self.get_segment_coordinates()
         self.reference_area = self.get_area()
         self.span = self.get_span()

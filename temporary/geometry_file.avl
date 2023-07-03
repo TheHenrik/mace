@@ -5,7 +5,7 @@ Vehicle
 0         0         0         
 
 #Sref	Cref	Bref
-0.52856   0.132962993794460422.064     
+0.52856   0.13296   2.064     
 #Xref	Yref	Zref
 0.1       0.0       0.0       
 
@@ -15,3 +15,102 @@ main_wing
 10  1  20  -2
 
 Component
+1
+
+YDUPLICATE
+0.0
+
+TRANSLATE
+0	0	0
+
+ANGLE
+2.00000
+
+#--------------------
+SECTION
+#Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
+0.0  0.0  0.0  0.292  0.020-2
+
+AFIL  0.0  1.0
+/Users/jannik/Documents/GitHub/mace/data/airfoils/ag19.dat
+
+SECTION
+#Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
+0.00235  0.51929  0.02715  0.29  0.020-2
+
+AFIL  0.0  1.0
+/Users/jannik/Documents/GitHub/mace/data/airfoils/ag19.dat
+
+SECTION
+#Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
+0.04491  0.83885  0.04242  0.23  0.020-2
+
+AFIL  0.0  1.0
+/Users/jannik/Documents/GitHub/mace/data/airfoils/ag19.dat
+
+SECTION
+#Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
+0.15019  1.03059  0.0488  0  0
+
+AFIL  0.0  1.0
+/Users/jannik/Documents/GitHub/mace/data/airfoils/ag19.dat
+
+SURFACE
+horizontal_stabilizer
+10  1  20  -2
+
+Component
+2
+
+YDUPLICATE
+0.0
+
+TRANSLATE
+0.8	0	0
+
+ANGLE
+0.00000
+
+#--------------------
+SECTION
+#Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
+0.8  0.0  0.0  0.17574  0.020-2
+
+AFIL  0.0  1.0
+/Users/jannik/Documents/GitHub/mace/data/airfoils/n0012.dat
+
+SECTION
+#Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
+0.84218  0.28118  0.0  0  0.0
+
+AFIL  0.0  1.0
+/Users/jannik/Documents/GitHub/mace/data/airfoils/n0012.dat
+
+SURFACE
+vertical_stabilizer
+10  1  20  -2
+
+Component
+3
+
+TRANSLATE
+1.0	0	0
+
+ANGLE
+0.00000
+
+#--------------------
+SECTION
+#Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
+1.0  0.0  0.0  0.25426  0.020-2
+
+AFIL  0.0  1.0
+/Users/jannik/Documents/GitHub/mace/data/airfoils/n0012.dat
+
+SECTION
+#Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
+1.07628  0.0  0.28604  0  0.0
+
+AFIL  0.0  1.0
+/Users/jannik/Documents/GitHub/mace/data/airfoils/n0012.dat
+

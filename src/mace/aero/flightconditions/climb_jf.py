@@ -1,14 +1,15 @@
 import math
 
 import numpy as np
-from mace.domain import params, Plane
+from mace.domain import params
+from mace.domain.vehicle import Vehicle
 from mace.aero.implementations.aero import Aerodynamics
 from mace.aero.generalfunctions import GeneralFunctions
 
 class Climb:
-    def __init__(self, plane: Plane):
+    def __init__(self, plane: Vehicle):
         self.plane = plane
-        self.mass = self.plane.mass[0]
+        self.mass = self.plane.mass
         self.s_ref = self.plane.reference_values.s_ref
         self.g = params.Constants.g
         self.rho = params.Constants.rho
@@ -125,35 +126,35 @@ class Climb:
             else:
                 climb_data = np.vstack((climb_data, results))
 
-        self.plane.flightconditions.climb.results.climb_data = climb_data
+        self.plane.flight_conditions.climb.results.climb_data = climb_data
         
     def get_gamma_max(self):
         # gamma maximal
-        climb_data = self.plane.flightconditions.climb.results.climb_data
+        climb_data = self.plane.flight_conditions.climb.results.climb_data
         if climb_data is None:
             self.evaluate()
-            climb_data = self.plane.flightconditions.climb.results.climb_data
+            climb_data = self.plane.flight_conditions.climb.results.climb_data
         
-        gamma_max = np.max(self.plane.flightconditions.climb.results.climb_data[:, 3])  # alle Zeilen, Element
-        self.plane.flightconditions.climb.results.gamma_max = gamma_max
+        gamma_max = np.max(self.plane.flight_conditions.climb.results.climb_data[:, 3])  # alle Zeilen, Element
+        self.plane.flight_conditions.climb.results.gamma_max = gamma_max
         return gamma_max
 
     def get_v_v_max(self):
         # V_v maximal
-        climb_data = self.plane.flightconditions.climb.results.climb_data
+        climb_data = self.plane.flight_conditions.climb.results.climb_data
         if climb_data is None:
             self.evaluate()
-            climb_data = self.plane.flightconditions.climb.results.climb_data
+            climb_data = self.plane.flight_conditions.climb.results.climb_data
         
-        v_vertical_max = np.max(self.plane.flightconditions.climb.results.climb_data[:, 2])  # alle Zeilen, Element
-        self.plane.flightconditions.climb.results.v_vertical_max = v_vertical_max
+        v_vertical_max = np.max(self.plane.flight_conditions.climb.results.climb_data[:, 2])  # alle Zeilen, Element
+        self.plane.flight_conditions.climb.results.v_vertical_max = v_vertical_max
         return v_vertical_max
 
     def get_h_max(self, delta_t, h0=0):
         """
         Returns a gained height. Needs therefore a timespan and an additional value.
         """
-        v_vertical_max = self.plane.flightconditions.climb.results.v_vertical_max
+        v_vertical_max = self.plane.flight_conditions.climb.results.v_vertical_max
         if v_vertical_max is None:
             v_vertical_max = self.get_v_v_max()
             

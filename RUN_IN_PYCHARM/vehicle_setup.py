@@ -1,5 +1,6 @@
 from mace.domain.wing import Wing, WingSegment
 from mace.domain.vehicle import Vehicle
+import numpy as np
 
 def vehicle_setup() -> Vehicle:
     vehicle = Vehicle()
@@ -12,9 +13,7 @@ def vehicle_setup() -> Vehicle:
     main_wing.tag = "main_wing"
     main_wing.origin = [0, 0, 0]
     main_wing.airfoil = "ag19"
-    main_wing.angle = 10.
-
-    dihedral = 3.
+    main_wing.angle = 2.
 
     # Inner segment
     segment1 = WingSegment()
@@ -22,7 +21,7 @@ def vehicle_setup() -> Vehicle:
     segment1.inner_chord = 0.292
     segment1.outer_chord = 0.290
     segment1.flap_chord_ratio = 0.3
-    segment1.dihedral = dihedral
+    segment1.dihedral = 3
     main_wing.add_segment(segment1)
 
     # Mid segment
@@ -31,7 +30,7 @@ def vehicle_setup() -> Vehicle:
     segment2.inner_chord = segment1.outer_chord
     segment2.outer_chord = 0.230
     segment2.flap_chord_ratio = 0.3
-    segment2.dihedral = dihedral
+    segment2.dihedral = 3
     main_wing.add_segment(segment2)
 
     # Outer segment
@@ -40,12 +39,12 @@ def vehicle_setup() -> Vehicle:
     segment3.inner_chord = segment2.outer_chord
     segment3.outer_chord = 0.08
     segment3.flap_chord_ratio = 0.3
-    segment3.dihedral = dihedral
-    segment3.outer_twist = 0.
+    segment3.dihedral = 3
+    segment3.outer_twist = 0
     main_wing.add_segment(segment3)
 
     # Resize Wing
-    main_wing.hinge_angle = 1.
+    main_wing.hinge_angle = 0.
     main_wing.build()
 
     # Get wing properties
@@ -85,7 +84,7 @@ def vehicle_setup() -> Vehicle:
     vertical_stabilizer.vertical = True
     vertical_stabilizer.symmetric = False
     vertical_stabilizer.airfoil = "n0012"
-    vertical_stabilizer.hinge_angle = -15
+    vertical_stabilizer.hinge_angle = 0
 
     # Segment
     segment = WingSegment()
@@ -109,8 +108,14 @@ def vehicle_setup() -> Vehicle:
         S = wing.reference_area
         print("%s %.1f sqdm" % (wing.tag, S*100))
 
-    vehicle.plot_vehicle()
+    #vehicle.plot_vehicle(azim=180, elev=0)
+    #vehicle.plot_vehicle(azim=230, elev=30)
+    #vehicle.plot_vehicle(azim=0, elev=90)
+    #vehicle.plot_vehicle(azim=90, elev=0)
 
+    ####################################################################################################################
+    # PROPULSION
+    vehicle.propulsion.thrust = np.array([[0, 16.7], [8, 15.2], [12, 14.1], [16, 12.4], [20, 11], [30, 9], [50, 5], [70, 3], [90, 2], [110, 1], [130, 0]])
     return vehicle
     ####################################################################################################################
 

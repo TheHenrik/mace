@@ -353,7 +353,8 @@ class FlightConditions:
 @dataclass()
 class Plane:
     name: str = None
-    wings = {}
+    tag: str = None
+    wing: Wing = None
     fuselage: Fuselage = None
     mass: np.ndarray = None                 # [mass   x     y     z    [ Ixx     Iyy    Izz     Ixy   Ixz   Iyz ]
     propulsion: Propulsion = None
@@ -364,9 +365,7 @@ class Plane:
     reference_values: ReferenceValues = None
     avl: Avl = None
     flightconditions: FlightConditions = None
-    
-    def add_wing(self, position: str, wing: Wing):
-        self.wings[position] = wing
+
 
 # ------ Initialize Test Airplane ------
 

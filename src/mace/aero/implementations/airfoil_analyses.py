@@ -20,7 +20,7 @@ class Airfoil:
         self.surrogate_path = os.path.join(tool_path, "data", "surrogates", foil_name+".csv")
         self.foil_name = foil_name
 
-        self.re_min = 3e4
+        self.re_min = 2e4
         self.re_max = 1e6
         self.re_step = 5e4
         self.re_list = np.arange(self.re_min, self.re_max, self.re_step)
@@ -104,12 +104,12 @@ class Airfoil:
         re_list = np.unique(polar_data[:, 0])
         
         if re > re_list[-1]:
-            print("Warning: Reynolds number is above the maximum reynolds number in the surrogate model")
+            print("Warning: Airfoil: %s -> Re=%f.0f above max Re in surrogate model" % (self.foil_name, re))
             re = re_list[-1]
         upper_re = re_list[np.where(re_list >= re)[0][0]]
         if np.where(re_list >= re)[0][0] == 0:
             lower_re = re_list[np.where(re_list >= re)[0][0]]
-            print("Warning: Reynolds number is below the minimum reynolds number in the surrogate model")
+            print("Warning: Airfoil: %s -> Re=%.0f below min Re in surrogate model" % (self.foil_name, re))
         else:
             lower_re = re_list[np.where(re_list >= re)[0][0] - 1]
 
@@ -135,12 +135,12 @@ class Airfoil:
         re_list = np.unique(polar_data[:, 0])
 
         if re > re_list[-1]:
-            print("Warning: Reynolds number is above the maximum reynolds number in the surrogate model")
+            print("Warning: Airfoil: %s -> Re=%f.0f above max Re in surrogate model" % (self.foil_name, re))
             re = re_list[-1]
         upper_re = re_list[np.where(re_list >= re)[0][0]]
         if np.where(re_list >= re)[0][0] == 0:
             lower_re = re_list[np.where(re_list >= re)[0][0]]
-            print("Warning: Reynolds number is below the minimum reynolds number in the surrogate model")
+            print("Warning: Airfoil: %s -> Re=%.0f below min Re in surrogate model" % (self.foil_name, re))
         else:
             lower_re = re_list[np.where(re_list >= re)[0][0] - 1]
 

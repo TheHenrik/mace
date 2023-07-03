@@ -1,20 +1,22 @@
 import os  # operation system
 import numpy as np
 from mace.aero.implementations import runsubprocess as runsub
-from mace.domain import plane, Plane
+from mace.domain.vehicle import Vehicle
 from mace.domain.parser import PlaneParser
 from mace.aero.implementations.avl.geometry_and_mass_files import GeometryFile, MassFile
 from pathlib import Path
 
 
 class AVL:
-    def __init__(self, plane: Plane):
+    def __init__(self, plane: Vehicle):
         self.plane = plane
         tool_path = Path(__file__).resolve().parents[5]
         self.avl_path = os.path.join(tool_path, "avl")
         self.total_forces_file_name = os.path.join(tool_path, "temporary/total_forces.avl")
         self.strip_forces_file_name = os.path.join(tool_path, "temporary/strip_forces.avl")
         self.input_file_name = os.path.join(tool_path, "temporary/input_file_avl.in")
+        self.geometry_file = os.path.join(tool_path, "temporary/geometry_file.avl")
+        self.mass_file = os.path.join(tool_path, "temporary/mass_file.mass")
 
     def run_avl(self, avl_file=None, mass_file=None,
                 angle_of_attack=None, lift_coefficient=None, run_case: int = 1, maschine_readable_file=True):
@@ -32,11 +34,11 @@ class AVL:
             if avl_file:
                 input_file.write(f'LOAD {avl_file}\n')
             else:
-                input_file.write(f'LOAD {self.plane.avl.inputs.avl_file}\n')
+                input_file.write(f'LOAD {self.geometry_file}\n')
             if mass_file:
                 input_file.write(f'MASS {mass_file}\n')
             else:
-                input_file.write(f'MASS {self.plane.avl.inputs.mass_file}\n')
+                input_file.write(f'MASS {self.mass_file}\n')
             # input_file.write(f'CASE {run_file}\n')
             input_file.write(f'OPER\n')
             if run_case != 1:  # select run_case

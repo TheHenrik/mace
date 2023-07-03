@@ -1,4 +1,4 @@
-LOAD /Users/jannik/Documents/GitHub/mace/data/airfoils/ag19.dat
+LOAD /Users/jannik/Documents/GitHub/mace/data/airfoils/n0012.dat
 NORM
 OPER
 Visc 980000.0

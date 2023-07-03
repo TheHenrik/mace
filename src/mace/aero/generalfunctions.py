@@ -1,4 +1,5 @@
-from mace.domain import params, Plane
+from mace.domain import params
+from mace.domain.vehicle import Vehicle
 from mace.aero.implementations.avl import athenavortexlattice, geometry_and_mass_files
 from mace.aero.implementations.viscousdrag import ViscousDrag
 import numpy as np
@@ -65,9 +66,9 @@ def get_reynolds_number(v, length):              # neuer Name
 
 
 class GeneralFunctions:
-    def __init__(self, plane: Plane):
+    def __init__(self, plane: Vehicle):
         self.plane = plane
-        self.mass = self.plane.mass[0]
+        self.mass = self.plane.mass
         self.s_ref = self.plane.reference_values.s_ref
         self.g = params.Constants.g
         self.rho = params.Constants.rho

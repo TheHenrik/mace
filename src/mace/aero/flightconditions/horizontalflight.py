@@ -1,15 +1,16 @@
 import numpy as np
 from scipy.interpolate import interp1d
 from scipy.optimize import bisect
-from mace.domain import params, Plane
+from mace.domain import params
+from mace.domain.vehicle import Vehicle
 from mace.aero.implementations.aero import Aerodynamics
 from mace.aero.generalfunctions import GeneralFunctions
 
 
 class HorizontalFlight:
-    def __init__(self, plane: Plane):
+    def __init__(self, plane: Vehicle):
         self.plane = plane
-        self.mass = self.plane.mass[0]
+        self.mass = self.plane.mass
         self.s_ref = self.plane.reference_values.s_ref
         self.g = params.Constants.g
         self.rho = params.Constants.rho
@@ -54,16 +55,16 @@ class HorizontalFlight:
 
             results.append([V, D, T])
 
-        self.plane.flightconditions.horizontalflight.results.thrust_velocity_correlation = np.array(results)
+        self.plane.flight_conditions.horizontal_flight.results.thrust_velocity_correlation = np.array(results)
 
     def get_maximum_velocity(self):
         """
         Returns the maximum velocity in horizontal flight.
         """
-        results = self.plane.flightconditions.horizontalflight.results.thrust_velocity_correlation
+        results = self.plane.flight_conditions.horizontal_flight.results.thrust_velocity_correlation
         if results is None:
             self.fv_diagramm()
-            results = self.plane.flightconditions.horizontalflight.results.thrust_velocity_correlation
+            results = self.plane.flight_conditions.horizontal_flight.results.thrust_velocity_correlation
 
         V = results[:, 0]
         D = results[:, 1]
@@ -84,10 +85,10 @@ class HorizontalFlight:
         Plots the thrust-velocity correlation.
         """
         import matplotlib.pyplot as plt
-        results = self.plane.flightconditions.horizontalflight.results.thrust_velocity_correlation
+        results = self.plane.flight_conditions.horizontal_flight.results.thrust_velocity_correlation
         if results is None:
             self.fv_diagramm()
-            results = self.plane.flightconditions.horizontalflight.results.thrust_velocity_correlation
+            results = self.plane.flight_conditions.horizontal_flight.results.thrust_velocity_correlation
 
         V = results[:, 0]
         D = results[:, 1]

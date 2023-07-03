@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 from mace.domain.wing import Wing, WingSegment
+from mace.domain.results import FlightConditions, Climb, ClimbResults, Avl, AvlInputs, AvlOutputs, AeroCoeffs, Cl, \
+    Cd, HorizontalFlight, HorizontalFlightResults
 import matplotlib.pyplot as plt
+import numpy as np
 class Vehicle:
     def __init__(self):
         self.tag = "Vehicle"
@@ -8,6 +11,20 @@ class Vehicle:
         self.center_of_gravity = [0., 0., 0.]
         self.wings = {}
         self.reference_values = ReferenceValues
+
+        self.flight_conditions = FlightConditions
+        self.flight_conditions.climb = Climb
+        self.flight_conditions.climb.results = ClimbResults
+        self.flight_conditions.horizontal_flight = HorizontalFlight
+        self.flight_conditions.horizontal_flight.results = HorizontalFlightResults
+
+        self.avl = Avl
+        self.avl.inputs = AvlInputs
+        self.avl.outputs = AvlOutputs
+        self.aero_coeffs = AeroCoeffs
+        self.aero_coeffs.lift_coeff = Cl
+        self.aero_coeffs.drag_coeff = Cd
+        self.propulsion = Propulsion
     def add_wing(self, position: str, wing: Wing):
         self.wings[position] = wing
         
@@ -25,7 +42,7 @@ class Vehicle:
         self.reference_values.y_ref = self.center_of_gravity[1]
         self.reference_values.z_ref = self.center_of_gravity[2]
         
-    def plot_vehicle(self, color = 'b'):
+    def plot_vehicle(self, color = 'b', zticks = False, show_points = False, elev = 30, azim = 30):
         x = []
         y = []
         z = []
@@ -42,11 +59,11 @@ class Vehicle:
                     y.append([-segment.nose_inner[1], -segment.nose_outer[1], -segment.back_outer[1], -segment.back_inner[1]])
                     z.append([segment.nose_inner[2], segment.nose_outer[2], segment.back_outer[2], segment.back_inner[2]])
 
-        fig = plt.figure()
+        fig = plt.figure(dpi=400)
         ax = fig.add_subplot(111, projection='3d')
 
-        # Punkte in 3D zeichnen
-        ax.scatter(x, y, z, c=color, marker='o')
+        if show_points:
+            ax.scatter(x, y, z, c=color, marker='o')
 
         for wing in self.wings.values():
             for segment in wing.segments:
@@ -75,16 +92,30 @@ class Vehicle:
 
                 
         # Achsen beschriften
-        ax.set_xlabel('X-Achse')
-        ax.set_ylabel('Y-Achse')
-        ax.set_zlabel('Z-Achse')
+        ax.set_xlabel('x')
+        ax.set_ylabel('y')
+        ax.set_zlabel('z')
         ax.set_aspect('equal')
+        if zticks:
+            ax.set_zticks(zticks)
+        else:
+            ax.set_zticks([])
+
+        ax.view_init(elev=elev, azim=azim)
+
+        plt.tick_params(which='major', labelsize=6)
 
         # Titel hinzufügen
-        plt.title('3D-Punkte-Plot')
+        plt.title(self.tag, fontsize=10)
 
         # Anzeigen des Plots
         plt.show()
+
+@dataclass()
+class Propulsion:
+    mass: float = 0
+    center_of_gravity: np.ndarray = None
+    thrust: np.ndarray = None
 
 @dataclass()
 class ReferenceValues:
@@ -102,3 +133,36 @@ class ReferenceValues:
     h: float = 0  # Height wof WingNP above ground for rolling
     b: float = 0  # Spanwidth
     AR: float = 0  # Aspect ratio (Streckung) b^2 / S
+
+@dataclass()
+class AvlInputs:
+    avl_file = None
+    mass_file = None
+
+@dataclass()
+class AvlOutputs:
+    # Trefftz plane
+    clff: float = 0
+    cdff: float = 0
+    cyff: float = 0
+    oswaldfactor: float = 0
+    # Reference data
+    s_ref: float = 0
+    c_ref: float = 0
+    b_ref: float = 0
+    x_ref: float = 0
+    y_ref: float = 0
+    z_ref: float = 0
+    # Overall data
+    number_of_strips: int = 0
+    number_of_surfaces: int = 0
+    number_of_vortices: int = 0
+    # Surface data
+    surface_data: np.ndarray = None
+    first_and_last_strips = {}          # Dictionary
+    surface_dictionary = {}
+    strip_forces: np.ndarray = None
+@dataclass()
+class Avl:
+    inputs: AvlInputs = None
+    outputs: AvlOutputs = None

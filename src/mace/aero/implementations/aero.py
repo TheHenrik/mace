@@ -1,9 +1,10 @@
 from mace.aero.implementations.avl import athenavortexlattice
 from mace.aero.implementations.viscous_drag import ViscousDrag
 from mace.domain import Plane
+from mace.domain.vehicle import Vehicle
 
 class Aerodynamics:
-    def __init__(self, plane: Plane):
+    def __init__(self, plane: Vehicle):
         """
         :param plane: Plane object
         

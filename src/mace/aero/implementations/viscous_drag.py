@@ -1,7 +1,8 @@
 
 from mace.domain.parser import PlaneParser
 from mace.aero.implementations.avl.geometry_and_mass_files import GeometryFile, MassFile
-from mace.domain import params, Plane
+from mace.domain import params
+from mace.domain.vehicle import Vehicle
 from mace.aero.implementations.avl.athenavortexlattice import AVL
 from pathlib import Path
 import os
@@ -14,7 +15,7 @@ class ViscousDrag:
     """
     This class calculates the viscous drag of a wing using XFOIL.
     """
-    def __init__(self, plane: Plane):
+    def __init__(self, plane: Vehicle):
         """
         :param plane: Plane object
         
@@ -25,7 +26,7 @@ class ViscousDrag:
         self.s_ref = self.plane.reference_values.s_ref
         self.g = params.Constants.g
         self.rho = params.Constants.rho
-        AVL(self.plane).read_avl_output()
+        
         
     def evaluate(self):
         """
@@ -33,14 +34,15 @@ class ViscousDrag:
         It uses the AVL output file to get the geometry and flight condition. Since AVL is not dependent on the
         flight velocity, the velocity defined in the Plane object is used additionally.
         """
+        AVL(self.plane).read_avl_output()
         V = self.plane.aero_coeffs.velocity
         S_ref = self.plane.avl.outputs.s_ref
         S_sum = 0.
         CD = 0.
 
-        for surface in range(1, self.plane.avl.outputs.number_of_surfaces + 1, 2):
+        for surface in range(1, self.plane.avl.outputs.number_of_surfaces, 1):
             strips = self.plane.avl.outputs.surface_dictionary[surface]["strips"][:, 0]
-            for element in strips:
+            for element in range(len(strips)):
                 # initialize strip values
                 strip_values = self.plane.avl.outputs.surface_dictionary[surface]["strips"][int(element - 1), :]
 
@@ -49,13 +51,20 @@ class ViscousDrag:
                 cl  = strip_values[9]  # 9 und nicht 6 (cl_norm)
                 re = get_reynolds_number(V, c)
                 
-                airfoil = Airfoil("ag19") # TODO: get airfoil from plane
+                i = 1
+                for wing in self.plane.wings.values():
+                    if np.ceil(surface/2) == i:
+                        airfoil_name = wing.airfoil
+                    i += 1
+                        
+                    
+                airfoil = Airfoil(airfoil_name) # TODO: get airfoil from plane
                 cd = airfoil.get_cd(re, cl)
 
                 S = strip_values[5]
 
-                CD += 2 * cd * S / S_ref
-                S_sum += 2 * S
+                CD += cd * S / S_ref
+                S_sum += S
 
         self.plane.aero_coeffs.drag_coeff.cd_visc = CD
         self.plane.aero_coeffs.drag_coeff.cd_tot = CD + self.plane.aero_coeffs.drag_coeff.cd_ind
