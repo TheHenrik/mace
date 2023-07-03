@@ -4,9 +4,17 @@ import mace.aero.implementations.xfoil.xfoilpolars as xfoilpolars
 from pathlib import Path
 
 class Airfoil:
-    # This class is used for analyzing airfoils
-    def __init__(self, foil_name):
-        # Initialize the airfoil
+    """
+    This class is used for analyzing airfoils
+    """ 
+    def __init__(self, foil_name: str):
+        """
+         Initialize the airfoil
+        :param foil_name: Name of the airfoil. 
+        The airfoil must be located in the data/airfoils folder, 
+        and the name must be the same as the file name.
+        """
+        
         tool_path = Path(__file__).resolve().parents[4]
         self.airfoil_path = os.path.join(tool_path, "data", "airfoils", foil_name+".dat")
         self.surrogate_path = os.path.join(tool_path, "data", "surrogates", foil_name+".csv")
@@ -30,7 +38,10 @@ class Airfoil:
         self.must_rebuild_surrogate = False
 
     def build_surrogate(self):
-        # This function builds a surrogate model for the airfoil
+        """
+        This function builds a surrogate model for the airfoil
+        """
+
         re_list = self.re_list
 
         alpha_min = self.alpha_min
@@ -75,12 +86,16 @@ class Airfoil:
         np.savetxt(self.surrogate_path, polar_data, fmt='%.6f', delimiter=",", header=" ".join(header), comments="")
 
     def check_for_surrogate(self):
-        # This function checks if a surrogate model exists for the airfoil
+        """
+        This function checks if a surrogate model exists for the airfoil
+        """
         # TODO: Check if surrogate fits Ncrit and Mach number
         return os.path.isfile(self.surrogate_path)
 
-    def get_cd(self, re, cl):
-        # This function evaluates the airfoil at a given reynolds number and cl
+    def get_cd(self, re: float, cl: float) -> float:
+        """
+        This function evaluates the airfoil at a given reynolds number and cl and returns the drag coefficient
+        """
         if not self.check_for_surrogate() or self.must_rebuild_surrogate:
             self.build_surrogate()
 
@@ -108,8 +123,10 @@ class Airfoil:
 
         return CD
 
-    def get_cl_max(self, re):
-        # This function evaluates the airfoil at a given reynolds number and cl
+    def get_cl_max(self, re: float) -> float:
+        """
+        This function evaluates the airfoil at a given reynolds number and returns the maximum cl
+        """
         if not self.check_for_surrogate() or self.must_rebuild_surrogate:
             self.build_surrogate()
 

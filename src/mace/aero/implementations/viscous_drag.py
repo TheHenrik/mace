@@ -11,7 +11,15 @@ from mace.aero.generalfunctions import get_reynolds_number
 
 
 class ViscousDrag:
+    """
+    This class calculates the viscous drag of a wing using XFOIL.
+    """
     def __init__(self, plane: Plane):
+        """
+        :param plane: Plane object
+        
+        Initializes the viscous drag analysis.
+        """
         self.plane = plane
         self.mass = self.plane.mass
         self.s_ref = self.plane.reference_values.s_ref
@@ -20,6 +28,11 @@ class ViscousDrag:
         AVL(self.plane).read_avl_output()
         
     def evaluate(self):
+        """
+        This function evaluates the viscous drag of a wing using XFOIL.
+        It uses the AVL output file to get the geometry and flight condition. Since AVL is not dependent on the
+        flight velocity, the velocity defined in the Plane object is used additionally.
+        """
         V = self.plane.aero_coeffs.velocity
         S_ref = self.plane.avl.outputs.s_ref
         S_sum = 0.

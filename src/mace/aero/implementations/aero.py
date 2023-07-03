@@ -4,12 +4,20 @@ from mace.domain import Plane
 
 class Aerodynamics:
     def __init__(self, plane: Plane):
+        """
+        :param plane: Plane object
+        
+        Initializes the aerodynamic analysis.
+        """
         self.plane = plane
         self.AVL = athenavortexlattice.AVL(self.plane)
         self.XFOIL = ViscousDrag(self.plane)
         
-    def evaluate(self, CL, V):
+    def evaluate(self, CL: float, V: float) -> None:
         """
+        :param CL: Lift coefficient
+        :param V: Velocity
+
         Returns the drag coefficient for a given lift coefficient.
         """
         self.plane.aero_coeffs.lift_coefficient = CL

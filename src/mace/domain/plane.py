@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import List
 from mace.domain.params import Parameters
+from mace.domain.wing import Wing, WingSegment
 import numpy as np
 
 
@@ -69,10 +70,6 @@ class WingSegment:
     back_inner: np.ndarray = None
     back_outer: np.ndarray = None
     mass: float = 0
-    # chord_inner = ((back_inner[0] - nose_inner[0]) ** 2 + (back_inner[1] - nose_inner[1]) ** 2 + (
-    #             back_inner[2] - nose_inner[2]) ** 2) ** 0.5
-    # chord_outer = ((back_outer[0] - nose_outer[0]) ** 2 + (back_outer[1] - nose_outer[1]) ** 2 + (
-    #             back_outer[2] - nose_outer[2]) ** 2) ** 0.5
     area: float = 0
     volume: float = 0
     # for AVL
@@ -83,7 +80,6 @@ class WingSegment:
     inner_airfoil: Airfoil = None
     outer_airfoil: Airfoil = None
     control: Control = None
-
 
 @dataclass()
 class Wing:
@@ -195,7 +191,6 @@ class Electronics:
     batteries = None
     linkages = None
 
-
 @dataclass()
 class ReferenceValues:
     number_of_surfaces: float = 0
@@ -213,6 +208,7 @@ class ReferenceValues:
     b: float = 0  # Spanwidth
     lambd_k: float = 0  # Taper ratio (Zuspitzung)
     lambd_g: float = 0  # Aspect ratio (Streckung) b^2 / S
+
 
 # ---Aerodynamic Coefficients---
 
@@ -357,7 +353,7 @@ class FlightConditions:
 @dataclass()
 class Plane:
     name: str = None
-    wing: Wing = None
+    wings = {}
     fuselage: Fuselage = None
     mass: np.ndarray = None                 # [mass   x     y     z    [ Ixx     Iyy    Izz     Ixy   Ixz   Iyz ]
     propulsion: Propulsion = None
@@ -368,9 +364,11 @@ class Plane:
     reference_values: ReferenceValues = None
     avl: Avl = None
     flightconditions: FlightConditions = None
+    
+    def add_wing(self, position: str, wing: Wing):
+        self.wings[position] = wing
 
 # ------ Initialize Test Airplane ------
-
 
 def build_plane() -> Plane:
     avl_outputs = AvlOutputs()

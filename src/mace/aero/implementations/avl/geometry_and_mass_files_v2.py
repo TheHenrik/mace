@@ -1,6 +1,5 @@
 import os
-from mace.domain import Plane, plane as pl
-from mace.domain.parser import PlaneParser
+from mace.domain.vehicle import Vehicle
 from pathlib import Path
 
 # ========== Geometry File ==========
@@ -136,7 +135,7 @@ class GeometryFile:
     get good accuracy, but for most cases the chordwise spacing
     will be significant.
     """
-    def __init__(self, plane: Plane) -> None:
+    def __init__(self, plane: Vehicle) -> None:
         self.plane = plane
 
     def build_geo_header(self, geometry_file):
@@ -163,8 +162,8 @@ class GeometryFile:
                 (assumed zero if this line is absent, for previous-version compatibility)
         """
 
-        if self.plane.name is not None:
-            geometry_file.write(f'{self.plane.name}\n')
+        if self.plane.tag is not None:
+            geometry_file.write(f'{self.plane.tag}\n')
         geometry_file.write(f'# Mach\n')
         geometry_file.write(f'{self.plane.reference_values.mach}\n')
         geometry_file.write(f'#IYsym\tIZsym\tZsym\n')
@@ -430,7 +429,7 @@ class GeometryFile:
                         element.back_outer[2] - element.nose_outer[2]) ** 2) ** 0.5
         return chord_inner, chord_outer
 
-    def build_geo_surface_section(self, geometry_file, element):
+    def build_geo_surface_section(self, geometry_file, wing):
         """
         SECTION                             |  (keyword)
         0.0 5.0 0.2   0.50  1.50   5 -2.0   | Xle Yle Zle   Chord Ainc   [ Nspan Sspace ]
@@ -584,16 +583,14 @@ class GeometryFile:
         """
 
         chord_outer = 0
-        for index in range(len(element.segments)):
+        for i, segment in enumerate(wing.segments):
             geometry_file.write(f'SECTION\n')
             geometry_file.write(f'#Xle\tYle\tZle\tChord\tAinc\tNspanwise\tSspace\n')
-            chord_inner = self.get_chord(element.segments[index])[0]
-            chord_outer = self.get_chord(element.segments[index])[1]
-            geometry_file.write(f'{element.segments[index].nose_inner[0]}  '
-                                f'{element.segments[index].nose_inner[1]}  '
-                                f'{element.segments[index].nose_inner[2]}  '
-                                f'{chord_inner}  '
-                                f'{element.segments[index].a_inc}')
+            geometry_file.write(f'{segment.nose_inner[0]}  '
+                                f'{segment.nose_inner[1]}  '
+                                f'{segment.nose_inner[2]}  '
+                                f'{segment.inner_chord}  '
+                                f'{segment.a_inc}')
             if element.segments[index].n_spanwise is not None:
                 geometry_file.write(f'{  element.segments[index].n_spanwise}')
             if element.segments[index].s_space is not None:
@@ -840,28 +837,27 @@ class GeometryFile:
         defining sections.
         """
         # surface_name e.g wing or empennage
-        for element in [self.plane.wing]:                       # [... , self.plane.empennage]
-            if element.isactive:
-                geometry_file.write(f'SURFACE\n')
-                geometry_file.write(f'{element.name}\n')          # for example "Main Wing"
-                # geometry_file.write(f'#Nchordwise\tCspace\tNspanwise\tSspace\n')
-                geometry_file.write(f'{element.n_chordwise}  {element.c_space}  '
-                                    f'{element.n_spanwise}  {element.s_space}\n\n')
-                geometry_file.write(f'Component\n')
-                geometry_file.write(f'{element.l_comp}\n\n')             # component value/index
-                geometry_file.write(f'YDUPLICATE\n')
-                geometry_file.write(f'0.0\n\n')
-                # geometry_file.write(f'SCALE\n') # macht Probleme
-                # geometry_file.write(f'{element.x_scale}\t{element.y_scale}\t{element.z_scale}\n\n')
-                geometry_file.write(f'TRANSLATE\n')
-                geometry_file.write(f'{element.x_translate}\t{element.y_translate}\t{element.z_translate}\n\n')
-                geometry_file.write(f'ANGLE\n')
-                geometry_file.write(f'{element.twist_angle:.5f}\n\n')
-                geometry_file.write(f'#--------------------\n')
+        for i, wing in enumerate(self.plane.wings.values()):                       # [... , self.plane.empennage]
+            geometry_file.write(f'SURFACE\n')
+            geometry_file.write(f'{wing.tag}\n')          # for example "Main Wing"
+            # geometry_file.write(f'#Nchordwise\tCspace\tNspanwise\tSspace\n')
+            geometry_file.write(f'{wing.n_chordwise}  {wing.c_space}  '
+                                f'{wing.n_spanwise}  {wing.s_space}\n\n')
+            geometry_file.write(f'Component\n')
+            geometry_file.write(f'{i+1}\n\n')             # component value/index
+            geometry_file.write(f'YDUPLICATE\n')
+            geometry_file.write(f'0.0\n\n')
+            # geometry_file.write(f'SCALE\n') # macht Probleme
+            # geometry_file.write(f'{element.x_scale}\t{element.y_scale}\t{element.z_scale}\n\n')
+            geometry_file.write(f'TRANSLATE\n')
+            geometry_file.write(f'{wing.origin[0]}\t{wing.origin[1]}\t{wing.origin[2]}\n\n')
+            geometry_file.write(f'ANGLE\n')
+            geometry_file.write(f'{wing.angle:.5f}\n\n')
+            geometry_file.write(f'#--------------------\n')
 
-                GeometryFile.build_geo_surface_section(self, geometry_file, element)
+            GeometryFile.build_geo_surface_section(self, geometry_file, element)
 
-    def build_geometry_file(self, number_of_surfaces=1, plane_name=None, cdp=0, mach=0):
+    def build_geometry_file(self, plane_name=None, cdp=0, mach=0):
         """
         This method creates a geometry file as input for AVL.
 
@@ -875,8 +871,7 @@ class GeometryFile:
         with open(file_path, "w") as geometry_file:
             GeometryFile.build_geo_header(self, geometry_file)
             geometry_file.write(f'\n#======================\n')
-            for surface in range(number_of_surfaces):
-                GeometryFile.build_geo_surface(self, geometry_file)
+            GeometryFile.build_geo_surface(self, geometry_file)
 
         self.plane.avl.inputs.avl_file = file_path
         print('AVL Geometry File built successfully')
@@ -1062,7 +1057,7 @@ class MassFile:
     shifted by delta(x) = 0.2.  Data lines 3-5 revert back to the defaults.
     """
 
-    def __init__(self, plane: Plane) -> None:
+    def __init__(self, plane: Vehicle) -> None:
         self.plane = plane
 
     def build_mass_of_components(self, mass_file, n_o_comp):
@@ -1256,7 +1251,6 @@ class MassFile:
             mass_file.write(f'Lunit = {self.plane.parameters.units.l_unit} m\n')
             mass_file.write(f'Munit = {self.plane.parameters.units.m_unit} kg\n')
             mass_file.write(f'Tunit = {self.plane.parameters.units.t_unit} s\n')
-
             mass_file.write(f'g = {self.plane.parameters.constants.g}\n')
             mass_file.write(f'rho = {self.plane.parameters.constants.rho}\n')
             MassFile.build_mass_table(self, mass_file)

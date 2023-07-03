@@ -1,7 +1,8 @@
-from mace.domain.parser import PlaneParser
+
+from vehicle_setup import vehicle_setup
 from mace.aero.flightconditions.horizontalflight import HorizontalFlight
 from mace.aero.flightconditions.climb_jf import Climb
-from mace.aero.implementations.avl import geometry_and_mass_files
+from mace.aero.implementations.avl import geometry_and_mass_files_v2 as geometry_and_mass_files
 import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
@@ -9,16 +10,15 @@ if __name__ == '__main__':
     climb_time = 60.0
 
     # Define Aircraft Geometry
-    Aircraft = PlaneParser("aachen.toml").get("Plane")
-
+    Aircraft = vehicle_setup()
+    
     # Build AVL input files
-    geometry_and_mass_files.GeometryFile(Aircraft).build_geometry_file(1)
+    geometry_and_mass_files.GeometryFile(Aircraft).build_geometry_file()
     geometry_and_mass_files.MassFile(Aircraft).build_mass_file()
-
+    
     # Run Take-Off Analysis
 
     # TODO: Add Take-Off Analysis
-
 
     # Run Climb Analysis
     climb_analysis = Climb(Aircraft)
@@ -31,8 +31,3 @@ if __name__ == '__main__':
     V_max = cruise_analysis.get_maximum_velocity()
     print("Maximum Velocity: %.1f m/s" %  V_max)
     cruise_analysis.plot_fv_diagramm()
-
-
-
-
-    
