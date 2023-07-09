@@ -1,4 +1,5 @@
 from mace.domain.wing import Wing, WingSegment
+from mace.domain.landing_gear import LandingGear, Wheel
 from mace.domain.vehicle import Vehicle
 import numpy as np
 
@@ -14,6 +15,7 @@ def vehicle_setup() -> Vehicle:
     main_wing.origin = [0, 0, 0]
     main_wing.airfoil = "ag19"
     main_wing.angle = 2.
+    main_wing.symmetric = True
 
     # Inner segment
     segment1 = WingSegment()
@@ -21,7 +23,7 @@ def vehicle_setup() -> Vehicle:
     segment1.inner_chord = 0.292
     segment1.outer_chord = 0.290
     segment1.flap_chord_ratio = 0.3
-    segment1.dihedral = 3
+    segment1.dihedral = 10
     main_wing.add_segment(segment1)
 
     # Mid segment
@@ -30,7 +32,7 @@ def vehicle_setup() -> Vehicle:
     segment2.inner_chord = segment1.outer_chord
     segment2.outer_chord = 0.230
     segment2.flap_chord_ratio = 0.3
-    segment2.dihedral = 3
+    segment2.dihedral = 10
     main_wing.add_segment(segment2)
 
     # Outer segment
@@ -39,13 +41,13 @@ def vehicle_setup() -> Vehicle:
     segment3.inner_chord = segment2.outer_chord
     segment3.outer_chord = 0.08
     segment3.flap_chord_ratio = 0.3
-    segment3.dihedral = 3
+    segment3.dihedral = 10
     segment3.outer_twist = 0
     main_wing.add_segment(segment3)
 
     # Resize Wing
     main_wing.hinge_angle = 0.
-    #main_wing.aspect_ratio = 4.
+    # main_wing.aspect_ratio = 4.
     main_wing.build()
 
     # Get wing properties
@@ -109,16 +111,46 @@ def vehicle_setup() -> Vehicle:
         S = wing.reference_area
         print("%s %.1f sqdm" % (wing.tag, S*100))
 
+
+    ####################################################################################################################
+    # PROPULSION
+    vehicle.propulsion.thrust = np.array([[0, 16.7], [8, 15.2], [12, 14.1], [16, 12.4], [25, 4]])
+    ####################################################################################################################
+    # LANDING GEAR
+    landing_gear = LandingGear()
+
+    Height = 0.25
+
+    wheel1 = Wheel()
+    wheel1.diameter = 0.1
+    wheel1.mass = 0.05
+    wheel1.origin = np.array([-0.3, 0., -(Height-wheel1.diameter/2.)])
+    landing_gear.add_wheel(wheel1)
+
+    wheel2 = Wheel()
+    wheel2.diameter = 0.16
+    wheel2.mass = 0.05
+    wheel2.origin = np.array([vehicle.center_of_gravity[0] + 0.1, 0.3, -(Height-wheel2.diameter/2.)])
+    landing_gear.add_wheel(wheel2)
+
+    wheel3 = Wheel()
+    wheel3.diameter = wheel2.diameter
+    wheel3.mass = wheel2.mass
+    wheel3.origin = np.array([vehicle.center_of_gravity[0] + 0.1, -wheel2.origin[1], wheel2.origin[2]])
+    wheel3.origin[1] = -wheel2.origin[1]
+    landing_gear.add_wheel(wheel3)
+
+    landing_gear.finalize()
+
+    vehicle.landing_gear = landing_gear
+    ####################################################################################################################
+    # PLOT
+
     #vehicle.plot_vehicle(azim=180, elev=0)
     vehicle.plot_vehicle(azim=230, elev=30)
     #vehicle.plot_vehicle(azim=0, elev=90)
     #vehicle.plot_vehicle(azim=90, elev=0)
-
-    ####################################################################################################################
-    # PROPULSION
-    vehicle.propulsion.thrust = np.array([[0, 16.7], [8, 15.2], [12, 14.1], [16, 12.4], [20, 11], [30, 9], [50, 5], [70, 3], [90, 2], [110, 1], [130, 0]])
     return vehicle
-    ####################################################################################################################
 
 
 if __name__ == "__main__":

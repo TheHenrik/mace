@@ -56,9 +56,8 @@ class ViscousDrag:
                     if np.ceil(surface/2) == i:
                         airfoil_name = wing.airfoil
                     i += 1
-                        
-                    
-                airfoil = Airfoil(airfoil_name) # TODO: get airfoil from plane
+                
+                airfoil = Airfoil(airfoil_name)
                 cd = airfoil.get_cd(re, cl)
 
                 S = strip_values[5]

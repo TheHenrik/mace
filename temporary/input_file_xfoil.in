@@ -1,4 +1,4 @@
-LOAD /Users/jannik/Documents/GitHub/mace/data/airfoils/ht14.dat
+LOAD /Users/jannik/Documents/GitHub/mace/data/airfoils/acc22.dat
 NORM
 OPER
 Visc 970000.0

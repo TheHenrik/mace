@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from mace.domain.wing import Wing, WingSegment
+from mace.domain.landing_gear import LandingGear, Wheel
 from mace.domain.results import FlightConditions, Climb, ClimbResults, Avl, AvlInputs, AvlOutputs, AeroCoeffs, Cl, \
     Cd, HorizontalFlight, HorizontalFlightResults
 import matplotlib.pyplot as plt
@@ -24,7 +25,10 @@ class Vehicle:
         self.aero_coeffs = AeroCoeffs
         self.aero_coeffs.lift_coeff = Cl
         self.aero_coeffs.drag_coeff = Cd
+        
         self.propulsion = Propulsion
+        self.landing_gear = LandingGear()
+        
     def add_wing(self, position: str, wing: Wing):
         self.wings[position] = wing
         
@@ -42,7 +46,7 @@ class Vehicle:
         self.reference_values.y_ref = self.center_of_gravity[1]
         self.reference_values.z_ref = self.center_of_gravity[2]
         
-    def plot_vehicle(self, color = 'b', zticks = False, show_points = False, elev = 30, azim = 30):
+    def plot_vehicle(self, color = 'b', zticks = False, show_points = False, show_landing_gear=True, elev = 30, azim = 30):
         x = []
         y = []
         z = []
@@ -64,7 +68,7 @@ class Vehicle:
 
         if show_points:
             ax.scatter(x, y, z, c=color, marker='o')
-
+        
         for wing in self.wings.values():
             for segment in wing.segments:
                 n_i = segment.nose_inner
@@ -90,7 +94,9 @@ class Vehicle:
                     # Outer chord
                     ax.plot([n_o[0], b_o[0]], [-n_o[1], -b_o[1]], [n_o[2], b_o[2]], color)
 
-                
+        if show_landing_gear:
+            self.landing_gear.plot(color='b')
+
         # Achsen beschriften
         ax.set_xlabel('x')
         ax.set_ylabel('y')

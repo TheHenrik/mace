@@ -195,7 +195,7 @@ class Electronics:
 class ReferenceValues:
     number_of_surfaces: float = 0
     mach: float = 0  # mach number for Prandtl-Glauert correction
-    iy_sym: float = 0  # has to be 0 for YDUPLICATE
+    iy_sym: float = 1  # has to be 0 for YDUPLICATE
     iz_sym: float = 0  # 0: no z-symmetry assumed
     z_sym: float = 0  # for iz_sym = 0 ignored
     s_ref: float = 0  # reference wing area
