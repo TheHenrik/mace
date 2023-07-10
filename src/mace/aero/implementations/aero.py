@@ -14,7 +14,7 @@ class Aerodynamics:
         self.AVL = athenavortexlattice.AVL(self.plane)
         self.XFOIL = ViscousDrag(self.plane)
         
-    def evaluate(self, CL: float, V: float, FLAP: float = 0) -> None:
+    def evaluate(self, CL: float, V: float, FLAP: float = 0, ALPHA: float = None) -> None:
         """
         :param CL: Lift coefficient
         :param V: Velocity
@@ -25,7 +25,12 @@ class Aerodynamics:
         self.plane.aero_coeffs.velocity = V
         self.plane.aero_coeffs.flap_angle = FLAP
         
-        self.AVL.run_avl(lift_coefficient=CL, flap_angle=FLAP)
+        if ALPHA != None:
+            self.plane.aero_coeffs.angle_of_attack = ALPHA
+            self.AVL.run_avl(angle_of_attack=ALPHA, flap_angle=FLAP)
+        else:
+            self.AVL.run_avl(lift_coefficient=CL, flap_angle=FLAP)
+            
         self.AVL.read_avl_output()
         self.XFOIL.evaluate()
         

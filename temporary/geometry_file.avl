@@ -2,7 +2,7 @@ Vehicle
 # Mach
 0
 #IYsym	IZsym	Zsym
-0         0         0         
+0         0         -0.25     
 
 #Sref	Cref	Bref
 0.52856   0.13296   2.064     

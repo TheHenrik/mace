@@ -205,12 +205,9 @@ class AVL:
             lines = file.readlines()
             self.read_strip_forces_avl_file(lines)
 
-        # print(self.plane.avl.outputs.surface_data.shape[0])
-        # print(self.plane.avl.outputs.surface_data)
         for i in range(self.plane.avl.outputs.surface_data.shape[0]):
             first_strip = self.plane.avl.outputs.surface_data[i, -1]
             last_strip = first_strip + self.plane.avl.outputs.surface_data[i, -2] - 1
-            # print(f'Surface{i} has first strip {first_strip} and last strip {last_strip} with {self.plane.avl.outputs.surface_data[i, -2]} strips\n ')
             strips = self.plane.avl.outputs.strip_forces[first_strip - 1: last_strip, :]
             first_and_last_strip = {'first_strip': first_strip, 'last_strip': last_strip}
             surface_dictionary_data = {'first_strip': first_strip, 'last_strip': last_strip, 'strips': strips}

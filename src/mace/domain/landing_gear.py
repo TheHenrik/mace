@@ -12,6 +12,7 @@ class LandingGear:
         self.mass: float = 0.
         self.center_of_gravity: np.ndarray = np.array([0., 0., 0.])
         self.wheels: List[Wheel] = []
+        self.height: float = 0.
 
     def add_wheel(self, wheel: Wheel):
         self.wheels.append(wheel)

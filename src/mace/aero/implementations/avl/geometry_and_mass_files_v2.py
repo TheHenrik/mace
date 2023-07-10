@@ -9,6 +9,7 @@ from pathlib import Path
 class GeometryFile:
     def __init__(self, plane: Vehicle) -> None:
         self.plane = plane
+        self.z_sym = 0
 
     def build_geo_header(self, geometry_file):
         if self.plane.tag is not None:
@@ -17,8 +18,8 @@ class GeometryFile:
         geometry_file.write(f'{round(self.plane.reference_values.mach,5)}\n')
         geometry_file.write(f'#IYsym\tIZsym\tZsym\n')
         geometry_file.write(f'{round(self.plane.reference_values.iy_sym,5):<10}'
-                            f'{round(self.plane.reference_values.iz_sym,5):<10}'
-                            f'{round(self.plane.reference_values.z_sym,5):<10}\n\n')  # iYsym has to be 0 for YDUPLICATE
+                            f'{round(self.z_sym):<10}'
+                            f'{round(-self.plane.landing_gear.height,3):<10}\n\n')  # iYsym has to be 0 for YDUPLICATE
         geometry_file.write(f'#Sref\tCref\tBref\n')
         geometry_file.write(f'{round(self.plane.reference_values.s_ref,5):<10}'
                             f'{round(self.plane.reference_values.c_ref,5):<10}'

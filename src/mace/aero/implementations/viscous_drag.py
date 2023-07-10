@@ -26,6 +26,8 @@ class ViscousDrag:
         self.s_ref = self.plane.reference_values.s_ref
         self.g = params.Constants.g
         self.rho = params.Constants.rho
+        
+        self.print_re_warnings = True
 
     def match_segment_to_strip(self, surface: int, y:float, z:float):
         i = 0
@@ -87,6 +89,7 @@ class ViscousDrag:
                     flap_angle = 0.
                 
                 airfoil = Airfoil(airfoil_name, flap_angle=flap_angle, x_hinge=(1-segment.flap_chord_ratio))
+                airfoil.print_re_warnings = self.print_re_warnings
                 
                 cd = airfoil.get_cd(re, cl)
 

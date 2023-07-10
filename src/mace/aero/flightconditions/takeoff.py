@@ -53,13 +53,6 @@ class Takeoff:
         del_t = (self.mass[0] * (v2 - v1)) / (f - w - r)
         return del_t
 
-    # ---Kräfte---
-
-# (eventuell noch nach Matrix umschreiben, Schema bleibt identisch)
-# def schub(v, fv, ff):                       # aktuelle Geschwindigkeit, Datenpunkte Geschwindigkeit, Datenpunkte Schub
-#     f = np.interp(v, fv, ff)
-#     return f'''
-
     def lift_rolling(self, current_velocity):
         """
         Returns the lift while given plane is rolling on the ground.
@@ -173,6 +166,7 @@ class Takeoff:
         self.plane.flightconditions.takeoff.results.v_timer_start = v_timer_start
         self.plane.flightconditions.takeoff.results.rolling_distance = 0
         self.plane.flightconditions.takeoff.results.rolling_time = 0
+        
         AVL(self.plane).run_avl(lift_coefficient=self.cl_roll)
         AVL(self.plane).read_avl_output()
         v_takeoff = self.v_start(v_min)

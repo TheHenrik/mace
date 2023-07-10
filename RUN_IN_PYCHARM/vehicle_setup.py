@@ -120,7 +120,8 @@ def vehicle_setup() -> Vehicle:
     landing_gear = LandingGear()
 
     Height = 0.25
-
+    landing_gear.height = Height
+    
     wheel1 = Wheel()
     wheel1.diameter = 0.1
     wheel1.mass = 0.05

@@ -5,39 +5,6 @@ from mace.aero.implementations.viscousdrag import ViscousDrag
 import numpy as np
 from scipy.interpolate import interp1d
 
-
-# ---lineare Interpolation---
-
-
-# einfach
-"""def lin_interpol(x,x1,y1,x2,y2):
-    y = y1 + (x - x1) * ((y2 - y1)/(x2 - x1))
-
-    return y
-"""
-# Scipy (example)
-"""from scipy.interpolate import interp1d
-
-X = [1, 2, 3, 4, 5]  # random x values
-Y = [11, 2.2, 3.5, -88, 1]  # random y values
-
-interpolate_x = 2.5  # test Value
-
-y_interp = interp1d(X, Y)  # interpolation"""
-# print("Value of Y at x = {} is".format(interpolate_x),
-#       y_interp(interpolate_x))
-
-# Numpy (example)
-"""
-x = np.linspace(0, 10, num=11)  # random x values
-y = np.cos(-x**2 / 9.0)  # random y values
-
-xnew = np.linspace(0, 10, num=1001)
-ynew = np.interp(xnew, x, y)  # interpolation"""
-
-
-# ---lineare Schnittpunkte---
-
 def get_intersect(a1, a2, b1, b2):
     """
     Returns the point of intersection of the lines passing through a2,a1 and b2,b1.
@@ -112,21 +79,7 @@ class GeneralFunctions:
         geometry_and_mass_files.MassFile(self.plane).build_mass_file()
         athenavortexlattice.AVL(self.plane).run_avl(lift_coefficient=lift_coefficient)
         athenavortexlattice.AVL(self.plane).read_avl_output()
-        # Viscous drag
-        """if velocity:
-            ViscousDrag(self.plane).create_avl_viscous_drag_from_xfoil(velocity=velocity)
-        else:
-            ViscousDrag(self.plane).create_avl_viscous_drag_from_xfoil()"""
         cd = self.plane.aero_coeffs.drag_coeff.cd_viscous + self.plane.aero_coeffs.drag_coeff.cd_ind
         return cd
 
-# ---Polaren erstellen---
-
-
-def gen_polar(re):
-    pass
-
-
-def get_coeffs():
-    pass
 

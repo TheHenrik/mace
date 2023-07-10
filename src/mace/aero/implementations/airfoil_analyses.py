@@ -48,7 +48,8 @@ class Airfoil:
         self.flap_angle = flap_angle
         self.x_hinge = 0.75
         self.z_hinge = 0.
-
+        
+        self.print_re_warnings = True
         self.must_rebuild_surrogate = False
 
     def build_surrogate(self):
@@ -120,12 +121,14 @@ class Airfoil:
         re_list = np.unique(polar_data[:, 0])
         
         if re > re_list[-1]:
-            print("Warning: Airfoil: %s -> Re=%.0f above max Re in surrogate model" % (self.foil_name, re))
+            if self.print_re_warnings:
+                print("Warning: Airfoil: %s -> Re=%.0f above max Re in surrogate model" % (self.foil_name, re))
             re = re_list[-1]
         upper_re = re_list[np.where(re_list >= re)[0][0]]
         if np.where(re_list >= re)[0][0] == 0:
             lower_re = re_list[np.where(re_list >= re)[0][0]]
-            print("Warning: Airfoil: %s -> Re=%.0f below min Re in surrogate model" % (self.foil_name, re))
+            if self.print_re_warnings:
+                print("Warning: Airfoil: %s -> Re=%.0f below min Re in surrogate model" % (self.foil_name, re))
         else:
             lower_re = re_list[np.where(re_list >= re)[0][0] - 1]
 
@@ -151,12 +154,14 @@ class Airfoil:
         re_list = np.unique(polar_data[:, 0])
 
         if re > re_list[-1]:
-            print("Warning: Airfoil: %s -> Re=%.0f above max Re in surrogate model" % (self.foil_name, re))
+            if self.print_re_warnings:
+                print("Warning: Airfoil: %s -> Re=%.0f above max Re in surrogate model" % (self.foil_name, re))
             re = re_list[-1]
         upper_re = re_list[np.where(re_list >= re)[0][0]]
         if np.where(re_list >= re)[0][0] == 0:
             lower_re = re_list[np.where(re_list >= re)[0][0]]
-            print("Warning: Airfoil: %s -> Re=%.0f below min Re in surrogate model" % (self.foil_name, re))
+            if self.print_re_warnings:
+                print("Warning: Airfoil: %s -> Re=%.0f below min Re in surrogate model" % (self.foil_name, re))
         else:
             lower_re = re_list[np.where(re_list >= re)[0][0] - 1]
 

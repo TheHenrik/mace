@@ -14,9 +14,11 @@ class HorizontalFlight:
         self.s_ref = self.plane.reference_values.s_ref
         self.g = params.Constants.g
         self.rho = params.Constants.rho
-        self.CL_start = 0.05
-        self.CL_end = 1.
-        self.CL_step = 0.05
+        self.cl_start = 0.05
+        self.cl_end = 1.
+        self.cl_step = 0.05
+        
+        self.flap_angle = 0.
 
     def get_drag_force(self, V):
         plane = self.plane
@@ -36,16 +38,16 @@ class HorizontalFlight:
         [[v1, d1, t1], [v2, d2, t2], [...], ...]
         """
         # Initialize vectors
-        CL_list = np.arange(self.CL_start, self.CL_end, self.CL_step)
+        cl_list = np.arange(self.cl_start, self.cl_end, self.cl_step)
         results = []
         Aero = Aerodynamics(self.plane)
         thrust = GeneralFunctions(self.plane).current_thrust
 
         # Evaluate required thrust in cl range
-        for CL in CL_list:
+        for CL in cl_list:
             V = self.flight_velocity(CL)
 
-            Aero.evaluate(CL=CL, V=V)
+            Aero.evaluate(CL=CL, V=V, FLAP=self.flap_angle)
             
             # Calculate total drag force
             D = self.get_drag_force(V)
