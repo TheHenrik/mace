@@ -24,6 +24,7 @@ class AeroCoeffs:
     velocity: float = None
     lift_coeff: Cl = None
     drag_coeff: Cd = None
+    flap_angle: float = None
     # for AVL
     cdp: float = 0  # not used, just in case. Default profile drag coefficient added to geometry.
     

@@ -14,11 +14,13 @@ class Climb:
         self.g = params.Constants.g
         self.rho = params.Constants.rho
 
-        self.CL_start = 0.1
-        self.CL_end = 1.1
-        self.CL_step = 0.05
+        self.cl_start = 0.1
+        self.cl_end = 1.1
+        self.cl_step = 0.05
         self.v_tolerance = 0.5
         self.it_max = 20
+        
+        self.flap_angle = 0.
 
     def v_climb(self, current_thrust, cl, cd) -> (float, float):
         """
@@ -79,9 +81,9 @@ class Climb:
         Returns a numpy matrix with [cl, velocity, v_vertical, sin, cos, gamma (in degrees), current_thrust]
         in each row.
         """
-        CL_start = self.CL_start
-        CL_end = self.CL_end
-        CL_step = self.CL_step
+        CL_start = self.cl_start
+        CL_end = self.cl_end
+        CL_step = self.cl_step
         v_tolerance = self.v_tolerance
         it_max = self.it_max
         
@@ -103,7 +105,7 @@ class Climb:
             it = 0
             while not_in_tolerance and it < it_max:
 
-                Aero.evaluate(V=V, CL=CL)
+                Aero.evaluate(V=V, CL=CL, FLAP=self.flap_angle)
                 CD = self.plane.aero_coeffs.drag_coeff.cd_tot
                 
                 T = thrust(V)
@@ -127,6 +129,8 @@ class Climb:
                 climb_data = np.vstack((climb_data, results))
 
         self.plane.flight_conditions.climb.results.climb_data = climb_data
+        
+        return climb_data
         
     def get_gamma_max(self):
         # gamma maximal

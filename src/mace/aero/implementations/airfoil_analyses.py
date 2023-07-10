@@ -7,17 +7,27 @@ class Airfoil:
     """
     This class is used for analyzing airfoils
     """ 
-    def __init__(self, foil_name: str):
+    def __init__(self, foil_name: str, flap_angle: float = 0, x_hinge: float = 0.75, z_hinge: float = 0.):
         """
          Initialize the airfoil
         :param foil_name: Name of the airfoil. 
         The airfoil must be located in the data/airfoils folder, 
         and the name must be the same as the file name.
         """
-        
         tool_path = Path(__file__).resolve().parents[4]
-        self.airfoil_path = os.path.join(tool_path, "data", "airfoils", foil_name+".dat")
-        self.surrogate_path = os.path.join(tool_path, "data", "surrogates", foil_name+".csv")
+        self.airfoil_path = os.path.join(tool_path, "data", "airfoils", foil_name + ".dat")
+        if np.isclose(flap_angle, 0):
+            self.surrogate_path = os.path.join(tool_path, "data", "surrogates",
+                                               foil_name
+                                               +".csv")
+        else:
+            self.surrogate_path = os.path.join(tool_path, "data", "surrogates",
+                                               foil_name
+                                               +"_"
+                                               +str(int(round((100-x_hinge*100),0)))
+                                               +"f"+
+                                               str(int(round(flap_angle,0)))+".csv")
+
         self.foil_name = foil_name
 
         self.re_min = 2e4
@@ -34,6 +44,10 @@ class Airfoil:
         self.n_iter = 100
         self.xtr_top = 100
         self.xtr_bot = 100
+
+        self.flap_angle = flap_angle
+        self.x_hinge = 0.75
+        self.z_hinge = 0.
 
         self.must_rebuild_surrogate = False
 
@@ -55,7 +69,8 @@ class Airfoil:
                 neg_polar_data = xfoilpolars.get_xfoil_polar(self.airfoil_path, reynoldsnumber=re, alfa_start=0,
                                                      alfa_end=self.alpha_min, alfa_step=self.alpha_step, mach=self.mach,
                                                      n_crit=self.n_crit, n_iter=self.n_iter,
-                                                     x_transition_top=self.xtr_top, x_transition_bottom=self.xtr_bot)
+                                                     x_transition_top=self.xtr_top, x_transition_bottom=self.xtr_bot,
+                                                     flap_angle=self.flap_angle, x_hinge=self.x_hinge, z_hinge=self.z_hinge)
                 # cut polar
                 cl_min_index = np.argmin(neg_polar_data[:, 1])
                 neg_polar_data = neg_polar_data[:cl_min_index, :]
@@ -68,7 +83,8 @@ class Airfoil:
                 pos_polar_data = xfoilpolars.get_xfoil_polar(self.airfoil_path, reynoldsnumber=re, alfa_start=0,
                                                      alfa_end=self.alpha_max, alfa_step=self.alpha_step, mach=self.mach,
                                                      n_crit=self.n_crit, n_iter=self.n_iter,
-                                                     x_transition_top=self.xtr_top, x_transition_bottom=self.xtr_bot)
+                                                     x_transition_top=self.xtr_top, x_transition_bottom=self.xtr_bot,
+                                                     flap_angle=self.flap_angle, x_hinge=self.x_hinge, z_hinge=self.z_hinge)
                 # cut polar
                 cl_max_index = np.argmax(pos_polar_data[:, 1])
                 pos_polar_data = pos_polar_data[:cl_max_index+1, :]

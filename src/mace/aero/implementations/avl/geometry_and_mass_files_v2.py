@@ -28,13 +28,13 @@ class GeometryFile:
                             f'{round(self.plane.reference_values.y_ref,5):<10}'
                             f'{round(self.plane.reference_values.z_ref,5):<10}\n')
 
-    def build_geo_surface_section_control(self, geometry_file, element):
-        geometry_file.write(f'\t\t#++++++++++++++++++++\n')
-        geometry_file.write(f'\t\t\t#CONTROL\n')
-        geometry_file.write(f'\t\t\t#Cname\tCgain\tXhinge\tHingeVec\t \t \tSgnDup\n')
-        geometry_file.write(f'\t\t\t{element.c_name}\t{element.c_gain}\t{element.x_hinge}\t'
-                            f'{element.hinge_vec[0]}\t{element.hinge_vec[1]}\t{element.hinge_vec[2]}\t'
-                            f'{element.sgn_dup}\n')  # HingeVec most cases 0 0 0 -> along hinge
+    def build_geo_surface_section_control(self, geometry_file, segment):
+        #geometry_file.write(f'\t\t#++++++++++++++++++++\n')
+        geometry_file.write(f'CONTROL\n')
+        geometry_file.write(f'#Cname\tCgain\tXhinge\tHingeVec\t \t \tSgnDup\n')
+        geometry_file.write(f'{segment.control_name}\t{segment.c_gain}\t{(1-segment.flap_chord_ratio)}\t'
+                            f'{"0. 0. 0."}\t'
+                            f'{segment.sgn_dup}\n')  # HingeVec most cases 0 0 0 -> along hinge
 
     def get_chord(self, element):
         chord_inner = ((element.back_inner[0] - element.nose_inner[0]) ** 2 +

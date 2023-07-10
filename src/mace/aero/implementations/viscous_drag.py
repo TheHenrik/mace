@@ -26,8 +26,31 @@ class ViscousDrag:
         self.s_ref = self.plane.reference_values.s_ref
         self.g = params.Constants.g
         self.rho = params.Constants.rho
-        
-        
+
+    def match_segment_to_strip(self, surface: int, y:float, z:float):
+        i = 0
+        for wing in self.plane.wings.values():
+            if wing.symmetric:
+                i += 1
+                if surface == i:
+                    this_wing = wing
+                    break
+            i += 1
+            if surface == i:
+                this_wing = wing
+                break
+
+        for segment in this_wing.segments:
+            if this_wing.vertical == False:
+                if segment.nose_inner[1] < abs(y) and segment.nose_outer[1] > abs(y):
+                    this_segment = segment
+                    break
+            else:
+                if segment.nose_inner[2] < z and segment.nose_outer[2] > z:
+                    this_segment = segment
+                    break
+        return this_wing, this_segment
+    
     def evaluate(self):
         """
         This function evaluates the viscous drag of a wing using XFOIL.
@@ -36,9 +59,11 @@ class ViscousDrag:
         """
         AVL(self.plane).read_avl_output()
         V = self.plane.aero_coeffs.velocity
+        FLAP = self.plane.aero_coeffs.flap_angle
         S_ref = self.plane.avl.outputs.s_ref
         S_sum = 0.
         CD = 0.
+        
 
         for surface in range(1, self.plane.avl.outputs.number_of_surfaces, 1):
             strips = self.plane.avl.outputs.surface_dictionary[surface]["strips"][:, 0]
@@ -50,14 +75,19 @@ class ViscousDrag:
                 c   = strip_values[4]
                 cl  = strip_values[9]  # 9 und nicht 6 (cl_norm)
                 re = get_reynolds_number(V, c)
+                y = strip_values[2]
+                z = strip_values[3]
                 
-                i = 1
-                for wing in self.plane.wings.values():
-                    if np.ceil(surface/2) == i:
-                        airfoil_name = wing.airfoil
-                    i += 1
+                wing, segment = self.match_segment_to_strip(surface, y, z)
+                airfoil_name = wing.airfoil
                 
-                airfoil = Airfoil(airfoil_name)
+                if segment.control:
+                    flap_angle = FLAP * segment.c_gain
+                else:
+                    flap_angle = 0.
+                
+                airfoil = Airfoil(airfoil_name, flap_angle=flap_angle, x_hinge=(1-segment.flap_chord_ratio))
+                
                 cd = airfoil.get_cd(re, cl)
 
                 S = strip_values[5]
@@ -71,9 +101,6 @@ class ViscousDrag:
         return CD
 
 
-
-
-        
 if __name__ == "__main__":
     # Initialize aircraft
     plane = PlaneParser("aachen.toml").get("Plane")

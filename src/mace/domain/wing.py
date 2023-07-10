@@ -37,6 +37,10 @@ class WingSegment:
         self.outer_airfoil = None
         
         self.control = None # TODO
+        self.control_name = 'flap'
+        self.hinge_vec = np.array([0., 0., 0.])
+        self.c_gain = 1.
+        self.sgn_dup = 1.
 
     def get_area(self) -> float:
         """

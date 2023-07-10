@@ -18,32 +18,32 @@ def vehicle_setup() -> Vehicle:
     main_wing.symmetric = True
 
     # Inner segment
-    segment1 = WingSegment()
-    segment1.span = 0.52
-    segment1.inner_chord = 0.292
-    segment1.outer_chord = 0.290
-    segment1.flap_chord_ratio = 0.3
-    segment1.dihedral = 10
-    main_wing.add_segment(segment1)
+    segment = WingSegment()
+    segment.span = 0.52
+    segment.inner_chord = 0.292
+    segment.outer_chord = 0.290
+    segment.dihedral = 5
+    segment.control = True
+    main_wing.add_segment(segment)
 
     # Mid segment
-    segment2 = WingSegment()
-    segment2.span = 0.32
-    segment2.inner_chord = segment1.outer_chord
-    segment2.outer_chord = 0.230
-    segment2.flap_chord_ratio = 0.3
-    segment2.dihedral = 10
-    main_wing.add_segment(segment2)
+    segment = WingSegment()
+    segment.span = 0.32
+    segment.inner_chord = 0.290
+    segment.outer_chord = 0.230
+    segment.dihedral = 5
+    segment.control = True
+    main_wing.add_segment(segment)
 
     # Outer segment
-    segment3 = WingSegment()
-    segment3.span = 0.192
-    segment3.inner_chord = segment2.outer_chord
-    segment3.outer_chord = 0.08
-    segment3.flap_chord_ratio = 0.3
-    segment3.dihedral = 10
-    segment3.outer_twist = 0
-    main_wing.add_segment(segment3)
+    segment = WingSegment()
+    segment.span = 0.192
+    segment.inner_chord = 0.230
+    segment.outer_chord = 0.08
+    segment.dihedral = 5
+    segment.outer_twist = 0
+    segment.control = True
+    main_wing.add_segment(segment)
 
     # Resize Wing
     main_wing.hinge_angle = 0.

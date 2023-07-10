@@ -19,7 +19,7 @@ class AVL:
         self.mass_file = os.path.join(tool_path, "temporary/mass_file.mass")
 
     def run_avl(self, avl_file=None, mass_file=None,
-                angle_of_attack=None, lift_coefficient=None, run_case: int = 1, maschine_readable_file=True):
+                angle_of_attack=None, lift_coefficient=None, flap_angle=None, run_case: int = 1, maschine_readable_file=True):
         """
         For run_case != 1 please check if runcase is available! At the time not possible! (maybe in future versions)
         """
@@ -47,6 +47,20 @@ class AVL:
                 input_file.write(f'A A {angle_of_attack}\n')
             if lift_coefficient is not None:  # set angle of attack with cl
                 input_file.write(f'A C {lift_coefficient}\n')
+
+            num_control_surfaces = 0
+            if flap_angle is not None:  # set flap angle
+                for wing in self.plane.wings.values():
+                    for segment in wing.segments:
+                        if segment.control:
+                            num_control_surfaces += 1
+                            input_file.write(f'D{num_control_surfaces} D{num_control_surfaces} {flap_angle}\n')
+
+            if num_control_surfaces != 0:
+                num_control_surfaces += 1
+                input_file.write(f'D{num_control_surfaces} D{num_control_surfaces} {flap_angle}\n')
+
+
             input_file.write(f'X\n')  # execute runcase, XX executes all runcases but uses last runcase
             if maschine_readable_file:
                 input_file.write(f'MRF\n')  # maschine readable file

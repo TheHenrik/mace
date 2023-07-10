@@ -9,7 +9,8 @@ from pathlib import Path
 def get_xfoil_polar(airfoil_name, reynoldsnumber, *,
                     alfa=None, alfa_start=None, alfa_end=None, cl=None, cl_start=None, cl_end=None,
                     alfa_step: float = 0.5, cl_step: float = 0.05, n_iter=100,
-                    mach: float = 0, n_crit: float = 9, x_transition_top=100, x_transition_bottom=100):
+                    mach: float = 0, n_crit: float = 9, x_transition_top=100, x_transition_bottom=100,
+                    flap_angle: float = 0, x_hinge: float = 0.75, z_hinge: float = 0.):
     """
     returns a numpy array with all polar data:
         each row contains:
@@ -50,8 +51,20 @@ def get_xfoil_polar(airfoil_name, reynoldsnumber, *,
 
     with open(input_file_path, 'w') as input_file:
         input_file.write(f'LOAD {airfoil_name}\n')
-        input_file.write(f'NORM\n')
-#        input_file.write(f'PANE\n')
+
+        # Set flaps
+        if flap_angle != 0:
+            input_file.write(f'NORM\n')
+            input_file.write(f'GDES\n')
+            input_file.write(f'FLAP\n')
+            input_file.write(f'{round(x_hinge, 3)}\n')
+            input_file.write(f'{round(z_hinge, 3)}\n')
+            input_file.write(f'{round(flap_angle, 3)}\n')
+            input_file.write(f'X\n')
+            input_file.write(f'\n')
+
+
+        #        input_file.write(f'PANE\n')
         input_file.write(f'OPER\n')
         input_file.write(f'Visc {reynoldsnumber}\n')
         if mach != 0:
