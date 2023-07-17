@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
     # Define Analysis
-    climb_time = 55.
+    climb_time = 60.
 
     # Define Aircraft Geometry
     Aircraft = vehicle_setup()
@@ -18,15 +18,18 @@ if __name__ == '__main__':
     mass_file = geometry_and_mass_files.MassFile(Aircraft)
     mass_file.build_mass_file()
 
-    geometry_file = geometry_and_mass_files.GeometryFile(plane)
+    geometry_file = geometry_and_mass_files.GeometryFile(Aircraft)
     geometry_file.z_sym = 1
     geometry_file.build_geometry_file()
     
     # Run Take-Off Analysis
     takeoff_analysis = TakeOff(Aircraft)
+    takeoff_analysis.mu = 0.07
     takeoff_analysis.flap_angle = 10.
     takeoff_analysis.cl_safety_factor = 1.3
-    takeoff_analysis.evaluate()
+    takeoff_analysis.v_wind = 1.
+    takeoff_analysis.v_start_counter = 5.
+    take_off_length, take_off_time = takeoff_analysis.evaluate()
 
     # Geometry File with zsym = 0
     geometry_file.z_sym = 0
@@ -34,10 +37,10 @@ if __name__ == '__main__':
 
     # Run Climb Analysis
     climb_analysis = Climb(Aircraft)
-    climb_analysis.flap_angle = 4.
+    climb_analysis.flap_angle = 4. #0 for acc22, 4 for ag19
     climb_analysis.cl_start = 0.4
     climb_analysis.cl_step = 0.1
-    H = climb_analysis.get_h_max(delta_t=climb_time)
+    H = climb_analysis.get_h_max(delta_t=climb_time-take_off_time)
     print("H Climb: %.1f m" % H)
 
     # Run Cruise Analysis

@@ -18,6 +18,8 @@ class Cd:
     cd_tot: float = 0
     cd_vis: float = 0
     cd_ind: float = 0
+    cd_fuse: float = 0
+    cd_wheels: float = 0
 
 @dataclass()
 class AeroCoeffs:

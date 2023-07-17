@@ -1,7 +1,5 @@
 from mace.domain import params
 from mace.domain.vehicle import Vehicle
-from mace.aero.implementations.avl import athenavortexlattice, geometry_and_mass_files
-from mace.aero.implementations.viscousdrag import ViscousDrag
 import numpy as np
 from scipy.interpolate import interp1d
 
@@ -72,14 +70,5 @@ class GeneralFunctions:
         lift = coefficient * rho / 2 * velocity**2 * s_ref
         return lift
 
-    def calcualate_drag(self, lift_coefficient, *, velocity):
-        # AVL
-        print(f'lift_Coefficient in calculate drag = {lift_coefficient}')
-        geometry_and_mass_files.GeometryFile(self.plane).build_geometry_file(1)
-        geometry_and_mass_files.MassFile(self.plane).build_mass_file()
-        athenavortexlattice.AVL(self.plane).run_avl(lift_coefficient=lift_coefficient)
-        athenavortexlattice.AVL(self.plane).read_avl_output()
-        cd = self.plane.aero_coeffs.drag_coeff.cd_viscous + self.plane.aero_coeffs.drag_coeff.cd_ind
-        return cd
 
 

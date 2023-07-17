@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from mace.domain.wing import Wing, WingSegment
+from mace.domain.fuselage import Fuselage, FuselageSegment
 from mace.domain.landing_gear import LandingGear, Wheel
 from mace.domain.results import FlightConditions, Climb, ClimbResults, Avl, AvlInputs, AvlOutputs, AeroCoeffs, Cl, \
     Cd, HorizontalFlight, HorizontalFlightResults
@@ -11,6 +12,7 @@ class Vehicle:
         self.mass = 0.
         self.center_of_gravity = [0., 0., 0.]
         self.wings = {}
+        self.fuselages = {}
         self.reference_values = ReferenceValues
 
         self.flight_conditions = FlightConditions
@@ -31,6 +33,9 @@ class Vehicle:
         
     def add_wing(self, position: str, wing: Wing):
         self.wings[position] = wing
+        
+    def add_fuselage(self, position: str, fuselage: Fuselage):
+        self.fuselages[position] = fuselage
         
     def get_reference_values(self):
         if "main_wing" in self.wings.keys():
@@ -93,6 +98,34 @@ class Vehicle:
                     ax.plot([n_i[0], b_i[0]], [-n_i[1], -b_i[1]], [n_i[2], b_i[2]], color)
                     # Outer chord
                     ax.plot([n_o[0], b_o[0]], [-n_o[1], -b_o[1]], [n_o[2], b_o[2]], color)
+
+        for fuse in self.fuselages.values():
+            segment_counter = 0
+            for segment in fuse.segments:
+                if segment.shape == 'rectangular':
+                    b_l = segment.origin + np.array([0., -segment.width/2, -segment.height/2])
+                    b_r = segment.origin + np.array([0., +segment.width/2, -segment.height/2])
+                    u_l = segment.origin + np.array([0., -segment.width / 2, +segment.height / 2])
+                    u_r = segment.origin + np.array([0., +segment.width / 2, +segment.height / 2])
+
+                    ax.plot([u_l[0], u_r[0]], [u_l[1], u_r[1]], [u_l[2], u_r[2]], color)
+                    ax.plot([u_r[0], b_r[0]], [u_r[1], b_r[1]], [u_r[2], b_r[2]], color)
+                    ax.plot([b_r[0], b_l[0]], [b_r[1], b_l[1]], [b_r[2], b_l[2]], color)
+                    ax.plot([b_l[0], u_l[0]], [b_l[1], u_l[1]], [b_l[2], u_l[2]], color)
+
+                    if segment_counter != 0:
+                        ax.plot([u_l[0], last_seg_u_l[0]], [u_l[1], last_seg_u_l[1]], [u_l[2], last_seg_u_l[2]], color)
+                        ax.plot([u_r[0], last_seg_u_r[0]], [u_r[1], last_seg_u_r[1]], [u_r[2], last_seg_u_r[2]], color)
+                        ax.plot([b_r[0], last_seg_b_r[0]], [b_r[1], last_seg_b_r[1]], [b_r[2], last_seg_b_r[2]], color)
+                        ax.plot([b_l[0], last_seg_b_l[0]], [b_l[1], last_seg_b_l[1]], [b_l[2], last_seg_b_l[2]], color)
+
+                    last_seg_b_l = b_l
+                    last_seg_b_r = b_r
+                    last_seg_u_l = u_l
+                    last_seg_u_r = u_r
+
+                    segment_counter += 1
+
 
         if show_landing_gear:
             self.landing_gear.plot(color='b')

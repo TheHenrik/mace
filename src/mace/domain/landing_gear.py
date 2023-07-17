@@ -1,11 +1,22 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+from mace.domain import params
+
 
 class Wheel:
     def __init__(self):
         self.mass: float = 0.
         self.origin: np.ndarray = np.array([0., 0., 0.])
         self.diameter: float = 0.
+
+    def get_drag_coefficient(self, V, S_ref):
+        Re_L = V * np.pi / 4 * self.diameter / params.Constants.ny
+        if Re_L == 0:
+            Re_L = 1000
+        C_D_wet = 0.074 / Re_L**0.2
+        C_D_wheel = 2 * C_D_wet * np.pi * self.diameter**2 / 4 / S_ref
+        return C_D_wheel
 
 class LandingGear:
     def __init__(self):

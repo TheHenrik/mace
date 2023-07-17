@@ -25,7 +25,7 @@ if __name__ == '__main__':
     fig = plt.figure(dpi=400)
     ax = fig.add_subplot(111)
 
-    flap_angles = [0., 2., 4., 6., 8., 10.]
+    flap_angles = [0., 2., 4., 10.]
 
     for i, flap_angle in enumerate(flap_angles):
 

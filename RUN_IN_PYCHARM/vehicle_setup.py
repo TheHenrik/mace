@@ -1,4 +1,5 @@
 from mace.domain.wing import Wing, WingSegment
+from mace.domain.fuselage import Fuselage, FuselageSegment
 from mace.domain.landing_gear import LandingGear, Wheel
 from mace.domain.vehicle import Vehicle
 import numpy as np
@@ -114,7 +115,32 @@ def vehicle_setup() -> Vehicle:
 
     ####################################################################################################################
     # PROPULSION
-    vehicle.propulsion.thrust = np.array([[0, 16.7], [8, 15.2], [12, 14.1], [16, 12.4], [25, 4]])
+    vehicle.propulsion.thrust = np.array([[0., 14.42], [3., 13.82], [6., 12.89], [9., 11.85], [12., 10.58], [15., 9.19],
+                                          [18., 7.79], [21., 5.86], [24., 4.01]])
+    ####################################################################################################################
+    # FUSELAGE
+    fuselage = Fuselage()
+
+    segment = FuselageSegment()
+    segment.origin[0] = -0.4
+    segment.width = 0.1
+    segment.height = 0.1
+    fuselage.add_segment(segment)
+
+    segment = FuselageSegment()
+    segment.origin[0] = 0
+    segment.width = 0.1
+    segment.height = 0.2
+    fuselage.add_segment(segment)
+
+    segment = FuselageSegment()
+    segment.origin[0] = 1.
+    segment.width = 0.05
+    segment.height = 0.05
+    fuselage.add_segment(segment)
+
+    fuselage.build()
+    vehicle.add_fuselage("fuselage", fuselage)
     ####################################################################################################################
     # LANDING GEAR
     landing_gear = LandingGear()
