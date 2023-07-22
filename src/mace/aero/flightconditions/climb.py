@@ -122,7 +122,11 @@ class Climb:
             V_vertical = self.v_vertical(V, sin)
 
             results = np.array([CL, V, V_vertical, gamma])
-            
+            CD_ind = self.plane.aero_coeffs.drag_coeff.cd_ind
+            CD_vis = self.plane.aero_coeffs.drag_coeff.cd_visc
+            CD_fus = self.plane.aero_coeffs.drag_coeff.cd_fuse
+            CD_wheel = self.plane.aero_coeffs.drag_coeff.cd_wheels
+            print(V_vertical, CD_ind, CD_vis, CD_fus, CD_wheel)
             if i == 0:
                 climb_data = results
             else:

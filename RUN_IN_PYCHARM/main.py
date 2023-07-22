@@ -1,4 +1,4 @@
-from vehicle_setup import vehicle_setup
+from vehicle_setup_acc22_akastutt import vehicle_setup
 from mace.domain.parser import PlaneParser
 from mace.aero.flightconditions.horizontalflight import HorizontalFlight
 from mace.aero.flightconditions.climb import Climb
@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 if __name__ == '__main__':
     # Define Analysis
     climb_time = 60.
+    transition_time = 5.
 
     # Define Aircraft Geometry
     Aircraft = vehicle_setup()
@@ -40,7 +41,7 @@ if __name__ == '__main__':
     climb_analysis.flap_angle = 4. #0 for acc22, 4 for ag19
     climb_analysis.cl_start = 0.4
     climb_analysis.cl_step = 0.1
-    H = climb_analysis.get_h_max(delta_t=climb_time-take_off_time)
+    H = climb_analysis.get_h_max(delta_t=climb_time-take_off_time-transition_time)
     print("H Climb: %.1f m" % H)
 
     # Run Cruise Analysis

@@ -34,12 +34,16 @@ class Aerodynamics:
         self.AVL.read_avl_output()
         self.XFOIL.evaluate()
         
+        CD_fuse = 0.
         for fuselage in self.plane.fuselages.values():
-            CD_fuse = fuselage.get_drag_coefficient(V, self.plane.avl.outputs.s_ref)
-            self.plane.aero_coeffs.drag_coeff.cd_fuse += CD_fuse
-            self.plane.aero_coeffs.drag_coeff.cd_tot += CD_fuse
+            CD_fuse += fuselage.get_drag_coefficient(V, self.plane.avl.outputs.s_ref)
+
+        self.plane.aero_coeffs.drag_coeff.cd_fuse = CD_fuse
+        self.plane.aero_coeffs.drag_coeff.cd_tot += CD_fuse
         
+        CD_wheel = 0.
         for wheel in self.plane.landing_gear.wheels:
-            CD_wheel = wheel.get_drag_coefficient(V, self.plane.avl.outputs.s_ref)
-            self.plane.aero_coeffs.drag_coeff.cd_wheels += CD_wheel
-            self.plane.aero_coeffs.drag_coeff.cd_tot += CD_wheel
+            CD_wheel += wheel.get_drag_coefficient(V, self.plane.avl.outputs.s_ref)
+
+        self.plane.aero_coeffs.drag_coeff.cd_wheels = CD_wheel
+        self.plane.aero_coeffs.drag_coeff.cd_tot += CD_wheel
