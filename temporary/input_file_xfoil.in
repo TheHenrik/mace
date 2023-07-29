@@ -1,19 +1,11 @@
-LOAD /Users/jannik/Documents/GitHub/mace/data/airfoils/acc22.dat
-NORM
-GDES
-FLAP
-0.75
-0.0
-8.0
-X
-
+LOAD /Users/jannik/Documents/GitHub/mace/data/airfoils/goe443.dat
 OPER
-Visc 320000.0
+Visc 970000.0
 PACC
 /Users/jannik/Documents/GitHub/mace/temporary/polar_file.txt
 
 ITER 100
-ASeq 0 -10 0.1
+ASeq 0 15 0.1
 
 
 quit 

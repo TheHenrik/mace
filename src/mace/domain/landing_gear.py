@@ -9,13 +9,14 @@ class Wheel:
         self.mass: float = 0.
         self.origin: np.ndarray = np.array([0., 0., 0.])
         self.diameter: float = 0.
+        self.drag_correction: float = 3.
 
     def get_drag_coefficient(self, V, S_ref):
         Re_L = V * np.pi / 4 * self.diameter / params.Constants.ny
         if Re_L == 0:
             Re_L = 1000
         C_D_wet = 0.074 / Re_L**0.2
-        C_D_wheel = 2 * C_D_wet * np.pi * self.diameter**2 / 4 / S_ref
+        C_D_wheel = self.drag_correction * 2 * C_D_wet * np.pi * self.diameter**2 / 4 / S_ref
         return C_D_wheel
 
 class LandingGear:
@@ -24,6 +25,8 @@ class LandingGear:
         self.center_of_gravity: np.ndarray = np.array([0., 0., 0.])
         self.wheels: List[Wheel] = []
         self.height: float = 0.
+        self.effective_drag_length: float = 0.
+        self.length_specific_cd: float = 0.
 
     def add_wheel(self, wheel: Wheel):
         self.wheels.append(wheel)
@@ -33,6 +36,13 @@ class LandingGear:
             self.mass += wheel.mass
             self.center_of_gravity += wheel.mass * wheel.origin
         self.center_of_gravity /= self.mass
+        
+    def get_drag_coefficient(self, V, S_ref):
+        cd = 0.
+        for wheel in self.wheels:
+            cd += wheel.get_drag_coefficient(V, S_ref)
+            cd += self.effective_drag_length * self.length_specific_cd / S_ref
+        return cd
 
     def plot(self, color='b'):
         for wheel in self.wheels:

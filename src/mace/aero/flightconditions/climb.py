@@ -17,7 +17,7 @@ class Climb:
         self.cl_start = 0.1
         self.cl_end = 1.1
         self.cl_step = 0.05
-        self.v_tolerance = 0.5
+        self.v_tolerance = 0.1
         self.it_max = 20
         
         self.flap_angle = 0.
@@ -115,18 +115,17 @@ class Climb:
                 it += 1
                 not_in_tolerance = abs(V - V2) >= v_tolerance
                 V = V2
-
             sin = self.sin_gamma(T, V**2, CD)
             cos = self.cos_gamma(V**2, CL)
             gamma = self.gamma(sin, cos)
             V_vertical = self.v_vertical(V, sin)
 
             results = np.array([CL, V, V_vertical, gamma])
-            CD_ind = self.plane.aero_coeffs.drag_coeff.cd_ind
-            CD_vis = self.plane.aero_coeffs.drag_coeff.cd_visc
-            CD_fus = self.plane.aero_coeffs.drag_coeff.cd_fuse
-            CD_wheel = self.plane.aero_coeffs.drag_coeff.cd_wheels
-            print(V_vertical, CD_ind, CD_vis, CD_fus, CD_wheel)
+            # CD_ind = self.plane.aero_coeffs.drag_coeff.cd_ind
+            # CD_vis = self.plane.aero_coeffs.drag_coeff.cd_visc
+            # CD_fus = self.plane.aero_coeffs.drag_coeff.cd_fuse
+            # CD_wheel = self.plane.aero_coeffs.drag_coeff.cd_wheels
+            # print(V_vertical, CD_ind, CD_vis, CD_fus, CD_wheel)
             if i == 0:
                 climb_data = results
             else:

@@ -23,6 +23,7 @@ class Fuselage:
         self.length: float = 0.
         self.diameter: float = 0.
         self.segments = []
+        self.drag_correction: float = 2.6
 
     def add_segment(self, segment: FuselageSegment) -> None:
         self.segments.append(segment)
@@ -65,7 +66,7 @@ class Fuselage:
         
         C_D_turb = 0.074 / Re_L**0.2
         C_D_wet = (1 + 1.5 * d_l ** 1.5 + 7 * d_l ** 3) * C_D_turb
-        C_D_fuse = C_D_wet * S_wet / S_ref
+        C_D_fuse = self.drag_correction * C_D_wet * S_wet / S_ref
         
         return C_D_fuse
     

@@ -293,12 +293,14 @@ class Wing:
             segment.back_inner = self.origin + rotate_vector(segment.back_inner - self.origin, 0, self.angle, 0)
             segment.back_outer = self.origin + rotate_vector(segment.back_outer - self.origin, 0, self.angle, 0)
 
-    def build(self) -> None:
+    def build(self, resize_areas=True, resize_x_offset_from_hinge_angle=True) -> None:
         """
         Builds the wing by calculating the wing geometry.
         """
-        self.resize_wing(new_span=self.span, new_aspect_ratio=self.aspect_ratio, new_area=self.reference_area)
-        self.resize_sweep_to_constant_flap_chord_ratio(self.hinge_angle)
+        if resize_areas:
+            self.resize_wing(new_span=self.span, new_aspect_ratio=self.aspect_ratio, new_area=self.reference_area)
+        if resize_x_offset_from_hinge_angle:
+            self.resize_sweep_to_constant_flap_chord_ratio(self.hinge_angle)
         
         for segment in self.segments:
             segment.inner_airfoil = self.airfoil
