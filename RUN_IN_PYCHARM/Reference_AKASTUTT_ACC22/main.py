@@ -41,7 +41,7 @@ if __name__ == '__main__':
     # Run Climb Analysis
     climb_analysis = Climb(Aircraft)
     climb_analysis.flap_angle = 0. #0 for akastutt, 4 for addi
-    climb_analysis.cl_start = 0.4
+    climb_analysis.cl_start = 0.2
     climb_analysis.cl_step = 0.1
     climb_analysis.cl_end = 1.5
     H = climb_analysis.get_h_max(delta_t=climb_time-take_off_time-transition_time)

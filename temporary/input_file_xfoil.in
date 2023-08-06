@@ -1,4 +1,4 @@
-LOAD /Users/jannik/Documents/GitHub/mace/data/airfoils/goe443.dat
+LOAD /Users/jannik/Documents/GitHub/mace/data/airfoils/acc22.dat
 OPER
 Visc 970000.0
 PACC
