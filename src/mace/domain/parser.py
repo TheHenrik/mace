@@ -1,48 +1,27 @@
-import inspect
-import tomllib
-
 import xml.etree.ElementTree as ET
+
 import numpy as np
 
+from mace.domain import plane
 from mace import domain
 
 
-class TOMLParser:
-    def __init__(self, path) -> None:
-        with open(f"./././data/planes/{path}", "rb") as f:
-            self.data = tomllib.load(f)
-        self.classes = {
-            key: val
-            for key, val in globals()["domain"].__dict__.items()
-            if inspect.isclass(val)
-        }
+class PlaneParser:
+    def __init__(self, file_name):
+        self.plane = Plane()
+        self.tree = ET.parse(f"./././data/planes/{file_name}")
 
     def get(self, obj):
         return self._rec_par(obj)
 
-    def _rec_par(self, curr):
-        sup = self.classes[curr]()
-        for obj in self.data[curr]:
-            if obj not in sup.__dict__:
-                raise ValueError(
-                    f"Object {obj!r} not attribute of {self.classes[curr]}"
-                )
-            val = self.data[curr][obj]
-            if type(val) is list:
-                sup.__dict__[obj] = np.array(val)
-            elif obj == "segments":
-                sup.__dict__[obj] = self._wing_segments()
-            elif val in self.classes:
-                sup.__dict__[obj] = self._rec_par(val)
-            else:
-                sup.__dict__[obj] = val
-        return sup
+    def build_leitwerk(self, element):
+        pass
 
     # Works only if no segments on empenage
     def _wing_segments(self):
         segments = []
         for segment in self.data["WingSegment"]:
-            sup = domain.WingSegment()
+            sup = plane.WingSegment()
             for obj in self.data["WingSegment"][segment]:
                 if obj not in sup.__dict__:
                     raise ValueError(
@@ -52,7 +31,7 @@ class TOMLParser:
                 if type(val) is list:
                     sup.__dict__[obj] = np.array(val)
                 elif obj == "segments":
-                    sup.__dict__[obj] = self.wing_segments()
+                    sup.__dict__[obj] = self._wing_segments()
                 elif val in self.classes:
                     sup.__dict__[obj] = self._rec_par(val)
                 else:
@@ -61,34 +40,6 @@ class TOMLParser:
         return segments
 
 
-class XMLParser:
-    def __init__(self, path) -> None:
-        self.tree = ET.parse(f"./././data/planes/{path}")
-        self.classes = {
-            key: val
-            for key, val in globals()["domain"].__dict__.items()
-            if inspect.isclass(val)
-        }
-
-    def get(self, obj):
-        return self._rec_par(obj)
-    
-    def _rec_par(self, curr):
-        sup = self.classes[curr]()
-        for obj in self.data[curr]:
-            if obj not in sup.__dict__:
-                raise ValueError(
-                    f"Object {obj!r} not attribute of {self.classes[curr]}"
-                )
-            val = self.data[curr][obj]
-            if type(val) is list:
-                sup.__dict__[obj] = np.array(val)
-            elif val in self.classes:
-                sup.__dict__[obj] = self._rec_par(val)
-            else:
-                sup.__dict__[obj] = val
-        return sup
-
 if __name__ == "__main__":
-    plane = TOMLParser("plane.toml").get()
+    plane = PlaneParser("testplane.toml").get("Plane")
     print(plane)
