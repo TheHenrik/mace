@@ -122,8 +122,6 @@ class GeometryFile:
             GeometryFile.build_geo_surface(self, geometry_file)
 
         # self.plane.avl.inputs.avl_file = file_path
-        print('AVL Geometry File built successfully')
-
 
 # ========== Mass File ==========
 
@@ -504,7 +502,6 @@ class MassFile:
             MassFile.build_mass_table(self, mass_file)
 
         # self.plane.avl.inputs.mass_file = file_path
-        print('AVL Mass File built successfully')
 
 
 # ========== Test ===========

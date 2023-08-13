@@ -1,6 +1,14 @@
-LOAD /Users/jannik/Documents/GitHub/mace/data/airfoils/acc22.dat
+LOAD /Users/jannik/Documents/GitHub/mace/data/airfoils/ag40.dat
+NORM
+GDES
+FLAP
+0.75
+0.0
+8.0
+X
+
 OPER
-Visc 970000.0
+Visc 870000.0
 PACC
 /Users/jannik/Documents/GitHub/mace/temporary/polar_file.txt
 

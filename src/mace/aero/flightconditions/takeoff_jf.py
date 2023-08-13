@@ -64,10 +64,13 @@ class TakeOff:
 
             CL_MAX = WingAirfoil.get_cl_max(RE_AT_MAC)
 
+            if T > 20:
+                print("TakeOff failed")
+                break
             if CL_MAX > self.cl_safety_factor * REQ_CL:
                 break
 
-        print("TakeOff after %.2f m at a CL of %.3f and a time of %.2f s" % (S, REQ_CL, T))
+        # print("TakeOff after %.2f m at a CL of %.3f and a time of %.2f s" % (S, REQ_CL, T))
 
         return S, T
 

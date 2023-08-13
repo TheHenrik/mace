@@ -73,8 +73,9 @@ class Airfoil:
                                                      x_transition_top=self.xtr_top, x_transition_bottom=self.xtr_bot,
                                                      flap_angle=self.flap_angle, x_hinge=self.x_hinge, z_hinge=self.z_hinge)
                 # cut polar
-                cl_min_index = np.argmin(neg_polar_data[:, 1])
-                neg_polar_data = neg_polar_data[:cl_min_index, :]
+                if np.ndim(neg_polar_data) == 2:
+                    cl_min_index = np.argmin(neg_polar_data[:, 1])
+                    neg_polar_data = neg_polar_data[:cl_min_index, :]
                 # flip polar to make it attachable to the positive polar
                 neg_polar_data = np.flip(neg_polar_data, axis=0)
             else:

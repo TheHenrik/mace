@@ -9,6 +9,7 @@ import numpy as np
 class Vehicle:
     def __init__(self):
         self.tag = "Vehicle"
+        self.payload = 0.
         self.mass = 0.
         self.center_of_gravity = [0., 0., 0.]
         self.wings = {}
