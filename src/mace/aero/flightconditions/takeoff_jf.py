@@ -18,9 +18,11 @@ class TakeOff:
         self.get_force = GeneralFunctions(self.plane).coefficient_to_lift_or_drag
         self.get_thrust = GeneralFunctions(self.plane).current_thrust
         self.flap_angle = 0.
-        self.t_step = 0.2
+        self.t_step = 0.5
         self.cl_safety_factor = 1.
-        self.v_wind = 1.
+        self.v_wind = 0.
+        self.v_start_counter = 0.
+        self.manual_cl_max = 0
         
     def get_friction(self, lift):
         return (self.plane.mass * params.Constants.g - lift) * self.mu
@@ -42,9 +44,11 @@ class TakeOff:
         T = 0.
         S = 0.
         V = 0.
-        while True:
+        CL_MAX = 0.
+        REQ_CL = 1.
+        while CL_MAX < self.cl_safety_factor * REQ_CL and T < 20:
+
             self.aero.evaluate(CL=None, V=V, FLAP=self.flap_angle, ALPHA=0.)
-            
             CL = self.plane.aero_coeffs.lift_coeff.cl_tot
             CD = self.plane.aero_coeffs.drag_coeff.cd_tot
             
@@ -54,23 +58,22 @@ class TakeOff:
             THRUST = self.get_thrust(V+V_wind)
             
             ACCELL = (THRUST - DRAG - FRICTION) / MASS
-            if V > V_start_counter:
+            if V >= V_start_counter:
                 T += DELTA_T
-            V += ACCELL * DELTA_T
             S += 1/2 * ACCELL * DELTA_T ** 2 + V * DELTA_T
+            V += ACCELL * DELTA_T
+            V_exakt = ACCELL * T
+            S_exakt = 1 / 2 * ACCELL * T ** 2
             
             REQ_CL = (MASS * G) / (1/2 * RHO * (V+V_wind) ** 2 * S_REF)
-            RE_AT_MAC = get_reynolds_number((V+V_wind), MAC)
+            if self.manual_cl_max == 0:
+                RE_AT_MAC = get_reynolds_number((V + V_wind), MAC)
+                CL_MAX = WingAirfoil.get_cl_max(RE_AT_MAC)
+            else:
+                CL_MAX = self.manual_cl_max
 
-            CL_MAX = WingAirfoil.get_cl_max(RE_AT_MAC)
-
-            if T > 20:
-                print("TakeOff failed")
-                break
-            if CL_MAX > self.cl_safety_factor * REQ_CL:
-                break
-
-        # print("TakeOff after %.2f m at a CL of %.3f and a time of %.2f s" % (S, REQ_CL, T))
+        if T >= 20:
+            print("Takeoff failed")
 
         return S, T
 

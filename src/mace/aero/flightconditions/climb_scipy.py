@@ -7,6 +7,7 @@ from mace.aero.implementations.aero import Aerodynamics
 from mace.aero.implementations.airfoil_analyses import Airfoil
 from mace.aero.generalfunctions import GeneralFunctions
 import mace.aero.generalfunctions as functions
+from scipy.optimize import minimize_scalar
 import time
 
 class Climb:
@@ -79,66 +80,34 @@ class Climb:
         v_vert = velocity * sin_gam
         return v_vert
 
-    def evaluate(self):
-        """
-        cl_init should start around 0, so AVL can easily converge.
-        Returns a numpy matrix with [cl, velocity, v_vertical, sin, cos, gamma (in degrees), current_thrust]
-        in each row.
-        """
-        CL_start = self.cl_start
-        CL_end = self.cl_end
-        CL_step = self.cl_step
+
+    def evaluate(self, CL):
         v_tolerance = self.v_tolerance
         it_max = self.it_max
-        
-        CL_list = np.arange(CL_start, CL_end + CL_step, CL_step)
-
-        climb_data = np.ndarray
-
         Aero = Aerodynamics(self.plane)
         thrust = GeneralFunctions(self.plane).current_thrust
+        V = ((2 * self.mass * self.g) / (CL * self.rho * self.s_ref)) ** 0.5
+        not_in_tolerance = True
+        it = 0
 
-        for i, CL in enumerate(CL_list):
+        while not_in_tolerance and it < it_max:
+            if self.optimize_flap_angle:
+                c_length = self.plane.reference_values.c_ref
+                re = functions.get_reynolds_number(V, c_length)
+                airfoil = Airfoil(self.plane.wings['main_wing'].airfoil)
+                self.flap_angle = airfoil.check_for_best_flap_setting(re, CL)
 
-            # v_iteration_start aus Horizontalflug bestimmen
-            if i == 0:
-                V = ((2 * self.mass * self.g) / (CL * self.rho * self.s_ref)) ** 0.5
+            Aero.evaluate(V=V, CL=CL, FLAP=self.flap_angle)
+            CD = self.plane.aero_coeffs.drag_coeff.cd_tot
+            T = thrust(V)
+            V2 = self.v_climb(T, CL, CD)
+            it += 1
+            not_in_tolerance = abs(V - V2) >= v_tolerance
+            V = V2
 
-            not_in_tolerance = True
-
-            it = 0
-            while not_in_tolerance and it < it_max:
-                if self.optimize_flap_angle:
-                    c_length = self.plane.reference_values.c_ref
-                    re = functions.get_reynolds_number(V, c_length)
-                    airfoil = Airfoil(self.plane.wings['main_wing'].airfoil)
-                    self.flap_angle = airfoil.check_for_best_flap_setting(re, CL)
-
-                Aero.evaluate(V=V, CL=CL, FLAP=self.flap_angle)
-                CD = self.plane.aero_coeffs.drag_coeff.cd_tot
-
-                T = thrust(V)
-
-                V2 = self.v_climb(T, CL, CD)
-
-                it += 1
-                not_in_tolerance = abs(V - V2) >= v_tolerance
-                V = V2
-
-            sin = self.sin_gamma(T, V**2, CD)
-            cos = self.cos_gamma(V**2, CL)
-            gamma = self.gamma(sin, cos)
-            V_vertical = self.v_vertical(V, sin)
-
-            results = np.array([CL, V, V_vertical, gamma])
-            if i == 0:
-                climb_data = results
-            else:
-                climb_data = np.vstack((climb_data, results))
-
-        self.plane.flight_conditions.climb.results.climb_data = climb_data
-        
-        return climb_data
+        sin = self.sin_gamma(T, V**2, CD)
+        V_vertical = self.v_vertical(V, sin)
+        return - V_vertical
         
     def get_gamma_max(self):
         # gamma maximal
@@ -153,24 +122,14 @@ class Climb:
 
     def get_v_v_max(self):
         # V_v maximal
-        climb_data = self.plane.flight_conditions.climb.results.climb_data
-        if climb_data is None:
-            self.evaluate()
-            climb_data = self.plane.flight_conditions.climb.results.climb_data
-        
-        v_vertical_max = np.max(self.plane.flight_conditions.climb.results.climb_data[:, 2])  # alle Zeilen, Element
-        self.plane.flight_conditions.climb.results.v_vertical_max = v_vertical_max
-        return v_vertical_max
+        res = minimize_scalar(self.evaluate, bounds=(self.cl_start, self.cl_end), method='bounded',
+                              options={'xatol': 0.01})
+        return -res.fun
 
     def get_h_max(self, delta_t, h0=0):
         """
         Returns a gained height. Needs therefore a timespan and an additional value.
         """
-        time0 = time.time()
-        v_vertical_max = self.plane.flight_conditions.climb.results.v_vertical_max
-        if v_vertical_max is None:
-            v_vertical_max = self.get_v_v_max()
-            
+        v_vertical_max = self.get_v_v_max()
         height = h0 + v_vertical_max * delta_t
-        print("Time needed for calculation: ", time.time() - time0)
         return height

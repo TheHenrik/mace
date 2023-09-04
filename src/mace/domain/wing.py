@@ -133,7 +133,7 @@ class Wing:
         """
         mac = 0
         for segment in self.segments:
-            mac += segment.get_area() * (segment.inner_chord + segment.outer_chord) / 2
+            mac += segment.get_area() * (1 + self.symmetric) * (segment.inner_chord + segment.outer_chord) / 2
         mac /= self.get_area()
         return mac
 

@@ -5,7 +5,7 @@ Vehicle
 0         0         -0.25     
 
 #Sref	Cref	Bref
-0.6       0.10519   3.0       
+0.75      0.26298   3.0       
 #Xref	Yref	Zref
 0.1       0.0       0.0       
 
@@ -29,7 +29,7 @@ ANGLE
 #--------------------
 SECTION
 #Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
-0.0  0.0  0.0  0.24837  0.020-2
+0.0  0.0  0.0  0.31046  0.020-2
 
 AFIL  0.0  1.0
 /Users/jannik/Documents/GitHub/mace/data/airfoils/ag40.dat
@@ -39,7 +39,7 @@ CONTROL
 flap	1.0	0.75	0. 0. 0.	1.0
 SECTION
 #Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
-0.00666  0.71042  0.01218  0.22353  0.020-2
+0.01131  0.71042  0.01201  0.27941  0.020-2
 
 AFIL  0.0  1.0
 /Users/jannik/Documents/GitHub/mace/data/airfoils/ag40.dat
@@ -49,7 +49,7 @@ CONTROL
 flap	1.0	0.75	0. 0. 0.	1.0
 SECTION
 #Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
-0.03707  1.1823  0.05242  0.17386  0.020-2
+0.05103  1.1823  0.05194  0.21732  0.020-2
 
 AFIL  0.0  1.0
 /Users/jannik/Documents/GitHub/mace/data/airfoils/ag40.dat
@@ -59,7 +59,7 @@ CONTROL
 flap	1.0	0.75	0. 0. 0.	1.0
 SECTION
 #Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
-0.08951  1.41824  0.07125  0.09935  0.020-2
+0.11743  1.41824  0.07027  0.12418  0.020-2
 
 AFIL  0.0  1.0
 /Users/jannik/Documents/GitHub/mace/data/airfoils/ag40.dat
@@ -69,7 +69,7 @@ CONTROL
 flap	1.0	0.75	0. 0. 0.	1.0
 SECTION
 #Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
-0.1256  1.49689  0.07687  0.04967  0
+0.16283  1.49689  0.07557  0.06209  0
 
 AFIL  0.0  1.0
 /Users/jannik/Documents/GitHub/mace/data/airfoils/ag40.dat
@@ -96,21 +96,21 @@ ANGLE
 #--------------------
 SECTION
 #Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
-1.05  0.0  0.0  0.14405  0.020-2
+1.05  0.0  0.0  0.25465  0.020-2
 
 AFIL  0.0  1.0
 /Users/jannik/Documents/GitHub/mace/data/airfoils/ht14.dat
 
 SECTION
 #Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
-1.05761  0.15951  0.13384  0.13137  0.020-2
+1.06345  0.28198  0.23661  0.23224  0.020-2
 
 AFIL  0.0  1.0
 /Users/jannik/Documents/GitHub/mace/data/airfoils/ht14.dat
 
 SECTION
 #Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
-1.09494  0.31902  0.26769  0.06914  0.0
+1.12945  0.56395  0.47321  0.12223  0.0
 
 AFIL  0.0  1.0
 /Users/jannik/Documents/GitHub/mace/data/airfoils/ht14.dat

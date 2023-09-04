@@ -4,15 +4,15 @@ GDES
 FLAP
 0.75
 0.0
-8.0
+8
 X
 
 OPER
-Visc 870000.0
+Visc 970000.0
 PACC
 /Users/jannik/Documents/GitHub/mace/temporary/polar_file.txt
 
-ITER 100
+ITER 150
 ASeq 0 15 0.1
 
 

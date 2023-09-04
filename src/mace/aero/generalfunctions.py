@@ -24,8 +24,8 @@ def get_intersect(a1, a2, b1, b2):
 # ---Reynoldsnumber---
 
 def get_reynolds_number(v, length):              # neuer Name
-    rey = (v * length) / params.Constants.ny
-    return rey
+    re = (v * length) / params.Constants.ny
+    return re
 
 # ------------------------
 
