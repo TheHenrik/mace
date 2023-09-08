@@ -17,12 +17,15 @@ class HorizontalFlight:
         self.s_ref = self.plane.reference_values.s_ref
         self.g = params.Constants.g
         self.rho = params.Constants.rho
-        self.cl_start = 0.05
+        self.cl_start = 0.01
         self.cl_end = 1.
         self.cl_step = 0.05
         
         self.flap_angle = 0.
         self.optimize_flap_angle = True
+        
+        self.Aero = Aerodynamics(self.plane)
+        self.Aero.XFOIL.print_re_warnings = False
 
     def get_drag_force(self, V):
         plane = self.plane
@@ -48,14 +51,13 @@ class HorizontalFlight:
         # Initialize vectors
         cl_list = np.arange(self.cl_start, self.cl_end, self.cl_step)
         results = []
-        Aero = Aerodynamics(self.plane)
         thrust = GeneralFunctions(self.plane).current_thrust
 
         # Evaluate required thrust in cl range
         for CL in cl_list:
             V = self.flight_velocity(CL)
 
-            Aero.evaluate(CL=CL, V=V, FLAP=self.flap_angle)
+            self.Aero.evaluate(CL=CL, V=V, FLAP=self.flap_angle)
             
             # Calculate total drag force
             D = self.get_drag_force(V)
@@ -99,7 +101,7 @@ class HorizontalFlight:
                 re = functions.get_reynolds_number(V, c_length)
                 airfoil = Airfoil(self.plane.wings['main_wing'].airfoil)
                 self.flap_angle = airfoil.check_for_best_flap_setting(re, CL)
-            Aero.evaluate(CL=CL, V=V, FLAP=self.flap_angle)
+            self.Aero.evaluate(CL=CL, V=V, FLAP=self.flap_angle)
             D = self.get_drag_force(V)
             T = GeneralFunctions(self.plane).current_thrust(V)
             return D - T

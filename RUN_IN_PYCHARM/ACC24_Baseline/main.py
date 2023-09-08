@@ -3,16 +3,16 @@ from mace.domain.parser import PlaneParser
 from mace.aero.flightconditions.horizontalflight import HorizontalFlight
 from mace.aero.flightconditions.climb_scipy import Climb
 from mace.aero.flightconditions.takeoff_jf import TakeOff
-from mace.aero.flightconditions.glidingflight_jf import GlidingFlight
-
+from mace.aero.flightconditions.efficiency_flight_low_fid import EfficiencyFlight
 from mace.aero.implementations.avl import geometry_and_mass_files_v2 as geometry_and_mass_files
 import matplotlib.pyplot as plt
 
 
 if __name__ == '__main__':
-    payload = 4.8
+    payload = 3.
     span = 3.
-    aspect_ratio = 12.
+    aspect_ratio = 13.
+    airfoil = "ag45c"
 
     # Define Analysis
     climb_time = 30.
@@ -21,7 +21,7 @@ if __name__ == '__main__':
     minimum_height = 10.
 
     # Define Aircraft Geometry
-    Aircraft = vehicle_setup(payload=payload, span=span, aspect_ratio=aspect_ratio)
+    Aircraft = vehicle_setup(payload=payload, span=span, aspect_ratio=aspect_ratio, airfoil=airfoil)
     print('\n')
     print('M Payload: %.2f kg' % Aircraft.payload)
 
@@ -50,30 +50,18 @@ if __name__ == '__main__':
 
     # Run Climb Analysis
     climb_analysis = Climb(Aircraft)
-    climb_analysis.optimize_flap_angle = False
-    climb_analysis.flap_angle = 2.
-    climb_analysis.cl_start = 0.2
-    climb_analysis.cl_step = 0.1
-    climb_analysis.cl_end = 1.5
-    climb_height = climb_analysis.get_h_max(delta_t=climb_time-take_off_time-transition_time)
+    climb_analysis.optimize_flap_angle = True
+    climb_height, climb_ias = climb_analysis.get_h_max(delta_t=climb_time-take_off_time-transition_time)
     climb_height = min(climb_height, 100.)
-    print("H Climb: %.1f m" % climb_height)
+    print("H Climb: %.1f m, V IAS %.1f m/s" % (climb_height, climb_ias))
 
     # Run Efficiency Analysis
-    efficiency_analysis = GlidingFlight(Aircraft)
-    efficiency_analysis.flap_angle = 6.
-    efficiency_analysis.cl_start = 0.5
-    efficiency_analysis.cl_step = 0.05
-    efficiency_analysis.cl_end = 1.5
-    glide_time = efficiency_analysis.get_glide_time(climb_height-minimum_height)
-    print("T Glide: %.1f s" % glide_time)
+    efficiency_flight = EfficiencyFlight(Aircraft)
+    e_efficiency = efficiency_flight.optimizer(climb_ias, climb_height, I=30.)
 
     # Run Cruise Analysis
     cruise_analysis = HorizontalFlight(Aircraft)
-    cruise_analysis.flap_angle = 0.
-    cruise_analysis.cl_start = 0.07
-    cruise_analysis.cl_step = 0.05
-    cruise_analysis.cl_end = 1.
+    cruise_analysis.optimize_flap_angle = True
     V_max = cruise_analysis.get_maximum_velocity_scipy()
     s_cruise = V_max * cruise_time
-    print("S Cruise: %.1f m" %  s_cruise)
+    print("S Cruise: %.1f m" % s_cruise)

@@ -26,7 +26,6 @@ def get_intersect(a1, a2, b1, b2):
 def get_reynolds_number(v, length):              # neuer Name
     re = (v * length) / params.Constants.ny
     return re
-
 # ------------------------
 
 
@@ -69,6 +68,6 @@ class GeneralFunctions:
         rho = params.Constants.rho
         lift = coefficient * rho / 2 * velocity**2 * s_ref
         return lift
-
+    
 
 

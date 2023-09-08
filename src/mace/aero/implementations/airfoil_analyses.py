@@ -98,13 +98,16 @@ class Airfoil:
                                                      x_transition_top=self.xtr_top, x_transition_bottom=self.xtr_bot,
                                                      flap_angle=self.flap_angle, x_hinge=self.x_hinge, z_hinge=self.z_hinge)
                 # cut polar
-                cl_max_index = np.argmax(pos_polar_data[:, 1])
-                pos_polar_data = pos_polar_data[:cl_max_index+1, :]
+                if np.ndim(pos_polar_data) == 2:
+                    cl_max_index = np.argmax(pos_polar_data[:, 1])
+                    pos_polar_data = pos_polar_data[:cl_max_index+1, :]
             else:
                 pos_polar_data = np.array([])
 
-            if np.ndim(neg_polar_data) == 2:
+            if np.ndim(neg_polar_data) == 2 and np.ndim(pos_polar_data) == 2:
                 actual_re_polar_data = np.concatenate((neg_polar_data, pos_polar_data), axis=0)
+            elif np.ndim(neg_polar_data) == 2:
+                actual_re_polar_data = neg_polar_data
             else:
                 actual_re_polar_data = pos_polar_data
             actual_re_polar_data = np.hstack((re*np.ones((actual_re_polar_data.shape[0], 1)), actual_re_polar_data))
