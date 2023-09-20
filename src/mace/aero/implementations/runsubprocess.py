@@ -1,8 +1,9 @@
-import psutil
+import os
+import signal
 import subprocess
 import time
-import signal
-import os
+
+import psutil
 
 
 def run_subprocess(cmd, timeout=5):

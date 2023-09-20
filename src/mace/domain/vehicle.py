@@ -1,11 +1,27 @@
 from dataclasses import dataclass
-from mace.domain.wing import Wing, WingSegment
-from mace.domain.fuselage import Fuselage, FuselageSegment
-from mace.domain.landing_gear import LandingGear, Wheel
-from mace.domain.results import FlightConditions, Climb, ClimbResults, Avl, AvlInputs, AvlOutputs, AeroCoeffs, Cl, \
-    Cd, HorizontalFlight, HorizontalFlightResults
+
 import matplotlib.pyplot as plt
 import numpy as np
+
+from mace.domain.fuselage import Fuselage, FuselageSegment
+from mace.domain.landing_gear import LandingGear, Wheel
+from mace.domain.results import (
+    AeroCoeffs,
+    Avl,
+    AvlInputs,
+    AvlOutputs,
+    Cd,
+    Cl,
+    Climb,
+    ClimbResults,
+    FlightConditions,
+    HorizontalFlight,
+    HorizontalFlightResults,
+)
+from mace.domain.wing import Wing, WingSegment
+from mace.mass.mass import get_mass_plane
+
+
 class Vehicle:
     def __init__(self):
         self.tag = "Vehicle"
@@ -150,6 +166,10 @@ class Vehicle:
         # Anzeigen des Plots
         plt.show()
 
+    def get_mass(self) -> None:
+        self.mass = get_mass_plane(self)
+        
+    
 @dataclass()
 class Propulsion:
     mass: float = 0

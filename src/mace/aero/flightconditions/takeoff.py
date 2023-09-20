@@ -1,11 +1,14 @@
-import numpy as np
 import math
+
+import numpy as np
+
+from mace.aero.generalfunctions import GeneralFunctions
+from mace.aero.implementations.avl.athenavortexlattice import AVL
+
 # import datatypes
 # from mace.domain import params as par
 # from mace.domain import plane as pl
-from mace.domain import params, Plane
-from mace.aero.generalfunctions import GeneralFunctions
-from mace.aero.implementations.avl.athenavortexlattice import AVL
+from mace.domain import Plane, params
 
 
 class Takeoff:

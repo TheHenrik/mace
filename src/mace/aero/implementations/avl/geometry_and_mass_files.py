@@ -1,7 +1,9 @@
 import os
-from mace.domain import Plane, plane as pl
-from mace.domain.parser import PlaneParser
 from pathlib import Path
+
+from mace.domain import Plane
+from mace.domain import plane as pl
+from mace.domain.parser import PlaneParser
 
 # ========== Geometry File ==========
 

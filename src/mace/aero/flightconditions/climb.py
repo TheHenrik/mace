@@ -1,10 +1,12 @@
 import math
 
 import numpy as np
+
+from mace.aero.generalfunctions import GeneralFunctions
+from mace.aero.implementations.aero import Aerodynamics
 from mace.domain import params
 from mace.domain.vehicle import Vehicle
-from mace.aero.implementations.aero import Aerodynamics
-from mace.aero.generalfunctions import GeneralFunctions
+
 
 class Climb:
     def __init__(self, plane: Vehicle):

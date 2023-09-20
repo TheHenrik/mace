@@ -1,10 +1,11 @@
 import numpy as np
 from scipy.interpolate import interp1d
 from scipy.optimize import bisect
+
+from mace.aero.generalfunctions import GeneralFunctions
+from mace.aero.implementations.aero import Aerodynamics
 from mace.domain import params
 from mace.domain.vehicle import Vehicle
-from mace.aero.implementations.aero import Aerodynamics
-from mace.aero.generalfunctions import GeneralFunctions
 
 
 class HorizontalFlight:

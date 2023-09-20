@@ -1,16 +1,17 @@
+import math
+import os
+from pathlib import Path
+
+import numpy as np
 import numpy.ma
 
-from mace.aero.implementations.avl import athenavortexlattice
 from mace.aero import generalfunctions
-from mace.aero.implementations.xfoil import xfoilpolars
-from mace.domain import params, Plane
+from mace.aero.implementations.avl import athenavortexlattice
 from mace.aero.implementations.avl.athenavortexlattice import AVL
-import numpy as np
-import math
-from mace.domain.parser import PlaneParser
 from mace.aero.implementations.avl.geometry_and_mass_files import GeometryFile, MassFile
-from pathlib import Path
-import os
+from mace.aero.implementations.xfoil import xfoilpolars
+from mace.domain import Plane, params
+from mace.domain.parser import PlaneParser
 
 
 class ViscousDrag:

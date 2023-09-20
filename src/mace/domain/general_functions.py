@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def rotate_vector(vector: np.ndarray, alpha: float, beta: float, gamma: float) -> np.ndarray:
     """
     Rotates a vector around the x-, y- and z-axis.

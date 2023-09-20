@@ -1,5 +1,6 @@
-from mace.domain import plane
 import numpy as np
+
+from mace.domain import plane
 
 # --- Airfoil ---
 a_airfoil_file = plane.AirfoilFile(filepath="C:/Users/Gregor/Documents/GitHub/mace/data/airfoils/n0012")

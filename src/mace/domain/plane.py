@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 from typing import List
+
+import numpy as np
+
 from mace.domain.params import Parameters
 from mace.domain.wing import Wing, WingSegment
-import numpy as np
 
 
 @dataclass()

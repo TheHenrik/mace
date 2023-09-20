@@ -1,8 +1,9 @@
 #import takeoff as to
 import numpy as np
-from mace.domain import params, Plane
+
 from mace.aero.flightconditions.takeoff import Takeoff
 from mace.aero.generalfunctions import GeneralFunctions
+from mace.domain import Plane, params
 
 
 class Landing:

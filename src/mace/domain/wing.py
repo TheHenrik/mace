@@ -1,6 +1,8 @@
 import math
+
 import matplotlib.pyplot as plt
 import numpy as np
+
 from mace.domain.general_functions import rotate_vector
 
 rad = np.pi / 180

@@ -1,7 +1,8 @@
 import os
-from mace.domain.vehicle import Vehicle
-from mace.domain.params import Units, Constants
 from pathlib import Path
+
+from mace.domain.params import Constants, Units
+from mace.domain.vehicle import Vehicle
 
 # ========== Geometry File ==========
 

@@ -1,7 +1,10 @@
 import os
-import numpy as np
-import mace.aero.implementations.xfoil.xfoilpolars as xfoilpolars
 from pathlib import Path
+
+import numpy as np
+
+import mace.aero.implementations.xfoil.xfoilpolars as xfoilpolars
+
 
 class Airfoil:
     """

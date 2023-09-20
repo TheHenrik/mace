@@ -1,10 +1,12 @@
 import math
 
 import numpy as np
+
+from mace.aero import generalfunctions
+
 # from mace.aero.implementations.avl import athenavortexlattice, geometry_and_mass_files
 # from mace.aero.implementations.viscousdrag import ViscousDrag
-from mace.domain import params, Plane
-from mace.aero import generalfunctions
+from mace.domain import Plane, params
 
 
 class TurningFlight:

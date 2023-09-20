@@ -1,9 +1,11 @@
-from mace.domain.wing import Wing, WingSegment
+import matplotlib.pyplot as plt
+import numpy as np
+
 from mace.domain.fuselage import Fuselage, FuselageSegment
 from mace.domain.landing_gear import LandingGear, Wheel
 from mace.domain.vehicle import Vehicle
-import numpy as np
-import matplotlib.pyplot as plt
+from mace.domain.wing import Wing, WingSegment
+
 
 def fuselage_setup():
     fuselage = Fuselage()

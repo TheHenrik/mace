@@ -1,14 +1,16 @@
 
-from mace.domain.parser import PlaneParser
+import os
+from pathlib import Path
+
+import numpy as np
+
+from mace.aero.generalfunctions import get_reynolds_number
+from mace.aero.implementations.airfoil_analyses import Airfoil
+from mace.aero.implementations.avl.athenavortexlattice import AVL
 from mace.aero.implementations.avl.geometry_and_mass_files import GeometryFile, MassFile
 from mace.domain import params
+from mace.domain.parser import PlaneParser
 from mace.domain.vehicle import Vehicle
-from mace.aero.implementations.avl.athenavortexlattice import AVL
-from pathlib import Path
-import os
-import numpy as np
-from mace.aero.implementations.airfoil_analyses import Airfoil
-from mace.aero.generalfunctions import get_reynolds_number
 
 
 class ViscousDrag:

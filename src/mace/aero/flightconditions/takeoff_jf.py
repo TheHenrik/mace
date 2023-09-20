@@ -1,12 +1,15 @@
-import numpy as np
 import math
-from mace.domain import params
-from mace.domain.vehicle import Vehicle
-from mace.aero.generalfunctions import GeneralFunctions
-from mace.aero.generalfunctions import get_reynolds_number
+
+import numpy as np
+
+from mace.aero.generalfunctions import GeneralFunctions, get_reynolds_number
 from mace.aero.implementations.aero import Aerodynamics
 from mace.aero.implementations.airfoil_analyses import Airfoil
-from mace.aero.implementations.avl import geometry_and_mass_files_v2 as geometry_and_mass_files
+from mace.aero.implementations.avl import (
+    geometry_and_mass_files_v2 as geometry_and_mass_files,
+)
+from mace.domain import params
+from mace.domain.vehicle import Vehicle
 
 
 class TakeOff:

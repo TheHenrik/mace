@@ -1,7 +1,9 @@
-import os                       # operation system
-import numpy as np
-from mace.aero.implementations import runsubprocess as runsub
+import os  # operation system
 from pathlib import Path
+
+import numpy as np
+
+from mace.aero.implementations import runsubprocess as runsub
 
 # ---Inputs---
 

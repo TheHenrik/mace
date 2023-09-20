@@ -1,7 +1,9 @@
-from mace.domain import params
-from mace.domain.vehicle import Vehicle
 import numpy as np
 from scipy.interpolate import interp1d
+
+from mace.domain import params
+from mace.domain.vehicle import Vehicle
+
 
 def get_intersect(a1, a2, b1, b2):
     """

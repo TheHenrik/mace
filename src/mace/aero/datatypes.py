@@ -4,7 +4,6 @@ import numpy as np
 
 from mace.domain.plane import Plane
 
-
 # ---Klassen für Eingabe für Berechnungsfunktionen---
 
 class Inputdata:

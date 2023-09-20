@@ -2,13 +2,21 @@ import xml.etree.ElementTree as ET
 
 import numpy as np
 
-from mace.domain import plane
 from mace import domain
+from mace.domain import plane
+
+
+class TOMLParser:
+    pass
+
+
+class XMLParser:
+    pass
 
 
 class PlaneParser:
     def __init__(self, file_name):
-        self.plane = Plane()
+        self.plane = None
         self.tree = ET.parse(f"./././data/planes/{file_name}")
 
     def get(self, obj):

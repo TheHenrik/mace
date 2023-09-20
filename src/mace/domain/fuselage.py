@@ -1,5 +1,7 @@
 import numpy as np
+
 from mace.domain import params
+
 
 class FuselageSegment:
     def __init__(self):

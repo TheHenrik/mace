@@ -1,10 +1,12 @@
 import os  # operation system
-import numpy as np
-from mace.aero.implementations import runsubprocess as runsub
-from mace.domain.vehicle import Vehicle
-from mace.domain.parser import PlaneParser
-from mace.aero.implementations.avl.geometry_and_mass_files import GeometryFile, MassFile
 from pathlib import Path
+
+import numpy as np
+
+from mace.aero.implementations import runsubprocess as runsub
+from mace.aero.implementations.avl.geometry_and_mass_files import GeometryFile, MassFile
+from mace.domain.parser import PlaneParser
+from mace.domain.vehicle import Vehicle
 
 
 class AVL:
