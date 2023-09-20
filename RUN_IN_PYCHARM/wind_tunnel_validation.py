@@ -29,7 +29,7 @@ def fuselage_setup():
     fuselage.add_segment(segment)
 
     segment = FuselageSegment()
-    segment.origin[0] = 0.
+    segment.origin[0] = 0.0
     segment.width = 0.102
     segment.height = 0.151
     fuselage.add_segment(segment)
@@ -49,6 +49,7 @@ def fuselage_setup():
     fuselage.build()
     return fuselage
 
+
 def wheel_setup():
     landing_gear = LandingGear()
 
@@ -58,33 +59,36 @@ def wheel_setup():
     wheel1 = Wheel()
     wheel1.diameter = 0.1
     wheel1.mass = 0.05
-    wheel1.origin = np.array([-0.1, 0., -0.2])
+    wheel1.origin = np.array([-0.1, 0.0, -0.2])
     landing_gear.add_wheel(wheel1)
 
     wheel2 = Wheel()
     wheel2.diameter = 0.16
     wheel2.mass = 0.05
-    wheel2.origin = np.array([0., 0.27, -0.1])
+    wheel2.origin = np.array([0.0, 0.27, -0.1])
     landing_gear.add_wheel(wheel2)
 
     wheel3 = Wheel()
     wheel3.diameter = wheel2.diameter
     wheel3.mass = wheel2.mass
-    wheel3.origin = np.array([0., -0.27, -0.1])
+    wheel3.origin = np.array([0.0, -0.27, -0.1])
     wheel3.origin[1] = -wheel2.origin[1]
     landing_gear.add_wheel(wheel3)
 
     landing_gear.finalize()
 
-    l_calc = 0.
+    l_calc = 0.0
     for wheel in landing_gear.wheels:
-        l_calc += (wheel.origin[1] ** 2 + wheel.origin[2] ** 2) ** 0.5 - vehicle.fuselages['fuselage'].diameter
+        l_calc += (
+            wheel.origin[1] ** 2 + wheel.origin[2] ** 2
+        ) ** 0.5 - vehicle.fuselages["fuselage"].diameter
     landing_gear.effective_drag_length = l_calc
     landing_gear.length_specific_cd = 0.0033
 
     return landing_gear
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     vehicle = Vehicle()
 
     fuselage = fuselage_setup()
@@ -101,7 +105,7 @@ if __name__ == '__main__':
 
     v_vector_windtunnel_2 = [0, 4.2, 9.55, 14.84, 19.68, 23.25]
     wheel_drag_vector_windtunnel = [-0.0273, -0.0178, 0.0755, 0.2262, 0.3918, 0.6585]
-    gestaenge_drag_vector_windtunnel = [0., 0.03378, 0.17873, 0.483, 0.925, 1.2235]
+    gestaenge_drag_vector_windtunnel = [0.0, 0.03378, 0.17873, 0.483, 0.925, 1.2235]
 
     v_vector = np.linspace(0, 25, 50)
     fuse_drag_vector = np.zeros_like(v_vector)
@@ -109,7 +113,7 @@ if __name__ == '__main__':
     gestaenge_drag_vector = np.zeros_like(v_vector)
     for i, v in enumerate(v_vector):
         c_d_fuse = fuselage.get_drag_coefficient(v, 1)
-        c_d_wheel = 0.
+        c_d_wheel = 0.0
         for wheel in vehicle.landing_gear.wheels:
             c_d_wheel += wheel.get_drag_coefficient(v, 1)
         fuse_drag_vector[i] = rho / 2 * v**2 * c_d_fuse * 1
@@ -119,18 +123,26 @@ if __name__ == '__main__':
 
     fig = plt.figure(dpi=400)
     ax = fig.add_subplot(111)
-    ax.plot(v_vector, fuse_drag_vector, label='MACE Widerstand ACC Rumpf')
-    ax.scatter(v_vector_windtunnel, F_vector_windtunnel, label='WINDKANAL Widerstand ACC Rumpf')
-    ax.plot(v_vector, wheel_drag_vector, label='MACE Widerstand Räder')
-    ax.scatter(v_vector_windtunnel_2, wheel_drag_vector_windtunnel, label='WINDKANAL Widerstand Räder')
-    ax.plot(v_vector, gestaenge_drag_vector, label='MACE Widerstand Fahrwerk o. Räder')
-    ax.scatter(v_vector_windtunnel_2, gestaenge_drag_vector_windtunnel, label='WINDKANAL Widerstand Fahrwerk o. Räder')
-    ax.set_xlabel('V [m/s]')
-    ax.set_ylabel('F [N]')
+    ax.plot(v_vector, fuse_drag_vector, label="MACE Widerstand ACC Rumpf")
+    ax.scatter(
+        v_vector_windtunnel, F_vector_windtunnel, label="WINDKANAL Widerstand ACC Rumpf"
+    )
+    ax.plot(v_vector, wheel_drag_vector, label="MACE Widerstand Räder")
+    ax.scatter(
+        v_vector_windtunnel_2,
+        wheel_drag_vector_windtunnel,
+        label="WINDKANAL Widerstand Räder",
+    )
+    ax.plot(v_vector, gestaenge_drag_vector, label="MACE Widerstand Fahrwerk o. Räder")
+    ax.scatter(
+        v_vector_windtunnel_2,
+        gestaenge_drag_vector_windtunnel,
+        label="WINDKANAL Widerstand Fahrwerk o. Räder",
+    )
+    ax.set_xlabel("V [m/s]")
+    ax.set_ylabel("F [N]")
     plt.legend()
     plt.grid()
-    plt.tick_params(which='major', labelsize=6)
+    plt.tick_params(which="major", labelsize=6)
     plt.title("Wind tunnel validation", fontsize=10)
     plt.show()
-
-

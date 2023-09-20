@@ -23,6 +23,7 @@ class MassAndInertia:
 
 # ---Fuselage---
 
+
 @dataclass
 class FuselageProfile:
     height: int = None
@@ -44,6 +45,7 @@ class Fuselage:
 class Naca:
     number_of_naca: int = 0000
     filepath: str = None
+
 
 @dataclass()
 class AirfoilFile:
@@ -86,6 +88,7 @@ class WingSegment:
     outer_airfoil: Airfoil = None
     control: Control = None
 
+
 @dataclass()
 class Wing:
     segments: List[WingSegment] = None
@@ -97,7 +100,9 @@ class Wing:
     n_chordwise: int = 10
     c_space: int = 1  # = cos
     n_spanwise: int = 20
-    s_space: int = -2  # = -sin, good for straight, elliptical or slightly tapered wings, in other cases cos (1)
+    s_space: int = (
+        -2
+    )  # = -sin, good for straight, elliptical or slightly tapered wings, in other cases cos (1)
     x_scale: float = 0
     y_scale: float = 0
     z_scale: float = 0
@@ -157,7 +162,7 @@ class Propulsion:
     motor: str = None
     esc: str = None
     propeller: str = None
-    thrust: np.ndarray = None       # [[v0, f0], [v1, f1], [v2, f2], [v3, f3], ...]
+    thrust: np.ndarray = None  # [[v0, f0], [v1, f1], [v2, f2], [v3, f3], ...]
     mass_of_motor: float = 0
     mass_of_esc: float = 0
     mass_of_propeller: float = 0
@@ -166,6 +171,7 @@ class Propulsion:
 
 
 # ---Landing Gear Configuration---
+
 
 @dataclass()
 class Bipod:  # Zweibeinfahrwerk
@@ -195,6 +201,7 @@ class Electronics:
     cabels = None
     batteries = None
     linkages = None
+
 
 @dataclass()
 class ReferenceValues:
@@ -243,7 +250,9 @@ class AeroCoeffs:
     lift_coeff: Cl = None
     drag_coeff: Cd = None
     # for AVL
-    cdp: float = 0  # not used, just in case. Default profile drag coefficient added to geometry.
+    cdp: float = (
+        0  # not used, just in case. Default profile drag coefficient added to geometry.
+    )
 
 
 # --- AVL ---
@@ -275,7 +284,7 @@ class AvlOutputs:
     number_of_vortices: int = 0
     # Surface data
     surface_data: np.ndarray = None
-    first_and_last_strips = {}          # Dictionary
+    first_and_last_strips = {}  # Dictionary
     surface_dictionary = {}
     strip_forces: np.ndarray = None
 
@@ -287,6 +296,7 @@ class Avl:
 
 
 # ---Flightconditions---
+
 
 @dataclass()
 class TakeOffResults:
@@ -322,28 +332,34 @@ class ClimbResults:
 class Climb:
     results: ClimbResults = None
 
+
 @dataclass()
 class HorizontalFlightResults:
     thrust_velocity_correlation: np.ndarray = None  # [[v1, t1], [v2, t2], [...], ...]
     minimum_thrust: np.ndarray = None
     maximum_flight_velocity: tuple = None
 
+
 @dataclass()
 class HorizontalFlight:
     results: HorizontalFlightResults = None
 
+
 @dataclass()
 class GlidingFlightResults:
-    gliding_data: np.ndarray = None      # [cl, cd, cd_viscous, cd_induced, velocity, vertical_velocity] in each row
+    gliding_data: np.ndarray = None  # [cl, cd, cd_viscous, cd_induced, velocity, vertical_velocity] in each row
     data_best_glide_ratio: np.ndarray = None
     data_smallest_decline: np.ndarray = None
     best_glide_ratio: float = None
     row_index_best_glide_ratio: int = None
     smallest_decline: float = None
     row_index_smallest_decline: int = None
+
+
 @dataclass()
 class GlidingFlight:
     results: GlidingFlightResults = None
+
 
 @dataclass()
 class FlightConditions:
@@ -351,6 +367,7 @@ class FlightConditions:
     climb: Climb = None
     horizontalflight: HorizontalFlight = None
     glidingflight: GlidingFlight = None
+
 
 # ---Plane itself---
 
@@ -361,7 +378,9 @@ class Plane:
     tag: str = None
     wing: Wing = None
     fuselage: Fuselage = None
-    mass: np.ndarray = None                 # [mass   x     y     z    [ Ixx     Iyy    Izz     Ixy   Ixz   Iyz ]
+    mass: np.ndarray = (
+        None  # [mass   x     y     z    [ Ixx     Iyy    Izz     Ixy   Ixz   Iyz ]
+    )
     propulsion: Propulsion = None
     landing_gear: LandingGear = None
     aero_coeffs: AeroCoeffs = None
@@ -374,6 +393,7 @@ class Plane:
 
 # ------ Initialize Test Airplane ------
 
+
 def build_plane() -> Plane:
     avl_outputs = AvlOutputs()
     avl_inputs = AvlInputs()
@@ -382,6 +402,13 @@ def build_plane() -> Plane:
     cd = Cd()
     aero_coeffs = AeroCoeffs(cl, cd)
 
-    plane = Plane(name='airbus', empennage=EmpennageType(), wing=Wing(), fuselage=Fuselage(),
-                  mass=5, aero_coeffs=aero_coeffs, avl=avl)
+    plane = Plane(
+        name="airbus",
+        empennage=EmpennageType(),
+        wing=Wing(),
+        fuselage=Fuselage(),
+        mass=5,
+        aero_coeffs=aero_coeffs,
+        avl=avl,
+    )
     return plane

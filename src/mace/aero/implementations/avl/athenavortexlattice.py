@@ -14,14 +14,26 @@ class AVL:
         self.plane = plane
         tool_path = Path(__file__).resolve().parents[5]
         self.avl_path = os.path.join(tool_path, "avl")
-        self.total_forces_file_name = os.path.join(tool_path, "temporary/total_forces.avl")
-        self.strip_forces_file_name = os.path.join(tool_path, "temporary/strip_forces.avl")
+        self.total_forces_file_name = os.path.join(
+            tool_path, "temporary/total_forces.avl"
+        )
+        self.strip_forces_file_name = os.path.join(
+            tool_path, "temporary/strip_forces.avl"
+        )
         self.input_file_name = os.path.join(tool_path, "temporary/input_file_avl.in")
         self.geometry_file = os.path.join(tool_path, "temporary/geometry_file.avl")
         self.mass_file = os.path.join(tool_path, "temporary/mass_file.mass")
 
-    def run_avl(self, avl_file=None, mass_file=None,
-                angle_of_attack=None, lift_coefficient=None, flap_angle=None, run_case: int = 1, maschine_readable_file=True):
+    def run_avl(
+        self,
+        avl_file=None,
+        mass_file=None,
+        angle_of_attack=None,
+        lift_coefficient=None,
+        flap_angle=None,
+        run_case: int = 1,
+        maschine_readable_file=True,
+    ):
         """
         For run_case != 1 please check if runcase is available! At the time not possible! (maybe in future versions)
         """
@@ -32,23 +44,23 @@ class AVL:
             os.remove(self.strip_forces_file_name)
 
         # --- Input file writer---
-        with open(self.input_file_name, 'w') as input_file:
+        with open(self.input_file_name, "w") as input_file:
             if avl_file:
-                input_file.write(f'LOAD {avl_file}\n')
+                input_file.write(f"LOAD {avl_file}\n")
             else:
-                input_file.write(f'LOAD {self.geometry_file}\n')
+                input_file.write(f"LOAD {self.geometry_file}\n")
             if mass_file:
-                input_file.write(f'MASS {mass_file}\n')
+                input_file.write(f"MASS {mass_file}\n")
             else:
-                input_file.write(f'MASS {self.mass_file}\n')
+                input_file.write(f"MASS {self.mass_file}\n")
             # input_file.write(f'CASE {run_file}\n')
-            input_file.write(f'OPER\n')
+            input_file.write(f"OPER\n")
             if run_case != 1:  # select run_case
-                input_file.write(f'{run_case}\n')
+                input_file.write(f"{run_case}\n")
             if angle_of_attack is not None:  # set angle of attack in degrees
-                input_file.write(f'A A {angle_of_attack}\n')
+                input_file.write(f"A A {angle_of_attack}\n")
             if lift_coefficient is not None:  # set angle of attack with cl
-                input_file.write(f'A C {lift_coefficient}\n')
+                input_file.write(f"A C {lift_coefficient}\n")
 
             num_control_surfaces = 0
             if flap_angle is not None:  # set flap angle
@@ -56,27 +68,31 @@ class AVL:
                     for segment in wing.segments:
                         if segment.control:
                             num_control_surfaces += 1
-                            input_file.write(f'D{num_control_surfaces} D{num_control_surfaces} {flap_angle}\n')
+                            input_file.write(
+                                f"D{num_control_surfaces} D{num_control_surfaces} {flap_angle}\n"
+                            )
 
             if num_control_surfaces != 0:
                 num_control_surfaces += 1
-                input_file.write(f'D{num_control_surfaces} D{num_control_surfaces} {flap_angle}\n')
+                input_file.write(
+                    f"D{num_control_surfaces} D{num_control_surfaces} {flap_angle}\n"
+                )
 
-
-            input_file.write(f'X\n')  # execute runcase, XX executes all runcases but uses last runcase
+            input_file.write(
+                f"X\n"
+            )  # execute runcase, XX executes all runcases but uses last runcase
             if maschine_readable_file:
-                input_file.write(f'MRF\n')  # maschine readable file
-            input_file.write(f'FT\n')  # write total forces
-            input_file.write(f'{self.total_forces_file_name}\n')
-            input_file.write(f'FS\n')  # write strip forces
-            input_file.write(f'{self.strip_forces_file_name}\n')
+                input_file.write(f"MRF\n")  # maschine readable file
+            input_file.write(f"FT\n")  # write total forces
+            input_file.write(f"{self.total_forces_file_name}\n")
+            input_file.write(f"FS\n")  # write strip forces
+            input_file.write(f"{self.strip_forces_file_name}\n")
             input_file.write("\n")
             input_file.write("QUIT\n")
 
         # ---Run AVL---
-        cmd = self.avl_path + " <" + \
-              self.input_file_name  # external command to run
-        runsub.run_subprocess(cmd,timeout=15)
+        cmd = self.avl_path + " <" + self.input_file_name  # external command to run
+        runsub.run_subprocess(cmd, timeout=15)
         list_of_process_ids = runsub.find_process_id_by_name("avl")
         runsub.kill_subprocesses(list_of_process_ids)
 
@@ -168,7 +184,7 @@ class AVL:
             if line.endswith("| Surface #, # Chordwise, # Spanwise, First strip\n"):
                 hits += 1
                 string = line.split("|")
-                values = np.fromstring(string[0], dtype=int, sep=' ')
+                values = np.fromstring(string[0], dtype=int, sep=" ")
                 if hits == 1:
                     surface_data = values
                 else:
@@ -180,17 +196,29 @@ class AVL:
             values = np.array([])
             for line in lines:
                 if strip_number + 1 < 10:
-                    if line.startswith("   {0}".format(strip_number + 1)) and "|" not in line:
-                        values = np.fromstring(line, sep=' ')  # np.loadtxt(line)
+                    if (
+                        line.startswith("   {0}".format(strip_number + 1))
+                        and "|" not in line
+                    ):
+                        values = np.fromstring(line, sep=" ")  # np.loadtxt(line)
                 elif strip_number + 1 < 100:
-                    if line.startswith("  {0}".format(strip_number + 1)) and "|" not in line:
-                        values = np.fromstring(line, sep=' ')  # np.loadtxt(line)
+                    if (
+                        line.startswith("  {0}".format(strip_number + 1))
+                        and "|" not in line
+                    ):
+                        values = np.fromstring(line, sep=" ")  # np.loadtxt(line)
                 elif strip_number + 1 < 1000:
-                    if line.startswith(" {0}".format(strip_number + 1)) and "|" not in line:
-                        values = np.fromstring(line, sep=' ')  # np.loadtxt(line)
+                    if (
+                        line.startswith(" {0}".format(strip_number + 1))
+                        and "|" not in line
+                    ):
+                        values = np.fromstring(line, sep=" ")  # np.loadtxt(line)
                 elif strip_number + 1 < 10000:
-                    if line.startswith("{0}".format(strip_number + 1)) and "|" not in line:
-                        values = np.fromstring(line, sep=' ')  # np.loadtxt(line)
+                    if (
+                        line.startswith("{0}".format(strip_number + 1))
+                        and "|" not in line
+                    ):
+                        values = np.fromstring(line, sep=" ")  # np.loadtxt(line)
                 else:
                     print("No valid data format")
             if strip_number == 0:
@@ -210,9 +238,18 @@ class AVL:
         for i in range(self.plane.avl.outputs.surface_data.shape[0]):
             first_strip = self.plane.avl.outputs.surface_data[i, -1]
             last_strip = first_strip + self.plane.avl.outputs.surface_data[i, -2] - 1
-            strips = self.plane.avl.outputs.strip_forces[first_strip - 1: last_strip, :]
-            first_and_last_strip = {'first_strip': first_strip, 'last_strip': last_strip}
-            surface_dictionary_data = {'first_strip': first_strip, 'last_strip': last_strip, 'strips': strips}
+            strips = self.plane.avl.outputs.strip_forces[
+                first_strip - 1 : last_strip, :
+            ]
+            first_and_last_strip = {
+                "first_strip": first_strip,
+                "last_strip": last_strip,
+            }
+            surface_dictionary_data = {
+                "first_strip": first_strip,
+                "last_strip": last_strip,
+                "strips": strips,
+            }
             self.plane.avl.outputs.first_and_last_strips[i + 1] = first_and_last_strip
             self.plane.avl.outputs.surface_dictionary[i + 1] = surface_dictionary_data
 
@@ -358,10 +395,16 @@ def read_avl_output():
     for strip_number in range(number_of_strips):
         for line in lines:
             if strip_number + 1 < 10:
-                if line.startswith("   {0}".format(strip_number + 1)) and "|" not in line:
+                if (
+                    line.startswith("   {0}".format(strip_number + 1))
+                    and "|" not in line
+                ):
                     values = line.split()
             elif strip_number + 1 < 100:
-                if line.startswith("  {0}".format(strip_number + 1)) and "|" not in line:
+                if (
+                    line.startswith("  {0}".format(strip_number + 1))
+                    and "|" not in line
+                ):
                     values = line.split()
             elif strip_number + 1 < 1000:
                 if line.startswith(" {0}".format(strip_number + 1)) and "|" not in line:
@@ -401,8 +444,23 @@ def read_avl_output():
 """
     file.close()
 
-    result = (clff, cdff, cyff, oswaldfactor, s_ref, c_ref, b_ref, x_ref, y_ref, z_ref,
-              number_of_strips, number_of_surfaces, number_of_vortices, surface_data, strip_forces)
+    result = (
+        clff,
+        cdff,
+        cyff,
+        oswaldfactor,
+        s_ref,
+        c_ref,
+        b_ref,
+        x_ref,
+        y_ref,
+        z_ref,
+        number_of_strips,
+        number_of_surfaces,
+        number_of_vortices,
+        surface_data,
+        strip_forces,
+    )
     return result
 
 
@@ -418,9 +476,6 @@ if __name__ == "__main__":
     AVL(plane).read_avl_output()
     print(plane.avl.outputs.surface_dictionary)
 
-
-
-
     # avl_file_path = plane.avl.inputs.avl_file
     # mass_file_path = plane.avl.inputs.mass_file
 
@@ -431,6 +486,4 @@ if __name__ == "__main__":
     # strip_forces_file = "strip_forces_avl"
 
 
-
 # load C:/Users/Gregor/Documents/GitHub/mace/src/mace/aero/implementations/avl/geometry_file.avl
-

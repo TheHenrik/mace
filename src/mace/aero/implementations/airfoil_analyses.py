@@ -9,27 +9,41 @@ import mace.aero.implementations.xfoil.xfoilpolars as xfoilpolars
 class Airfoil:
     """
     This class is used for analyzing airfoils
-    """ 
-    def __init__(self, foil_name: str, flap_angle: float = 0, x_hinge: float = 0.75, z_hinge: float = 0.):
+    """
+
+    def __init__(
+        self,
+        foil_name: str,
+        flap_angle: float = 0,
+        x_hinge: float = 0.75,
+        z_hinge: float = 0.0,
+    ):
         """
          Initialize the airfoil
-        :param foil_name: Name of the airfoil. 
-        The airfoil must be located in the data/airfoils folder, 
+        :param foil_name: Name of the airfoil.
+        The airfoil must be located in the data/airfoils folder,
         and the name must be the same as the file name.
         """
         tool_path = Path(__file__).resolve().parents[4]
-        self.airfoil_path = os.path.join(tool_path, "data", "airfoils", foil_name + ".dat")
+        self.airfoil_path = os.path.join(
+            tool_path, "data", "airfoils", foil_name + ".dat"
+        )
         if np.isclose(flap_angle, 0):
-            self.surrogate_path = os.path.join(tool_path, "data", "surrogates",
-                                               foil_name
-                                               +".csv")
+            self.surrogate_path = os.path.join(
+                tool_path, "data", "surrogates", foil_name + ".csv"
+            )
         else:
-            self.surrogate_path = os.path.join(tool_path, "data", "surrogates",
-                                               foil_name
-                                               +"_"
-                                               +str(int(round((100-x_hinge*100),0)))
-                                               +"f"+
-                                               str(int(round(flap_angle,0)))+".csv")
+            self.surrogate_path = os.path.join(
+                tool_path,
+                "data",
+                "surrogates",
+                foil_name
+                + "_"
+                + str(int(round((100 - x_hinge * 100), 0)))
+                + "f"
+                + str(int(round(flap_angle, 0)))
+                + ".csv",
+            )
 
         self.foil_name = foil_name
 
@@ -50,8 +64,8 @@ class Airfoil:
 
         self.flap_angle = flap_angle
         self.x_hinge = 0.75
-        self.z_hinge = 0.
-        
+        self.z_hinge = 0.0
+
         self.print_re_warnings = True
         self.must_rebuild_surrogate = False
 
@@ -70,11 +84,21 @@ class Airfoil:
 
         for i, re in enumerate(re_list):
             if alpha_min < 0:
-                neg_polar_data = xfoilpolars.get_xfoil_polar(self.airfoil_path, reynoldsnumber=re, alfa_start=0,
-                                                     alfa_end=self.alpha_min, alfa_step=self.alpha_step, mach=self.mach,
-                                                     n_crit=self.n_crit, n_iter=self.n_iter,
-                                                     x_transition_top=self.xtr_top, x_transition_bottom=self.xtr_bot,
-                                                     flap_angle=self.flap_angle, x_hinge=self.x_hinge, z_hinge=self.z_hinge)
+                neg_polar_data = xfoilpolars.get_xfoil_polar(
+                    self.airfoil_path,
+                    reynoldsnumber=re,
+                    alfa_start=0,
+                    alfa_end=self.alpha_min,
+                    alfa_step=self.alpha_step,
+                    mach=self.mach,
+                    n_crit=self.n_crit,
+                    n_iter=self.n_iter,
+                    x_transition_top=self.xtr_top,
+                    x_transition_bottom=self.xtr_bot,
+                    flap_angle=self.flap_angle,
+                    x_hinge=self.x_hinge,
+                    z_hinge=self.z_hinge,
+                )
                 # cut polar
                 cl_min_index = np.argmin(neg_polar_data[:, 1])
                 neg_polar_data = neg_polar_data[:cl_min_index, :]
@@ -84,26 +108,47 @@ class Airfoil:
                 neg_polar_data = np.array([])
 
             if alpha_max > 0:
-                pos_polar_data = xfoilpolars.get_xfoil_polar(self.airfoil_path, reynoldsnumber=re, alfa_start=0,
-                                                     alfa_end=self.alpha_max, alfa_step=self.alpha_step, mach=self.mach,
-                                                     n_crit=self.n_crit, n_iter=self.n_iter,
-                                                     x_transition_top=self.xtr_top, x_transition_bottom=self.xtr_bot,
-                                                     flap_angle=self.flap_angle, x_hinge=self.x_hinge, z_hinge=self.z_hinge)
+                pos_polar_data = xfoilpolars.get_xfoil_polar(
+                    self.airfoil_path,
+                    reynoldsnumber=re,
+                    alfa_start=0,
+                    alfa_end=self.alpha_max,
+                    alfa_step=self.alpha_step,
+                    mach=self.mach,
+                    n_crit=self.n_crit,
+                    n_iter=self.n_iter,
+                    x_transition_top=self.xtr_top,
+                    x_transition_bottom=self.xtr_bot,
+                    flap_angle=self.flap_angle,
+                    x_hinge=self.x_hinge,
+                    z_hinge=self.z_hinge,
+                )
                 # cut polar
                 cl_max_index = np.argmax(pos_polar_data[:, 1])
-                pos_polar_data = pos_polar_data[:cl_max_index+1, :]
+                pos_polar_data = pos_polar_data[: cl_max_index + 1, :]
             else:
                 pos_polar_data = np.array([])
 
-            actual_re_polar_data = np.concatenate((neg_polar_data, pos_polar_data), axis=0)
-            actual_re_polar_data = np.hstack((re*np.ones((actual_re_polar_data.shape[0], 1)), actual_re_polar_data))
+            actual_re_polar_data = np.concatenate(
+                (neg_polar_data, pos_polar_data), axis=0
+            )
+            actual_re_polar_data = np.hstack(
+                (re * np.ones((actual_re_polar_data.shape[0], 1)), actual_re_polar_data)
+            )
 
             if i == 0:
                 polar_data = actual_re_polar_data
             else:
                 polar_data = np.concatenate((polar_data, actual_re_polar_data), axis=0)
 
-        np.savetxt(self.surrogate_path, polar_data, fmt='%.6f', delimiter=",", header=" ".join(header), comments="")
+        np.savetxt(
+            self.surrogate_path,
+            polar_data,
+            fmt="%.6f",
+            delimiter=",",
+            header=" ".join(header),
+            comments="",
+        )
 
     def check_for_surrogate(self):
         """
@@ -120,18 +165,24 @@ class Airfoil:
             self.build_surrogate()
 
         polar_data = np.loadtxt(self.surrogate_path, delimiter=",", skiprows=1)
-        
+
         re_list = np.unique(polar_data[:, 0])
-        
+
         if re > re_list[-1]:
             if self.print_re_warnings:
-                print("Warning: Airfoil: %s -> Re=%.0f above max Re in surrogate model" % (self.foil_name, re))
+                print(
+                    "Warning: Airfoil: %s -> Re=%.0f above max Re in surrogate model"
+                    % (self.foil_name, re)
+                )
             re = re_list[-1]
         upper_re = re_list[np.where(re_list >= re)[0][0]]
         if np.where(re_list >= re)[0][0] == 0:
             lower_re = re_list[np.where(re_list >= re)[0][0]]
             if self.print_re_warnings:
-                print("Warning: Airfoil: %s -> Re=%.0f below min Re in surrogate model" % (self.foil_name, re))
+                print(
+                    "Warning: Airfoil: %s -> Re=%.0f below min Re in surrogate model"
+                    % (self.foil_name, re)
+                )
         else:
             lower_re = re_list[np.where(re_list >= re)[0][0] - 1]
 
@@ -158,13 +209,19 @@ class Airfoil:
 
         if re > re_list[-1]:
             if self.print_re_warnings:
-                print("Warning: Airfoil: %s -> Re=%.0f above max Re in surrogate model" % (self.foil_name, re))
+                print(
+                    "Warning: Airfoil: %s -> Re=%.0f above max Re in surrogate model"
+                    % (self.foil_name, re)
+                )
             re = re_list[-1]
         upper_re = re_list[np.where(re_list >= re)[0][0]]
         if np.where(re_list >= re)[0][0] == 0:
             lower_re = re_list[np.where(re_list >= re)[0][0]]
             if self.print_re_warnings:
-                print("Warning: Airfoil: %s -> Re=%.0f below min Re in surrogate model" % (self.foil_name, re))
+                print(
+                    "Warning: Airfoil: %s -> Re=%.0f below min Re in surrogate model"
+                    % (self.foil_name, re)
+                )
         else:
             lower_re = re_list[np.where(re_list >= re)[0][0] - 1]
 
@@ -178,6 +235,7 @@ class Airfoil:
 
         return cl_max
 
+
 if __name__ == "__main__":
 
     ag19 = Airfoil("ag19")
@@ -187,5 +245,5 @@ if __name__ == "__main__":
     CD = ag19.get_cd(136000, 1.0)
     CL_max = ag19.get_cl_max(20000)
 
-    print('CL_max: %.3e' % CL_max)
-    print('CD:     %.3e' % CD)
+    print("CL_max: %.3e" % CL_max)
+    print("CD:     %.3e" % CD)

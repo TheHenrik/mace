@@ -11,6 +11,7 @@ class Cl:
     # --- from AVL:
     cl_tot: float = None
 
+
 @dataclass()
 class Cd:
     # cd_profil: float = None
@@ -22,6 +23,7 @@ class Cd:
     cd_fuse: float = 0
     cd_wheels: float = 0
 
+
 @dataclass()
 class AeroCoeffs:
     velocity: float = None
@@ -29,8 +31,11 @@ class AeroCoeffs:
     drag_coeff: Cd = None
     flap_angle: float = None
     # for AVL
-    cdp: float = 0  # not used, just in case. Default profile drag coefficient added to geometry.
-    
+    cdp: float = (
+        0  # not used, just in case. Default profile drag coefficient added to geometry.
+    )
+
+
 @dataclass()
 class AvlInputs:
     avl_file = None
@@ -57,7 +62,7 @@ class AvlOutputs:
     number_of_vortices: int = 0
     # Surface data
     surface_data: np.ndarray = None
-    first_and_last_strips = {}          # Dictionary
+    first_and_last_strips = {}  # Dictionary
     surface_dictionary = {}
     strip_forces: np.ndarray = None
 
@@ -66,6 +71,8 @@ class AvlOutputs:
 class Avl:
     inputs: AvlInputs = None
     outputs: AvlOutputs = None
+
+
 @dataclass()
 class TakeOffResults:
     v_max_rolling: float = None
@@ -95,9 +102,11 @@ class ClimbResults:
     gamma_max: float() = None
     v_vertical_max: float() = None
 
+
 @dataclass()
 class Climb:
     results: ClimbResults = None
+
 
 @dataclass()
 class HorizontalFlightResults:
@@ -105,22 +114,28 @@ class HorizontalFlightResults:
     minimum_thrust: np.ndarray = None
     maximum_flight_velocity: tuple = None
 
+
 @dataclass()
 class HorizontalFlight:
     results: HorizontalFlightResults = None
 
+
 @dataclass()
 class GlidingFlightResults:
-    gliding_data: np.ndarray = None      # [cl, cd, cd_viscous, cd_induced, velocity, vertical_velocity] in each row
+    gliding_data: np.ndarray = None  # [cl, cd, cd_viscous, cd_induced, velocity, vertical_velocity] in each row
     data_best_glide_ratio: np.ndarray = None
     data_smallest_decline: np.ndarray = None
     best_glide_ratio: float = None
     row_index_best_glide_ratio: int = None
     smallest_decline: float = None
     row_index_smallest_decline: int = None
+
+
 @dataclass()
 class GlidingFlight:
     results: GlidingFlightResults = None
+
+
 @dataclass()
 class FlightConditions:
     takeoff: TakeOff = None

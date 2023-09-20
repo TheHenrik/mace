@@ -9,7 +9,7 @@ from mace.aero.implementations.avl import (
 )
 from mace.domain.parser import PlaneParser
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Define Aircraft Geometry
     Aircraft = vehicle_setup()
 
@@ -24,12 +24,12 @@ if __name__ == '__main__':
     fig = plt.figure(dpi=400)
     ax = fig.add_subplot(111)
 
-    flap_angles = [-4., -2., 0., 2., 4.]
+    flap_angles = [-4.0, -2.0, 0.0, 2.0, 4.0]
     max_velocity = np.zeros(len(flap_angles))
 
     for i, flap_angle in enumerate(flap_angles):
 
-        print("Analysis %s of %s" % (i+1, len(flap_angles)))
+        print("Analysis %s of %s" % (i + 1, len(flap_angles)))
 
         cruise_analysis.flap_angle = flap_angle
         cruise_analysis.cl_start = 0.05
@@ -40,10 +40,9 @@ if __name__ == '__main__':
 
     ax.plot(flap_angles, max_velocity)
 
-    ax.set_xlabel('Flap angle [deg]')
-    ax.set_ylabel('V_max [m/s]')
+    ax.set_xlabel("Flap angle [deg]")
+    ax.set_ylabel("V_max [m/s]")
     plt.grid()
-    plt.tick_params(which='major', labelsize=6)
+    plt.tick_params(which="major", labelsize=6)
     plt.title("Cruise Analysis", fontsize=10)
     plt.show()
-

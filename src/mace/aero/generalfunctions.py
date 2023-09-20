@@ -13,21 +13,23 @@ def get_intersect(a1, a2, b1, b2):
     b1: [x, y] a point on the second line
     b2: [x, y] another point on the second line
     """
-    s = np.vstack([a1, a2, b1, b2])            # s for stacked
-    h = np.hstack((s, np.ones((4, 1))))     # h for homogeneous
-    l1 = np.cross(h[0], h[1])               # get first line
-    l2 = np.cross(h[2], h[3])               # get second line
-    x, y, z = np.cross(l1, l2)              # point of intersection
-    if z == 0:                              # lines are parallel
-        return float('inf'), float('inf')
+    s = np.vstack([a1, a2, b1, b2])  # s for stacked
+    h = np.hstack((s, np.ones((4, 1))))  # h for homogeneous
+    l1 = np.cross(h[0], h[1])  # get first line
+    l2 = np.cross(h[2], h[3])  # get second line
+    x, y, z = np.cross(l1, l2)  # point of intersection
+    if z == 0:  # lines are parallel
+        return float("inf"), float("inf")
     return x / z, y / z
 
 
 # ---Reynoldsnumber---
 
-def get_reynolds_number(v, length):              # neuer Name
+
+def get_reynolds_number(v, length):  # neuer Name
     rey = (v * length) / params.Constants.ny
     return rey
+
 
 # ------------------------
 
@@ -47,8 +49,13 @@ class GeneralFunctions:
         Returns thrust in Newton related to a current velocity of the plane.
         """
         thrust_array = self.plane.propulsion.thrust
-        interp = interp1d(thrust_array[:, 0], thrust_array[:, 1], kind="quadratic",
-                          fill_value=0, bounds_error=False)
+        interp = interp1d(
+            thrust_array[:, 0],
+            thrust_array[:, 1],
+            kind="quadratic",
+            fill_value=0,
+            bounds_error=False,
+        )
         thrust = interp(V)
         return thrust
 
@@ -57,7 +64,7 @@ class GeneralFunctions:
         return thrust
 
     def excess_power(self, cd, cl, thrust):
-        print(f'thrust_supply = {self.thrust_supply(cd, cl)}')
+        print(f"thrust_supply = {self.thrust_supply(cd, cl)}")
         excess_power = thrust - self.thrust_supply(cd, cl)
         return excess_power
 
@@ -71,6 +78,3 @@ class GeneralFunctions:
         rho = params.Constants.rho
         lift = coefficient * rho / 2 * velocity**2 * s_ref
         return lift
-
-
-

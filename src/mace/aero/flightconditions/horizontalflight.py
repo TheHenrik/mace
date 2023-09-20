@@ -16,10 +16,10 @@ class HorizontalFlight:
         self.g = params.Constants.g
         self.rho = params.Constants.rho
         self.cl_start = 0.05
-        self.cl_end = 1.
+        self.cl_end = 1.0
         self.cl_step = 0.05
-        
-        self.flap_angle = 0.
+
+        self.flap_angle = 0.0
 
     def get_drag_force(self, V):
         plane = self.plane
@@ -29,7 +29,7 @@ class HorizontalFlight:
         return D
 
     def flight_velocity(self, CL):
-        V = ((2 * self.mass * self.g)/(CL * self.rho * self.s_ref))**0.5
+        V = ((2 * self.mass * self.g) / (CL * self.rho * self.s_ref)) ** 0.5
         return V
 
     def fv_diagramm(self):
@@ -49,49 +49,62 @@ class HorizontalFlight:
             V = self.flight_velocity(CL)
 
             Aero.evaluate(CL=CL, V=V, FLAP=self.flap_angle)
-            
+
             # Calculate total drag force
             D = self.get_drag_force(V)
-            
+
             # --- Evaluate Thrust ---
             T = thrust(V)
 
             results.append([V, D, T])
 
-        self.plane.flight_conditions.horizontal_flight.results.thrust_velocity_correlation = np.array(results)
+        self.plane.flight_conditions.horizontal_flight.results.thrust_velocity_correlation = np.array(
+            results
+        )
 
     def get_maximum_velocity(self):
         """
         Returns the maximum velocity in horizontal flight.
         """
-        results = self.plane.flight_conditions.horizontal_flight.results.thrust_velocity_correlation
+        results = (
+            self.plane.flight_conditions.horizontal_flight.results.thrust_velocity_correlation
+        )
         if results is None:
             self.fv_diagramm()
-            results = self.plane.flight_conditions.horizontal_flight.results.thrust_velocity_correlation
+            results = (
+                self.plane.flight_conditions.horizontal_flight.results.thrust_velocity_correlation
+            )
 
         V = results[:, 0]
         D = results[:, 1]
         T = results[:, 2]
-        
+
         # Get maximum velocity
-        f_drag = interp1d(V, D, kind="quadratic", fill_value="extrapolate", bounds_error=False)
+        f_drag = interp1d(
+            V, D, kind="quadratic", fill_value="extrapolate", bounds_error=False
+        )
         f_thrust = interp1d(V, T, kind="quadratic", fill_value=0, bounds_error=False)
-        
+
         def objective(V):
             return f_drag(V) - f_thrust(V)
-        
+
         V_max = bisect(objective, min(V), max(V))
         return V_max
-    
+
     def plot_fv_diagramm(self):
         """
         Plots the thrust-velocity correlation.
         """
         import matplotlib.pyplot as plt
-        results = self.plane.flight_conditions.horizontal_flight.results.thrust_velocity_correlation
+
+        results = (
+            self.plane.flight_conditions.horizontal_flight.results.thrust_velocity_correlation
+        )
         if results is None:
             self.fv_diagramm()
-            results = self.plane.flight_conditions.horizontal_flight.results.thrust_velocity_correlation
+            results = (
+                self.plane.flight_conditions.horizontal_flight.results.thrust_velocity_correlation
+            )
 
         V = results[:, 0]
         D = results[:, 1]
@@ -105,7 +118,7 @@ class HorizontalFlight:
         ax.set_ylabel("Force [N]")
         plt.legend()
         plt.grid()
-        plt.tick_params(which='major', labelsize=6)
+        plt.tick_params(which="major", labelsize=6)
 
         plt.title("Horizontal Flight", fontsize=10)
         plt.show()

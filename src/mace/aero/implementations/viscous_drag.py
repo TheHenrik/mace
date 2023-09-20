@@ -1,4 +1,3 @@
-
 import os
 from pathlib import Path
 
@@ -17,10 +16,11 @@ class ViscousDrag:
     """
     This class calculates the viscous drag of a wing using XFOIL.
     """
+
     def __init__(self, plane: Vehicle):
         """
         :param plane: Plane object
-        
+
         Initializes the viscous drag analysis.
         """
         self.plane = plane
@@ -28,10 +28,10 @@ class ViscousDrag:
         self.s_ref = self.plane.reference_values.s_ref
         self.g = params.Constants.g
         self.rho = params.Constants.rho
-        
+
         self.print_re_warnings = True
 
-    def match_segment_to_strip(self, surface: int, y:float, z:float):
+    def match_segment_to_strip(self, surface: int, y: float, z: float):
         i = 0
         for wing in self.plane.wings.values():
             if wing.symmetric:
@@ -54,7 +54,7 @@ class ViscousDrag:
                     this_segment = segment
                     break
         return this_wing, this_segment
-    
+
     def evaluate(self):
         """
         This function evaluates the viscous drag of a wing using XFOIL.
@@ -65,34 +65,39 @@ class ViscousDrag:
         V = self.plane.aero_coeffs.velocity
         FLAP = self.plane.aero_coeffs.flap_angle
         S_ref = self.plane.avl.outputs.s_ref
-        S_sum = 0.
-        CD = 0.
-        
+        S_sum = 0.0
+        CD = 0.0
 
         for surface in range(1, self.plane.avl.outputs.number_of_surfaces, 1):
             strips = self.plane.avl.outputs.surface_dictionary[surface]["strips"][:, 0]
             for element in range(len(strips)):
                 # initialize strip values
-                strip_values = self.plane.avl.outputs.surface_dictionary[surface]["strips"][int(element - 1), :]
+                strip_values = self.plane.avl.outputs.surface_dictionary[surface][
+                    "strips"
+                ][int(element - 1), :]
 
                 # get local reynolds
-                c   = strip_values[4]
-                cl  = strip_values[9]  # 9 und nicht 6 (cl_norm)
+                c = strip_values[4]
+                cl = strip_values[9]  # 9 und nicht 6 (cl_norm)
                 re = get_reynolds_number(V, c)
                 y = strip_values[2]
                 z = strip_values[3]
-                
+
                 wing, segment = self.match_segment_to_strip(surface, y, z)
                 airfoil_name = wing.airfoil
-                
+
                 if segment.control:
                     flap_angle = FLAP * segment.c_gain
                 else:
-                    flap_angle = 0.
-                
-                airfoil = Airfoil(airfoil_name, flap_angle=flap_angle, x_hinge=(1-segment.flap_chord_ratio))
+                    flap_angle = 0.0
+
+                airfoil = Airfoil(
+                    airfoil_name,
+                    flap_angle=flap_angle,
+                    x_hinge=(1 - segment.flap_chord_ratio),
+                )
                 airfoil.print_re_warnings = self.print_re_warnings
-                
+
                 cd = airfoil.get_cd(re, cl)
 
                 S = strip_values[5]
@@ -101,7 +106,9 @@ class ViscousDrag:
                 S_sum += S
 
         self.plane.aero_coeffs.drag_coeff.cd_visc = CD
-        self.plane.aero_coeffs.drag_coeff.cd_tot = CD + self.plane.aero_coeffs.drag_coeff.cd_ind
+        self.plane.aero_coeffs.drag_coeff.cd_tot = (
+            CD + self.plane.aero_coeffs.drag_coeff.cd_ind
+        )
 
         return CD
 
@@ -113,7 +120,7 @@ if __name__ == "__main__":
     MassFile(plane).build_mass_file()
 
     # Define Analysis
-    V = 10.
+    V = 10.0
     W = plane.mass[0]
     CL = 0.5
 

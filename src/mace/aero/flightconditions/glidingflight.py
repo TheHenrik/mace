@@ -19,7 +19,9 @@ class GlidingFlight:
         """
         Returns the velocity in gliding flight
         """
-        v = ((2 * self.mass * self.g) / (self.rho * self.s_ref)) ** 0.5 * (cd ** 2 + cl ** 2) ** (-0.25)
+        v = ((2 * self.mass * self.g) / (self.rho * self.s_ref)) ** 0.5 * (
+            cd**2 + cl**2
+        ) ** (-0.25)
         return v
 
     def gamma(self, cd, cl):
@@ -35,12 +37,14 @@ class GlidingFlight:
         """
         Returns the vertical velocity for gliding flight
         """
-        v_v = velocity ** 3 * ((-self.rho / 2) * self.s_ref * cd) / (self.mass * self.g)
+        v_v = velocity**3 * ((-self.rho / 2) * self.s_ref * cd) / (self.mass * self.g)
         return v_v
 
     # ---Iteration über V---
 
-    def v_glide_iteration(self, cl_end, cl_start=0.1, cl_step=0.1, velocity_tolerance=0.1, it_max=20):
+    def v_glide_iteration(
+        self, cl_end, cl_start=0.1, cl_step=0.1, velocity_tolerance=0.1, it_max=20
+    ):
         """
         Returns a 2D numpy matrix containing following data in each row:
         [cl, cd, cd_viscous, cd_induced, velocity, vertical_velocity]
@@ -52,7 +56,7 @@ class GlidingFlight:
         self.plane.aero_coeffs.drag_coeff.cd_viscous = 0
 
         num = int(((cl_end - cl_start) / cl_step) + 1)
-        print(f'num = {num}, cl_start = {cl_start}, cl_end = {cl_end}')
+        print(f"num = {num}, cl_start = {cl_start}, cl_end = {cl_end}")
         print(np.linspace(cl_start, cl_end, num))
         for cl in np.linspace(cl_start, cl_end, num):
             # AVL -> cd_ind
@@ -64,22 +68,42 @@ class GlidingFlight:
             #     error = False
 
             # ViscousDrag -> cd_vis: Iteration: v_glidingflight ausrechnen, ViscousDrag, dann neu
-            cd = self.plane.aero_coeffs.drag_coeff.cd_viscous + self.plane.aero_coeffs.drag_coeff.cd_ind
+            cd = (
+                self.plane.aero_coeffs.drag_coeff.cd_viscous
+                + self.plane.aero_coeffs.drag_coeff.cd_ind
+            )
             velocity_init = self.v_gliding_flight(cd, cl)
             # ViscousDrag(self.plane).create_avl_viscous_drag_from_xfoil(velocity=velocity_init)
-            cd = self.plane.aero_coeffs.drag_coeff.cd_viscous + self.plane.aero_coeffs.drag_coeff.cd_ind
+            cd = (
+                self.plane.aero_coeffs.drag_coeff.cd_viscous
+                + self.plane.aero_coeffs.drag_coeff.cd_ind
+            )
             velocity = self.v_gliding_flight(cd, cl)
             i = 0
             while abs(velocity_init - velocity) > velocity_tolerance or i >= it_max:
                 velocity_init = velocity
-                ViscousDrag(self.plane).create_avl_viscous_drag_from_xfoil(velocity=velocity_init)
-                cd = self.plane.aero_coeffs.drag_coeff.cd_viscous + self.plane.aero_coeffs.drag_coeff.cd_ind
+                ViscousDrag(self.plane).create_avl_viscous_drag_from_xfoil(
+                    velocity=velocity_init
+                )
+                cd = (
+                    self.plane.aero_coeffs.drag_coeff.cd_viscous
+                    + self.plane.aero_coeffs.drag_coeff.cd_ind
+                )
                 velocity = self.v_gliding_flight(cd, cl)
                 i += 1
 
             gamma = self.gamma(cd, cl)[0]
-            results = np.array([cl, cd, self.plane.aero_coeffs.drag_coeff.cd_viscous,
-                                self.plane.aero_coeffs.drag_coeff.cd_ind, velocity, self.v_vertical(velocity, cd), gamma])
+            results = np.array(
+                [
+                    cl,
+                    cd,
+                    self.plane.aero_coeffs.drag_coeff.cd_viscous,
+                    self.plane.aero_coeffs.drag_coeff.cd_ind,
+                    velocity,
+                    self.v_vertical(velocity, cd),
+                    gamma,
+                ]
+            )
 
             if cl == cl_start:
                 gliding_data = results
@@ -97,15 +121,25 @@ class GlidingFlight:
         Returns the best glide ratio and saves the corresponding data in the object plane.
         """
         # noch checken, ob min oder max
-        cd_divided_by_cl = self.plane.flightconditions.glidingflight.results.gliding_data[:, 1] / \
-                           self.plane.flightconditions.glidingflight.results.gliding_data[:, 0]
+        cd_divided_by_cl = (
+            self.plane.flightconditions.glidingflight.results.gliding_data[:, 1]
+            / self.plane.flightconditions.glidingflight.results.gliding_data[:, 0]
+        )
         row_index = np.argmin(cd_divided_by_cl)
         best_glide_ratio = np.argmin(cd_divided_by_cl)
-        corresponding_data = self.plane.flightconditions.glidingflight.results.gliding_data[row_index, :]
+        corresponding_data = (
+            self.plane.flightconditions.glidingflight.results.gliding_data[row_index, :]
+        )
 
-        self.plane.flightconditions.glidingflight.results.best_glide_ratio = best_glide_ratio
-        self.plane.flightconditions.glidingflight.results.row_index_best_glide_ratio = row_index
-        self.plane.flightconditions.glidingflight.results.data_best_glide_ratio = corresponding_data
+        self.plane.flightconditions.glidingflight.results.best_glide_ratio = (
+            best_glide_ratio
+        )
+        self.plane.flightconditions.glidingflight.results.row_index_best_glide_ratio = (
+            row_index
+        )
+        self.plane.flightconditions.glidingflight.results.data_best_glide_ratio = (
+            corresponding_data
+        )
 
         return best_glide_ratio
 
@@ -113,13 +147,25 @@ class GlidingFlight:
         """
         Returns the smallest decline and saves the corresponding data in the object plane.
         """
-        smallest_decline = np.min(self.plane.flightconditions.glidingflight.results.gliding_data[:, 5])
-        row_index = np.argmin(self.plane.flightconditions.glidingflight.results.gliding_data[:, 5])
-        corresponding_data = self.plane.flightconditions.glidingflight.results.gliding_data[row_index, :]
+        smallest_decline = np.min(
+            self.plane.flightconditions.glidingflight.results.gliding_data[:, 5]
+        )
+        row_index = np.argmin(
+            self.plane.flightconditions.glidingflight.results.gliding_data[:, 5]
+        )
+        corresponding_data = (
+            self.plane.flightconditions.glidingflight.results.gliding_data[row_index, :]
+        )
 
-        self.plane.flightconditions.glidingflight.results.smallest_decline = smallest_decline
-        self.plane.flightconditions.glidingflight.results.row_index_smallest_decline = row_index
-        self.plane.flightconditions.glidingflight.results.data_smallest_decline = corresponding_data
+        self.plane.flightconditions.glidingflight.results.smallest_decline = (
+            smallest_decline
+        )
+        self.plane.flightconditions.glidingflight.results.row_index_smallest_decline = (
+            row_index
+        )
+        self.plane.flightconditions.glidingflight.results.data_smallest_decline = (
+            corresponding_data
+        )
 
         return smallest_decline
 

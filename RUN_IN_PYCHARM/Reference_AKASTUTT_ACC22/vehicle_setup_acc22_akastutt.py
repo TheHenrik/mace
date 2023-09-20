@@ -17,14 +17,14 @@ def vehicle_setup() -> Vehicle:
     main_wing.tag = "main_wing"
     main_wing.origin = [0, 0, 0]
     main_wing.airfoil = "acc22"
-    main_wing.angle = 2.
+    main_wing.angle = 2.0
     main_wing.symmetric = True
 
     # Inner segment
     segment = WingSegment()
     segment.span = 1.039 / 2
     segment.inner_chord = 0.320
-    segment.inner_x_offset = 0.
+    segment.inner_x_offset = 0.0
     segment.outer_chord = 0.299
     segment.outer_x_offset = 0.015
     segment.dihedral = 1
@@ -44,7 +44,7 @@ def vehicle_setup() -> Vehicle:
 
     # Outer segment
     segment = WingSegment()
-    segment.span = 2.32/2 - 0.331 - 1.039/2
+    segment.span = 2.32 / 2 - 0.331 - 1.039 / 2
     segment.inner_chord = 0.26
     segment.inner_x_offset = 0.08
     segment.outer_chord = 0.14
@@ -89,9 +89,9 @@ def vehicle_setup() -> Vehicle:
 
     # Resize Wing
     horizontal_stabilizer.span = 0.68
-    #l_ht = horizontal_stabilizer.origin[0] - main_wing.origin[0]
-    #v_ht = 0.583*2
-    #horizontal_stabilizer.get_stabilizer_area_from_volume_coefficient(v_ht, l_ht, S_ref, MAC)
+    # l_ht = horizontal_stabilizer.origin[0] - main_wing.origin[0]
+    # v_ht = 0.583*2
+    # horizontal_stabilizer.get_stabilizer_area_from_volume_coefficient(v_ht, l_ht, S_ref, MAC)
     horizontal_stabilizer.build(resize_x_offset_from_hinge_angle=False)
 
     vehicle.add_wing("horizontal_stabilizer", horizontal_stabilizer)
@@ -115,29 +115,38 @@ def vehicle_setup() -> Vehicle:
     vertical_stabilizer.add_segment(segment)
 
     # Resize Wing
-    #vertical_stabilizer.aspect_ratio = 1.5
+    # vertical_stabilizer.aspect_ratio = 1.5
     vertical_stabilizer.reference_area = 0.041
-    #l_vt = vertical_stabilizer.origin[0] - main_wing.origin[0]
-    #v_vt = 0.018
-    #vertical_stabilizer.get_stabilizer_area_from_volume_coefficient(v_vt, l_vt, S_ref, b_ref)
-    vertical_stabilizer.build(resize_x_offset_from_hinge_angle=False, resize_areas=False)
+    # l_vt = vertical_stabilizer.origin[0] - main_wing.origin[0]
+    # v_vt = 0.018
+    # vertical_stabilizer.get_stabilizer_area_from_volume_coefficient(v_vt, l_vt, S_ref, b_ref)
+    vertical_stabilizer.build(
+        resize_x_offset_from_hinge_angle=False, resize_areas=False
+    )
 
     vehicle.add_wing("vertical_stabilizer", vertical_stabilizer)
-    
+
     vehicle.get_reference_values()
-    
+
     for wing in vehicle.wings.values():
         S = wing.reference_area
-        print("%s %.1f sqdm" % (wing.tag, S*100))
-
+        print("%s %.1f sqdm" % (wing.tag, S * 100))
 
     ####################################################################################################################
     # PROPULSION
-    #vehicle.propulsion.thrust = np.array([[0., 14.42], [3., 13.82], [6., 12.89], [9., 11.85], [12., 10.58], [15., 9.19],
+    # vehicle.propulsion.thrust = np.array([[0., 14.42], [3., 13.82], [6., 12.89], [9., 11.85], [12., 10.58], [15., 9.19],
     #                                      [18., 7.79], [21., 5.86], [24., 4.01]]) # original thrust vector
     # new thrust vector 2023-7-26
-    vehicle.propulsion.thrust = np.array([[0., 12.4622], [4.24, 11.657], [9.6, 10.286],
-                                          [14.89, 8.771], [19.72, 7.2094], [23.25, 6.075]]) # new thrust vector 2023-7-26
+    vehicle.propulsion.thrust = np.array(
+        [
+            [0.0, 12.4622],
+            [4.24, 11.657],
+            [9.6, 10.286],
+            [14.89, 8.771],
+            [19.72, 7.2094],
+            [23.25, 6.075],
+        ]
+    )  # new thrust vector 2023-7-26
     # vehicle.propulsion.thrust = np.array(
     #     [[0., 16.39], [2.5, 16.25], [5., 16.08], [7.5, 15.49], [10., 14.68], [15., 12.43],
     #      [20., 9.96], [25., 7.18], [30., 2.47]])  # Addi Technical Report
@@ -166,13 +175,13 @@ def vehicle_setup() -> Vehicle:
     fuselage.add_segment(segment)
 
     segment = FuselageSegment()
-    segment.origin[0] = 0. - x_minus_offset
+    segment.origin[0] = 0.0 - x_minus_offset
     segment.width = 0.102
     segment.height = 0.151
     fuselage.add_segment(segment)
 
     segment = FuselageSegment()
-    segment.origin[0] = 0.  + x_plus_offset
+    segment.origin[0] = 0.0 + x_plus_offset
     segment.width = 0.102
     segment.height = 0.151
     fuselage.add_segment(segment)
@@ -198,31 +207,37 @@ def vehicle_setup() -> Vehicle:
 
     Height = 0.25
     landing_gear.height = Height
-    
+
     wheel1 = Wheel()
     wheel1.diameter = 0.1
     wheel1.mass = 0.05
-    wheel1.origin = np.array([-0.26, 0., -(Height-wheel1.diameter/2.)])
+    wheel1.origin = np.array([-0.26, 0.0, -(Height - wheel1.diameter / 2.0)])
     landing_gear.add_wheel(wheel1)
 
     wheel2 = Wheel()
     wheel2.diameter = 0.16
     wheel2.mass = 0.05
-    wheel2.origin = np.array([vehicle.center_of_gravity[0] + 0.1, 0.23, -(Height-wheel2.diameter/2.)])
+    wheel2.origin = np.array(
+        [vehicle.center_of_gravity[0] + 0.1, 0.23, -(Height - wheel2.diameter / 2.0)]
+    )
     landing_gear.add_wheel(wheel2)
 
     wheel3 = Wheel()
     wheel3.diameter = wheel2.diameter
     wheel3.mass = wheel2.mass
-    wheel3.origin = np.array([vehicle.center_of_gravity[0] + 0.1, -wheel2.origin[1], wheel2.origin[2]])
+    wheel3.origin = np.array(
+        [vehicle.center_of_gravity[0] + 0.1, -wheel2.origin[1], wheel2.origin[2]]
+    )
     wheel3.origin[1] = -wheel2.origin[1]
     landing_gear.add_wheel(wheel3)
 
     landing_gear.finalize()
 
-    l_calc = 0.
+    l_calc = 0.0
     for wheel in landing_gear.wheels:
-        l_calc += (wheel.origin[1] ** 2 + wheel.origin[2] ** 2) ** 0.5 - vehicle.fuselages['fuselage'].diameter
+        l_calc += (
+            wheel.origin[1] ** 2 + wheel.origin[2] ** 2
+        ) ** 0.5 - vehicle.fuselages["fuselage"].diameter
     print("L_calc %.4f m" % l_calc)
     landing_gear.effective_drag_length = l_calc
     landing_gear.length_specific_cd = 0.0033
@@ -231,13 +246,12 @@ def vehicle_setup() -> Vehicle:
     ####################################################################################################################
     # PLOT
 
-    #vehicle.plot_vehicle(azim=180, elev=0)
+    # vehicle.plot_vehicle(azim=180, elev=0)
     vehicle.plot_vehicle(azim=230, elev=30)
     vehicle.plot_vehicle(azim=0, elev=90)
-    #vehicle.plot_vehicle(azim=90, elev=0)
+    # vehicle.plot_vehicle(azim=90, elev=0)
     return vehicle
 
 
 if __name__ == "__main__":
     vehicle_setup()
-

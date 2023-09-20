@@ -12,8 +12,10 @@ def run_subprocess(cmd, timeout=5):
     """
     # cmd = "C:/Users/Gregor/Documents/Modellflug/Software/XFOIL/xfoil.exe < input_file.in"
     try:
-        with open(os.devnull, 'w') as devnull:
-            p = subprocess.Popen(cmd, shell=True, start_new_session=True, stdout=devnull)
+        with open(os.devnull, "w") as devnull:
+            p = subprocess.Popen(
+                cmd, shell=True, start_new_session=True, stdout=devnull
+            )
             p.wait(timeout=timeout)
     except subprocess.TimeoutExpired:
         # print(p.pid)
@@ -46,9 +48,9 @@ def find_process_id_by_name(process_name) -> list:
     # Iterate over all the running processes
     for proc in psutil.process_iter():
         try:
-            pinfo = proc.as_dict(attrs=['pid', 'name', 'create_time'])
+            pinfo = proc.as_dict(attrs=["pid", "name", "create_time"])
             # Check if process name contains the given name string.
-            if process_name.lower() in pinfo['name'].lower():
+            if process_name.lower() in pinfo["name"].lower():
                 list_of_process_objects.append(pinfo)
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
             pass
@@ -64,9 +66,11 @@ def kill_subprocesses(list_of_process_ids):
         for elem in list_of_process_ids:
             process_id = elem["pid"]
             process_name = elem["name"]
-            process_creation_time = time.strftime("%Y-%m-%d-%H:%M:%S", time.localtime(elem["create_time"]))
+            process_creation_time = time.strftime(
+                "%Y-%m-%d-%H:%M:%S", time.localtime(elem["create_time"])
+            )
             print((process_id, process_name, process_creation_time))
             os.kill(process_id, signal.SIGTERM)
     else:
         pass
-        #print("No running process found with given text")
+        # print("No running process found with given text")
