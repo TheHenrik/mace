@@ -2,7 +2,7 @@ import re
 from functools import cache
 
 import numpy as np
-
+from pathlib import Path
 
 def tri_area(first: np.ndarray, second: np.ndarray, third: np.ndarray):
     return np.sum(np.linalg.norm(np.cross(second - first, third - first), axis=1)) / 2
@@ -16,7 +16,7 @@ def scale(factors, vecs):
     return (factors * np.repeat(vecs[np.newaxis], len(factors), axis=0).T).T
 
 
-def gen_profile(profil, start_innen, end_innen, start_außen, end_außen):
+def gen_profile(profil_innen, profil_außen, start_innen, end_innen, start_außen, end_außen):
     innen_strecke = end_innen - start_innen
     außen_strecke = end_außen - start_außen
     innen_außen = (start_außen - start_innen) / np.linalg.norm(
@@ -26,20 +26,20 @@ def gen_profile(profil, start_innen, end_innen, start_außen, end_außen):
 
     profil_innen = (
         start_innen
-        + scale(profil[:, 0], innen_strecke)
-        + scale(profil[:, 1], höhen_strecke)
+        + scale(profil_innen[:, 0], innen_strecke)
+        + scale(profil_innen[:, 1], höhen_strecke)
     )
     profil_außen = (
         start_außen
-        + scale(profil[:, 0], außen_strecke)
-        + scale(profil[:, 1], höhen_strecke)
+        + scale(profil_außen[:, 0], außen_strecke)
+        + scale(profil_außen[:, 1], höhen_strecke)
     )
     return profil_innen, profil_außen
 
 
 @cache
 def get_profil(airfoil: str) -> list:
-    file_location = f"C:/Users/Gregor/Documents/GitHub/mace/data/airfoils/{airfoil}.dat"
+    file_location = Path(f"{Path(__file__).parents[3]}/data/airfoils/{airfoil}.dat")
     with open(file_location, "rt") as f:
         raw_data = f.read()
         data = re.findall(r"([01].\d+) +([0\-].\d+)", raw_data)

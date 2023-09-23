@@ -8,6 +8,23 @@ from mace.domain.general_functions import rotate_vector
 rad = np.pi / 180
 
 
+class Spar:
+    pass
+
+
+class WingSegmentBuild:
+    materials: list = []
+    build_type: str = None
+    surface_weight: str
+    density: str
+
+    def __init__(self, typ, surface, *args, density = 0) -> None:
+        self.build_type = typ
+        self.surface_weight = surface
+        self.materials = list(*args)
+        self.density = density
+
+
 class WingSegment:
     """
     Wing Segment Class
@@ -47,12 +64,28 @@ class WingSegment:
         self.c_gain = 1.0
         self.sgn_dup = 1.0
 
+        self.wsb: WingSegmentBuild = None
+
     def get_area(self) -> float:
         """
         Calculate the area of the wing segment
         """
         self.area = (self.inner_chord + self.outer_chord) * self.span / 2
         return self.area
+    
+    def get_mass(self, volume: float, area: float):
+        mass = 0
+        if self.wsb.build_type == "Positv":
+            mass += volume * self.wsb.density * 1.55
+        elif self.wsb.build_type == "Balsa":
+            mass += volume * self.wsb.density * 0.5
+        elif self.wsb.build_type == "Negativ":
+            mass += 0
+        
+        mass += area * self.wsb.surface_weight
+        for material in self.wsb.materials:
+            mass += material * area
+        return mass
 
 
 class Wing:
@@ -65,6 +98,7 @@ class Wing:
         Initialize Wing
         :param name: Name of the wing
         """
+        self.spar = None
         self.tag = None  # Wing name as string
         self.segments = []  # List of wing segments
         self.symmetric = True  # True if wing is symmetric

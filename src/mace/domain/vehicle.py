@@ -19,7 +19,6 @@ from mace.domain.results import (
     HorizontalFlightResults,
 )
 from mace.domain.wing import Wing, WingSegment
-from mace.mass.mass import get_mass_plane
 
 
 class Vehicle:
@@ -249,9 +248,6 @@ class Vehicle:
 
         # Anzeigen des Plots
         plt.show()
-
-    def get_mass(self) -> None:
-        self.mass = get_mass_plane(self)
 
 
 @dataclass()
