@@ -8,20 +8,24 @@ from mace.domain.general_functions import rotate_vector
 rad = np.pi / 180
 
 
+
 class Spar:
-    pass
+    lenght: int = None
+    height: int = None
+
 
 
 class WingSegmentBuild:
-    materials: list = []
+    materials: np.ndarray = None
     build_type: str = None
-    surface_weight: str
-    density: str
+    surface_weight: str = None
+    density: str = None
+    spar: Spar = None
 
     def __init__(self, typ, surface, *args, density = 0) -> None:
         self.build_type = typ
         self.surface_weight = surface
-        self.materials = list(*args)
+        self.materials = np.array(args)/1_000*2.2
         self.density = density
 
 
@@ -76,7 +80,7 @@ class WingSegment:
     def get_mass(self, volume: float, area: float):
         mass = 0
         if self.wsb.build_type == "Positv":
-            mass += volume * self.wsb.density * 1.55
+            mass += volume * self.wsb.density
         elif self.wsb.build_type == "Balsa":
             mass += volume * self.wsb.density * 0.5
         elif self.wsb.build_type == "Negativ":

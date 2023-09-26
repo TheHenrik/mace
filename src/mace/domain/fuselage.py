@@ -17,7 +17,7 @@ class FuselageSegment:
         if self.shape == "elliptical":
             lbda = self.width - self.height / (self.width + self.height)
             circumference = (
-                math.pi
+                np.pi
                 * (self.width + self.height)
                 * (1 + 3 * lbda**2 / (10 + (4 - 3 * lbda**2) ** 0.5))
             )

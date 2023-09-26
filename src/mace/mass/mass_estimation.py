@@ -23,9 +23,12 @@ def estimate_mass_plane(plane: Vehicle):
 
     mass["landing_gear"], weighted_cog["landing_gear"] = \
         plane.landing_gear.mass, plane.landing_gear.center_of_gravity
+    
+    mass["cargo_bay"], weighted_cog["cargo_bay"] = \
+        0.3, np.array([0,0,0])
+    
 
     plane.mass = sum(mass.values())
-    # TODO how does sum nparray work
     plane.center_of_gravity = sum(weighted_cog.values())/plane.mass
     return plane
 
@@ -60,4 +63,23 @@ def estimate_mass_segment(segment: WingSegment):
 
 
 def estimate_mass_fuselage(fuselage: Fuselage):
-    return 1, np.array([0,0,0])
+    lenght = len(fuselage.segments)
+    mass = 0
+    area = 0
+    if not fuselage.segments[0].shape == "rectangular":
+        raise ValueError(f"Shape not implemented {fuselage.segments[0].shape}")
+    for i in range(lenght-1):
+        w1 = fuselage.segments[i].width
+        h1 = fuselage.segments[i].height
+        w2 = fuselage.segments[i+1].width
+        h2 = fuselage.segments[i+1].height
+        area += (w1+h1+w2+h2)*abs(fuselage.segments[i].origin[0]-fuselage.segments[i+1].origin[0])
+
+    mass += area * 60 / 1000
+    # Battery
+    mass += 0.250
+    # Motor
+    mass += 0.175
+    # Regler
+    mass += 0.093
+    return mass, np.array([0,0,0])
