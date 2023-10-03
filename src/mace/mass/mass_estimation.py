@@ -42,7 +42,7 @@ def estimate_mass_wing(wing: Wing):
         cogs.append(tmp_cogs)
     if not wing.spar is None:
         masses.append(wing.spar.mass) 
-    mass = sum(masses)
+    mass = 2 * sum(masses)
     cog = sum(cogs)/mass
     return mass, cog
 

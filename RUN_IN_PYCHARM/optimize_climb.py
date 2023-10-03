@@ -23,6 +23,7 @@ if __name__ == "__main__":
     # Build AVL input files
     geometry_and_mass_files.GeometryFile(Aircraft).build_geometry_file()
     geometry_and_mass_files.MassFile(Aircraft).build_mass_file()
+    
 
     # Run Climb Analysis
     climb_analysis = Climb(Aircraft)
