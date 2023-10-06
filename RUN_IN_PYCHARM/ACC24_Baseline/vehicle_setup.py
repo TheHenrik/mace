@@ -2,11 +2,14 @@ from mace.domain.wing import Wing, WingSegment
 from mace.domain.fuselage import Fuselage, FuselageSegment
 from mace.domain.landing_gear import LandingGear, Wheel
 from mace.domain.vehicle import Vehicle
+from mace.aero.implementations.avl.athenavortexlattice import AVL
 import numpy as np
 from pathlib import Path
 import os
 
-def vehicle_setup(payload = 2., span = 3., aspect_ratio = 15., airfoil="ag40") -> Vehicle:
+
+def vehicle_setup(payload = 2., span = 3., aspect_ratio = 13., airfoil="ag40") -> Vehicle:
+
     vehicle = Vehicle()
     vehicle.payload = payload
     vehicle.mass = 2. * (span/3.)**2
@@ -227,6 +230,9 @@ def vehicle_setup(payload = 2., span = 3., aspect_ratio = 15., airfoil="ag40") -
         vehicle.plot_vehicle(azim=0, elev=90)
         vehicle.plot_vehicle(azim=90, elev=0)
     vehicle.plot_vehicle(azim=230, elev=30)
+
+    vehicle.get_stability_derivatives()
+
     return vehicle
 
 

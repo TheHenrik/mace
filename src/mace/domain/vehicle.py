@@ -4,6 +4,8 @@ from mace.domain.fuselage import Fuselage, FuselageSegment
 from mace.domain.landing_gear import LandingGear, Wheel
 from mace.domain.results import FlightConditions, Climb, ClimbResults, Avl, AvlInputs, AvlOutputs, AeroCoeffs, Cl, \
     Cd, HorizontalFlight, HorizontalFlightResults
+from mace.aero.implementations.avl import geometry_and_mass_files_v2 as geometry_and_mass_files
+from mace.aero.implementations.avl.athenavortexlattice import AVL
 import matplotlib.pyplot as plt
 import numpy as np
 class Vehicle:
@@ -150,6 +152,25 @@ class Vehicle:
 
         # Anzeigen des Plots
         plt.show()
+        
+    def get_stability_derivatives(self):
+        '''
+        Uses AVL to calculate stability derivatives, neutral point and static margin
+        '''
+        mass_file = geometry_and_mass_files.MassFile(self)
+        mass_file.build_mass_file()
+        
+        geometry_file = geometry_and_mass_files.GeometryFile(self)
+        geometry_file.z_sym = 0
+        geometry_file.build_geometry_file()
+
+        avl = AVL(self)
+        CLa, Cma, Cnb, XNP, SM = avl.get_stability_data()
+
+        return CLa, Cma, Cnb, XNP, SM
+    
+    def build(self):
+        pass
 
 @dataclass()
 class Propulsion:

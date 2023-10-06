@@ -7,7 +7,7 @@ import numpy as np
 def vehicle_setup() -> Vehicle:
     vehicle = Vehicle()
     vehicle.mass = 2.7 + 2.4
-    vehicle.center_of_gravity = [0.1, 0.0, 0.0]
+    vehicle.center_of_gravity = [0.130, 0.0, 0.0]
 
     ####################################################################################################################
     # MAIN WING
@@ -233,6 +233,9 @@ def vehicle_setup() -> Vehicle:
     vehicle.plot_vehicle(azim=230, elev=30)
     vehicle.plot_vehicle(azim=0, elev=90)
     #vehicle.plot_vehicle(azim=90, elev=0)
+
+    vehicle.get_stability_derivatives()
+
     return vehicle
 
 

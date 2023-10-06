@@ -82,7 +82,7 @@ class EfficiencyFlight():
 
         def func(x):
             h1 = min(x[0],100)
-            v2 = x[1]
+            v2 = max(x[1], 0)
 
             eq1 = E0 + (T(v1, I) - D(v1))* v1 * t1 - 1/2*m*v1**2 - m*g*h1
             eq2 = 1/2*m*v1**2 + m*g*h1 - D(v2)*v2*(tges-t1) - m*g*h2 - 1/2*m*v2**2

@@ -1,5 +1,5 @@
 import os
-from mace.domain.vehicle import Vehicle
+# from mace.domain.vehicle import Vehicle
 from mace.domain.params import Units, Constants
 from pathlib import Path
 
@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 class GeometryFile:
-    def __init__(self, plane: Vehicle) -> None:
+    def __init__(self, plane) -> None:
         self.plane = plane
         self.z_sym = 0
 
@@ -303,7 +303,7 @@ class MassFile:
     shifted by delta(x) = 0.2.  Data lines 3-5 revert back to the defaults.
     """
 
-    def __init__(self, plane: Vehicle) -> None:
+    def __init__(self, plane) -> None:
         self.plane = plane
 
     def build_mass_of_components(self, mass_file, n_o_comp):
