@@ -75,7 +75,7 @@ def vehicle_setup() -> Vehicle:
     segment.inner_chord = 1.0
     segment.outer_chord = 0.6
     segment.flap_chord_ratio = 0.4
-    segment.wsb = WingSegmentBuild("Positiv", 0.2, 40, 30, 0)
+    segment.wsb = WingSegmentBuild("Positiv", 0.2, 40, 30, density= 24)
     horizontal_stabilizer.add_segment(segment)
 
     # Resize Wing
@@ -103,7 +103,7 @@ def vehicle_setup() -> Vehicle:
     segment.inner_chord = 1.0
     segment.outer_chord = 0.5
     segment.flap_chord_ratio = 0.4
-    segment.wsb = WingSegmentBuild("Positiv", 0.2, 40, 30, 0)
+    segment.wsb = WingSegmentBuild("Positiv", 0.2, 40, 30, density=24)
     vertical_stabilizer.add_segment(segment)
 
     # Resize Wing
@@ -199,7 +199,7 @@ def vehicle_setup() -> Vehicle:
     # PLOT
 
     # vehicle.plot_vehicle(azim=180, elev=0)
-    vehicle.plot_vehicle(azim=230, elev=30)
+    # vehicle.plot_vehicle(azim=230, elev=30)
     # vehicle.plot_vehicle(azim=0, elev=90)
     # vehicle.plot_vehicle(azim=90, elev=0)
     return vehicle

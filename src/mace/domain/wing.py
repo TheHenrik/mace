@@ -79,7 +79,7 @@ class WingSegment:
     
     def get_mass(self, volume: float, area: float):
         mass = 0
-        if self.wsb.build_type == "Positv":
+        if self.wsb.build_type == "Positiv":
             mass += volume * self.wsb.density
         elif self.wsb.build_type == "Balsa":
             mass += volume * self.wsb.density * 0.5

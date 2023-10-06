@@ -24,8 +24,9 @@ def estimate_mass_plane(plane: Vehicle):
     mass["landing_gear"], weighted_cog["landing_gear"] = \
         plane.landing_gear.mass, plane.landing_gear.center_of_gravity
     
-    mass["cargo_bay"], weighted_cog["cargo_bay"] = \
-        0.3, np.array([0,0,0])
+    # TODO Add cargo bay
+    # mass["cargo_bay"], weighted_cog["cargo_bay"] = \
+    #     0.3, np.array([0,0,0])
     
 
     plane.mass = sum(mass.values())
@@ -66,6 +67,7 @@ def estimate_mass_fuselage(fuselage: Fuselage):
     lenght = len(fuselage.segments)
     mass = 0
     area = 0
+    # TODO Implement other shapes
     if not fuselage.segments[0].shape == "rectangular":
         raise ValueError(f"Shape not implemented {fuselage.segments[0].shape}")
     for i in range(lenght-1):
@@ -75,7 +77,8 @@ def estimate_mass_fuselage(fuselage: Fuselage):
         h2 = fuselage.segments[i+1].height
         area += (w1+h1+w2+h2)*abs(fuselage.segments[i].origin[0]-fuselage.segments[i+1].origin[0])
 
-    mass += area * 60 / 1000
+    # TODO MOve to class
+    mass += area * 80 * 2.2 / 1000
     # Battery
     mass += 0.250
     # Motor

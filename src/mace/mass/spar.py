@@ -31,12 +31,13 @@ def get_rovings(segment: WingSegment, total_mass: float, plane_half_wing_span):
 
 
 def calc_load(plane: Plane) -> Plane:
+    # TODO Verbinder
     main_wing: Wing = plane.wings["main_wing"]
     half_wing_span = main_wing.segments[-1].nose_outer[1]
     mass = 0
     for segment in main_wing.segments:
         rovings_count = get_rovings(segment, plane.mass, half_wing_span)
-        mass += segment.span * rovings_count * 0.01
+        mass += segment.span * rovings_count * 0.05
     
     plane.mass += 2 * mass
     return plane
