@@ -141,9 +141,37 @@ class Wing:
 
     def get_neutral_point(self) -> float:
         """
-        Calculate the neutral point of the wing
+        Calculate the neutral point of the wing. Method from SUAVE
         """
+        Cxys = []
+        As = []
+        for segment in self.segments:
+            a = segment.outer_chord
+            b = segment.inner_chord
+            c = segment.outer_x_offset - segment.inner_x_offset
+            dx = c
+            dy = segment.span
+            dz = np.tan(segment.dihedral) * dy
+            taper = segment.outer_chord / segment.inner_chord
+            dihedral = segment.dihedral
+
+            cx = (2 * a * c + a ** 2 + c * b + a * b + b ** 2) / (3 * (a + b))
+            cy = segment.span / 3. * ((1. + 2. * taper) / (1. + taper))
+            cz = cy * np.tan(dihedral)
+
+            Cxys.append(np.array([cx+dx,cy+dy,cz+dz]))
+            As.append(segment.area)
+
+        aerodynamic_center = (np.dot(np.transpose(Cxys), As) / (self.reference_area / (1 + self.symmetric)))
+
+        single_side_aerodynamic_center = (np.array(aerodynamic_center) * 1.)
+        single_side_aerodynamic_center[0] = single_side_aerodynamic_center[0] - self.mean_aerodynamic_chord * .25
+        if self.symmetric == True:
+            aerodynamic_center[1] = 0
+        aerodynamic_center[0] = single_side_aerodynamic_center[0]
+        self.neutral_point = aerodynamic_center
         return self.neutral_point
+    
     def resize_to_given_span(self, new_span):
         """
         :param new_span: The new span of the wing.
@@ -312,8 +340,8 @@ class Wing:
         self.reference_area = self.get_area()
         self.span = self.get_span()
         self.aspect_ratio = self.get_aspect_ratio()
-        self.neutral_point = self.get_neutral_point()
         self.mean_aerodynamic_chord = self.get_mean_aerodynamic_chord()
+        self.neutral_point = self.get_neutral_point()
 
 
     def plot_wing_geometry(self):

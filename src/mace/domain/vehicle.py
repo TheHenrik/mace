@@ -168,8 +168,24 @@ class Vehicle:
         CLa, Cma, Cnb, XNP, SM = avl.get_stability_data()
 
         return CLa, Cma, Cnb, XNP, SM
-    
+
     def build(self):
+        '''
+        Variables:
+            1. Horizontal tailplane volume coefficient
+            2. Vertical tailplane volume coefficient
+            3. Fuselage nose length -> CG
+            4. CG -> Landing gear position
+            5. CG -> Cargo Bay position
+        Iterate to fullfill all of the following requirements:
+            1. CG == 40%MAC -> CG
+            2. Static margin == 0.08 (or Cma == 0.7) -> HT Volume Coeff
+            3. Cnb == 0.045 -> VT Volume Coeff
+            4. CG -> Fuselage nose length
+            5. CG -> Landing gear position
+            6. CG -> Cargo Bay position
+        '''
+
         pass
 
 @dataclass()

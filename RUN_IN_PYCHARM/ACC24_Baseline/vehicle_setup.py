@@ -8,14 +8,15 @@ from pathlib import Path
 import os
 
 
-def vehicle_setup(payload = 2., span = 3., aspect_ratio = 13., airfoil="ag40") -> Vehicle:
-
+def vehicle_setup(payload=3., span=3., aspect_ratio=15., airfoil="ag40") -> Vehicle:
     vehicle = Vehicle()
     vehicle.payload = payload
     vehicle.mass = 2. * (span/3.)**2
     print('M Empty: %.2f kg' % vehicle.mass)
     vehicle.mass += vehicle.payload
-    vehicle.center_of_gravity = [0.1, 0.0, 0.0]
+
+    vehicle.center_of_gravity = [0.112, 0.0, 0.0]
+
 
     ####################################################################################################################
     # MAIN WING
@@ -102,7 +103,7 @@ def vehicle_setup(payload = 2., span = 3., aspect_ratio = 13., airfoil="ag40") -
 
     # Resize Wing
     l_ht = horizontal_stabilizer.origin[0] - main_wing.origin[0]
-    v_ht = 0.5 # 0.583*2 * 1.414
+    v_ht = 0.75 # 0.583*2 * 1.414
     horizontal_stabilizer.aspect_ratio = 7.
     horizontal_stabilizer.get_stabilizer_area_from_volume_coefficient(v_ht, l_ht, S_ref, MAC)
     horizontal_stabilizer.build(resize_x_offset_from_hinge_angle=True)
@@ -219,10 +220,13 @@ def vehicle_setup(payload = 2., span = 3., aspect_ratio = 13., airfoil="ag40") -
 
     ####################################################################################################################
     vehicle.get_reference_values()
+    vehicle.get_stability_derivatives()
 
     for wing in vehicle.wings.values():
         S = wing.reference_area
+        ac = wing.neutral_point
         print("%s %.1f sqdm" % (wing.tag, S * 100))
+        print(ac)
     
     # PLOT
     if __name__ == "__main__":
@@ -230,9 +234,7 @@ def vehicle_setup(payload = 2., span = 3., aspect_ratio = 13., airfoil="ag40") -
         vehicle.plot_vehicle(azim=0, elev=90)
         vehicle.plot_vehicle(azim=90, elev=0)
     vehicle.plot_vehicle(azim=230, elev=30)
-
-    vehicle.get_stability_derivatives()
-
+    
     return vehicle
 
 
