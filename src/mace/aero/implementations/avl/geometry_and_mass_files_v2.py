@@ -1,4 +1,5 @@
 import os
+
 # from mace.domain.vehicle import Vehicle
 from mace.domain.params import Units, Constants
 from pathlib import Path
@@ -151,6 +152,7 @@ class GeometryFile:
             GeometryFile.build_geo_surface(self, geometry_file)
 
         # self.plane.avl.inputs.avl_file = file_path
+
 
 # ========== Mass File ==========
 

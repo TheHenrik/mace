@@ -21,12 +21,12 @@ class HorizontalFlight:
         self.g = params.Constants.g
         self.rho = params.Constants.rho
         self.cl_start = 0.01
-        self.cl_end = 1.
+        self.cl_end = 1.0
         self.cl_step = 0.05
-        
-        self.flap_angle = 0.
+
+        self.flap_angle = 0.0
         self.optimize_flap_angle = True
-        
+
         self.Aero = Aerodynamics(self.plane)
         self.Aero.XFOIL.print_re_warnings = False
 
@@ -42,7 +42,7 @@ class HorizontalFlight:
         return V
 
     def lift_coefficient(self, V):
-        CL = (self.mass * self.g)/(0.5 * self.rho * V**2 * self.s_ref)
+        CL = (self.mass * self.g) / (0.5 * self.rho * V**2 * self.s_ref)
         return CL
 
     def fv_diagramm(self):
@@ -61,7 +61,7 @@ class HorizontalFlight:
             V = self.flight_velocity(CL)
 
             self.Aero.evaluate(CL=CL, V=V, FLAP=self.flap_angle)
-            
+
             # Calculate total drag force
             D = self.get_drag_force(V)
 
@@ -105,12 +105,13 @@ class HorizontalFlight:
 
     def get_maximum_velocity_scipy(self):
         Aero = Aerodynamics(self.plane)
+
         def func(V):
             CL = self.lift_coefficient(V)
             if self.optimize_flap_angle is True:
                 c_length = self.plane.reference_values.c_ref
                 re = functions.get_reynolds_number(V, c_length)
-                airfoil = Airfoil(self.plane.wings['main_wing'].airfoil)
+                airfoil = Airfoil(self.plane.wings["main_wing"].airfoil)
                 self.flap_angle = airfoil.check_for_best_flap_setting(re, CL)
             self.Aero.evaluate(CL=CL, V=V, FLAP=self.flap_angle)
             D = self.get_drag_force(V)
@@ -118,11 +119,12 @@ class HorizontalFlight:
             return D - T
 
         from scipy.optimize import root_scalar
+
         v_min = self.flight_velocity(self.cl_start)
         v_max = self.flight_velocity(self.cl_end)
-        res = root_scalar(func, bracket=(v_min, v_max), method='brentq', xtol=0.1)
+        res = root_scalar(func, bracket=(v_min, v_max), method="brentq", xtol=0.1)
         return res.root
-    
+
     def plot_fv_diagramm(self):
         """
         Plots the thrust-velocity correlation.

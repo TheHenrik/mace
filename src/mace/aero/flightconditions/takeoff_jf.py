@@ -20,13 +20,13 @@ class TakeOff:
         self.aero.XFOIL.print_re_warnings = False
         self.get_force = GeneralFunctions(self.plane).coefficient_to_lift_or_drag
         self.get_thrust = GeneralFunctions(self.plane).current_thrust
-        self.flap_angle = 0.
+        self.flap_angle = 0.0
         self.t_step = 0.4
-        self.cl_safety_factor = 1.
-        self.v_wind = 0.
-        self.v_start_counter = 0.
+        self.cl_safety_factor = 1.0
+        self.v_wind = 0.0
+        self.v_start_counter = 0.0
         self.manual_cl_max = 0
-        
+
     def get_friction(self, lift):
         return (self.plane.mass * params.Constants.g - lift) * self.mu
 
@@ -46,14 +46,14 @@ class TakeOff:
         WingAirfoil.print_re_warnings = False
         MAC = self.plane.wings["main_wing"].mean_aerodynamic_chord
 
-        T = 0.
-        S = 0.
-        V = 0.
-        CL_MAX = 0.
-        REQ_CL = 1.
+        T = 0.0
+        S = 0.0
+        V = 0.0
+        CL_MAX = 0.0
+        REQ_CL = 1.0
         while CL_MAX < self.cl_safety_factor * REQ_CL and T < 20:
 
-            self.aero.evaluate(CL=None, V=V, FLAP=self.flap_angle, ALPHA=0.)
+            self.aero.evaluate(CL=None, V=V, FLAP=self.flap_angle, ALPHA=0.0)
             CL = self.plane.aero_coeffs.lift_coeff.cl_tot
             CD = self.plane.aero_coeffs.drag_coeff.cd_tot
 
@@ -65,12 +65,12 @@ class TakeOff:
             ACCELL = (THRUST - DRAG - FRICTION) / MASS
             if V >= V_start_counter:
                 T += DELTA_T
-            S += 1/2 * ACCELL * DELTA_T ** 2 + V * DELTA_T
+            S += 1 / 2 * ACCELL * DELTA_T**2 + V * DELTA_T
             V += ACCELL * DELTA_T
             V_exakt = ACCELL * T
-            S_exakt = 1 / 2 * ACCELL * T ** 2
-            
-            REQ_CL = (MASS * G) / (1/2 * RHO * (V+V_wind) ** 2 * S_REF)
+            S_exakt = 1 / 2 * ACCELL * T**2
+
+            REQ_CL = (MASS * G) / (1 / 2 * RHO * (V + V_wind) ** 2 * S_REF)
             if self.manual_cl_max == 0:
                 RE_AT_MAC = get_reynolds_number((V + V_wind), MAC)
                 CL_MAX = WingAirfoil.get_cl_max(RE_AT_MAC)

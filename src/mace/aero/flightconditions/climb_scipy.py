@@ -10,6 +10,7 @@ import mace.aero.generalfunctions as functions
 from scipy.optimize import minimize_scalar, fsolve
 import time
 
+
 class Climb:
     def __init__(self, plane: Vehicle):
         self.plane = plane
@@ -20,8 +21,8 @@ class Climb:
 
         self.cl_start = 0.01
         self.cl_end = 0.5
-        
-        self.flap_angle = 0.
+
+        self.flap_angle = 0.0
         self.optimize_flap_angle = True
 
     def evaluate(self, CL, return_v=False):
@@ -36,13 +37,13 @@ class Climb:
         if self.optimize_flap_angle:
             c_length = self.plane.reference_values.c_ref
             re = functions.get_reynolds_number(V0, c_length)
-            airfoil = Airfoil(self.plane.wings['main_wing'].airfoil)
+            airfoil = Airfoil(self.plane.wings["main_wing"].airfoil)
             self.flap_angle = airfoil.check_for_best_flap_setting(re, CL)
 
         def func(x):
             v = x[0]
             alpha = x[1]
-            q = self.rho / 2 * v ** 2
+            q = self.rho / 2 * v**2
             Aero.evaluate(V=v, CL=CL, FLAP=self.flap_angle)
 
             CD = self.plane.aero_coeffs.drag_coeff.cd_tot
@@ -58,8 +59,12 @@ class Climb:
 
     def get_v_v_max(self):
         # V_v maximal
-        res = minimize_scalar(self.evaluate, bounds=(self.cl_start, self.cl_end), method='bounded',
-                              options={'xatol': 0.01})
+        res = minimize_scalar(
+            self.evaluate,
+            bounds=(self.cl_start, self.cl_end),
+            method="bounded",
+            options={"xatol": 0.01},
+        )
         v = self.evaluate(res.x, return_v=True)
         return -res.fun, v
 

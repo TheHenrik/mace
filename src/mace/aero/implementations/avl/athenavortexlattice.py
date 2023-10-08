@@ -4,6 +4,7 @@ from pathlib import Path
 import numpy as np
 
 from mace.aero.implementations import runsubprocess as runsub
+
 # from mace.domain.vehicle import Vehicle
 from mace.domain.parser import PlaneParser
 from mace.aero.implementations.avl.geometry_and_mass_files import GeometryFile, MassFile
@@ -24,9 +25,13 @@ class AVL:
         )
         self.input_file_name = os.path.join(tool_path, "temporary/input_file_avl.in")
         self.geometry_file = os.path.join(tool_path, "temporary/geometry_file.avl")
-        self.stability_file_name = os.path.join(tool_path, "temporary/stability_file.avl")
+        self.stability_file_name = os.path.join(
+            tool_path, "temporary/stability_file.avl"
+        )
         self.mass_file = os.path.join(tool_path, "temporary/mass_file.mass")
-        self.stability_input_file_name = os.path.join(tool_path, "temporary/stability_input_file_avl.in")
+        self.stability_input_file_name = os.path.join(
+            tool_path, "temporary/stability_input_file_avl.in"
+        )
 
     def run_avl(
         self,
@@ -86,13 +91,13 @@ class AVL:
                 f"X\n"
             )  # execute runcase, XX executes all runcases but uses last runcase
             if maschine_readable_file:
-                input_file.write(f'MRF\n')  # maschine readable file
-            input_file.write(f'FT\n')  # write total forces
-            input_file.write(f'{self.total_forces_file_name}\n')
-            input_file.write(f'FS\n')  # write strip forces
-            input_file.write(f'{self.strip_forces_file_name}\n')
-            #input_file.write(f'ST\n')  # write strip forces
-            #input_file.write(f'{self.stability_file_name}\n')
+                input_file.write(f"MRF\n")  # maschine readable file
+            input_file.write(f"FT\n")  # write total forces
+            input_file.write(f"{self.total_forces_file_name}\n")
+            input_file.write(f"FS\n")  # write strip forces
+            input_file.write(f"{self.strip_forces_file_name}\n")
+            # input_file.write(f'ST\n')  # write strip forces
+            # input_file.write(f'{self.stability_file_name}\n')
             input_file.write("\n")
             input_file.write("QUIT\n")
 
@@ -258,47 +263,57 @@ class AVL:
             }
             self.plane.avl.outputs.first_and_last_strips[i + 1] = first_and_last_strip
             self.plane.avl.outputs.surface_dictionary[i + 1] = surface_dictionary_data
-            
-    def get_stability_data(self, design_lift_coefficient=0.6, design_flap_angle=0., machine_readable_file=True):
+
+    def get_stability_data(
+        self,
+        design_lift_coefficient=0.6,
+        design_flap_angle=0.0,
+        machine_readable_file=True,
+    ):
         if os.path.exists(self.stability_input_file_name):
             os.remove(self.stability_input_file_name)
         if os.path.exists(self.stability_file_name):
             os.remove(self.stability_file_name)
-            
-        with open(self.stability_input_file_name, 'w') as input_file:
-            input_file.write(f'LOAD {self.geometry_file}\n')
-            input_file.write(f'MASS {self.mass_file}\n')
-            input_file.write(f'OPER\n')
-            input_file.write(f'A C {design_lift_coefficient}\n')
+
+        with open(self.stability_input_file_name, "w") as input_file:
+            input_file.write(f"LOAD {self.geometry_file}\n")
+            input_file.write(f"MASS {self.mass_file}\n")
+            input_file.write(f"OPER\n")
+            input_file.write(f"A C {design_lift_coefficient}\n")
             num_control_surfaces = 0
             if design_flap_angle is not None:  # set flap angle
                 for wing in self.plane.wings.values():
                     for segment in wing.segments:
                         if segment.control:
                             num_control_surfaces += 1
-                            input_file.write(f'D{num_control_surfaces} D{num_control_surfaces} {design_flap_angle}\n')
+                            input_file.write(
+                                f"D{num_control_surfaces} D{num_control_surfaces} {design_flap_angle}\n"
+                            )
             if num_control_surfaces != 0:
                 num_control_surfaces += 1
-                input_file.write(f'D{num_control_surfaces} D{num_control_surfaces} {design_flap_angle}\n')
-            input_file.write(f'X\n')  # execute runcase, XX executes all runcases but uses last runcase
+                input_file.write(
+                    f"D{num_control_surfaces} D{num_control_surfaces} {design_flap_angle}\n"
+                )
+            input_file.write(
+                f"X\n"
+            )  # execute runcase, XX executes all runcases but uses last runcase
             if machine_readable_file:
-                input_file.write(f'MRF\n')  # maschine readable file
-            input_file.write(f'ST\n')
-            input_file.write(f'{self.stability_file_name}\n')
+                input_file.write(f"MRF\n")  # maschine readable file
+            input_file.write(f"ST\n")
+            input_file.write(f"{self.stability_file_name}\n")
             input_file.write("\n")
             input_file.write("QUIT\n")
 
         # ---Run AVL---
-        cmd = self.avl_path + " <" + \
-              self.stability_input_file_name  # external command to run
-        runsub.run_subprocess(cmd,timeout=15)
+        cmd = (
+            self.avl_path + " <" + self.stability_input_file_name
+        )  # external command to run
+        runsub.run_subprocess(cmd, timeout=15)
         list_of_process_ids = runsub.find_process_id_by_name("avl")
         runsub.kill_subprocesses(list_of_process_ids)
-            
-            
+
         with open(self.stability_file_name) as file:
             lines = file.readlines()
-
 
             CLa: float = 0
             Cma: float = 0
@@ -328,23 +343,24 @@ class AVL:
                     XNP = float(values[0])
 
             SM = -Cma / CLa
-            l_mu = self.plane.wings['main_wing'].mean_aerodynamic_chord
-            ac = self.plane.wings['main_wing'].neutral_point[0]
-            XCG = XNP - SM * self.plane.wings['main_wing'].mean_aerodynamic_chord
+            l_mu = self.plane.wings["main_wing"].mean_aerodynamic_chord
+            ac = self.plane.wings["main_wing"].neutral_point[0]
+            XCG = XNP - SM * self.plane.wings["main_wing"].mean_aerodynamic_chord
             percentMAC = (XCG - (ac - 0.25 * l_mu)) / l_mu
 
-            print('\n')
+            print("\n")
             print("CLa: %.3f" % CLa)
             print("Cma: %.3f" % Cma)
             print("Cnb: %.3f" % Cnb)
             print("XNP: %.3f m" % XNP)
-            print("SM: %.1f %%" % (100*SM))
+            print("SM: %.1f %%" % (100 * SM))
             print("l_mu: %.3f m" % l_mu)
             print("XCG: %.3f m" % XCG)
-            print("percentMAC: %.1f %%" % (100*percentMAC))
-            print('\n')
-            
+            print("percentMAC: %.1f %%" % (100 * percentMAC))
+            print("\n")
+
             return CLa, Cma, Cnb, XNP, SM
+
 
 def read_avl_output():
     """
@@ -482,10 +498,24 @@ def read_avl_output():
             strip_forces = np.vstack((strip_forces, arr))
 
     file.close()
-    result = (clff, cdff, cyff, oswaldfactor, s_ref, c_ref, b_ref, x_ref, y_ref, z_ref,
-              number_of_strips, number_of_surfaces, number_of_vortices, surface_data, strip_forces)
+    result = (
+        clff,
+        cdff,
+        cyff,
+        oswaldfactor,
+        s_ref,
+        c_ref,
+        b_ref,
+        x_ref,
+        y_ref,
+        z_ref,
+        number_of_strips,
+        number_of_surfaces,
+        number_of_vortices,
+        surface_data,
+        strip_forces,
+    )
     return result
-
 
 
 # ---Test---
@@ -499,4 +529,3 @@ if __name__ == "__main__":
 
     AVL(plane).read_avl_output()
     print(plane.avl.outputs.surface_dictionary)
-

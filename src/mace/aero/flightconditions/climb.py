@@ -12,6 +12,7 @@ from mace.aero.generalfunctions import GeneralFunctions
 import mace.aero.generalfunctions as functions
 import time
 
+
 class Climb:
     def __init__(self, plane: Vehicle):
         self.plane = plane
@@ -25,8 +26,8 @@ class Climb:
         self.cl_step = 0.05
         self.v_tolerance = 0.1
         self.it_max = 20
-        
-        self.flap_angle = 0.
+
+        self.flap_angle = 0.0
         self.optimize_flap_angle = True
 
     def v_climb(self, current_thrust, cl, cd) -> (float, float):
@@ -109,7 +110,6 @@ class Climb:
 
         for i, CL in enumerate(CL_list):
 
-
             # v_iteration_start aus Horizontalflug bestimmen
             if i == 0:
                 V = ((2 * self.mass * self.g) / (CL * self.rho * self.s_ref)) ** 0.5
@@ -121,17 +121,15 @@ class Climb:
                 if self.optimize_flap_angle:
                     c_length = self.plane.reference_values.c_ref
                     re = functions.get_reynolds_number(V, c_length)
-                    airfoil = Airfoil(self.plane.wings['main_wing'].airfoil)
+                    airfoil = Airfoil(self.plane.wings["main_wing"].airfoil)
                     self.flap_angle = airfoil.check_for_best_flap_setting(re, CL)
 
                 Aero.evaluate(V=V, CL=CL, FLAP=self.flap_angle)
                 CD = self.plane.aero_coeffs.drag_coeff.cd_tot
 
-
                 T = thrust(V)
 
                 V2 = self.v_climb(T, CL, CD)
-
 
                 it += 1
                 not_in_tolerance = abs(V - V2) >= v_tolerance

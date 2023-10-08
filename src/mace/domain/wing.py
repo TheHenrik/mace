@@ -21,10 +21,10 @@ class WingSegmentBuild:
     density: str = None
     spar: Spar = None
 
-    def __init__(self, typ, surface, *args, density = 0) -> None:
+    def __init__(self, typ, surface, *args, density=0) -> None:
         self.build_type = typ
         self.surface_weight = surface
-        self.materials = np.array(args)/1_000*2.2
+        self.materials = np.array(args) / 1_000 * 2.2
         self.density = density
 
 
@@ -75,7 +75,7 @@ class WingSegment:
         """
         self.area = (self.inner_chord + self.outer_chord) * self.span / 2
         return self.area
-    
+
     def get_mass(self, volume: float, area: float):
         mass = 0
         if self.wsb.build_type == "Positiv":
@@ -84,7 +84,7 @@ class WingSegment:
             mass += volume * self.wsb.density * 0.5
         elif self.wsb.build_type == "Negativ":
             mass += 0
-        
+
         mass += area * self.wsb.surface_weight
         for material in self.wsb.materials:
             mass += material * area
@@ -186,7 +186,15 @@ class Wing:
         mac = 0
         for segment in self.segments:
             lbda = segment.outer_chord / segment.inner_chord
-            mac += 2 * segment.get_area() * 2/3 * segment.inner_chord * (1 + lbda + lbda ** 2) / (1 + lbda) # Equation from Strohmayer FZE1
+            mac += (
+                2
+                * segment.get_area()
+                * 2
+                / 3
+                * segment.inner_chord
+                * (1 + lbda + lbda**2)
+                / (1 + lbda)
+            )  # Equation from Strohmayer FZE1
             # mac += segment.get_area() * (1 + self.symmetric) * (segment.inner_chord + segment.outer_chord) / 2
         mac /= self.get_area()
         return mac
@@ -207,17 +215,21 @@ class Wing:
             taper = segment.outer_chord / segment.inner_chord
             dihedral = segment.dihedral
 
-            cx = (2 * a * c + a ** 2 + c * b + a * b + b ** 2) / (3 * (a + b))
-            cy = segment.span / 3. * ((1. + 2. * taper) / (1. + taper))
+            cx = (2 * a * c + a**2 + c * b + a * b + b**2) / (3 * (a + b))
+            cy = segment.span / 3.0 * ((1.0 + 2.0 * taper) / (1.0 + taper))
             cz = cy * np.tan(dihedral)
 
-            Cxys.append(np.array([cx+dx,cy+dy,cz+dz]))
+            Cxys.append(np.array([cx + dx, cy + dy, cz + dz]))
             As.append(segment.area)
 
-        aerodynamic_center = (np.dot(np.transpose(Cxys), As) / (self.reference_area / (1 + self.symmetric)))
+        aerodynamic_center = np.dot(np.transpose(Cxys), As) / (
+            self.reference_area / (1 + self.symmetric)
+        )
 
-        single_side_aerodynamic_center = (np.array(aerodynamic_center) * 1.)
-        single_side_aerodynamic_center[0] = single_side_aerodynamic_center[0] - self.mean_aerodynamic_chord * .25
+        single_side_aerodynamic_center = np.array(aerodynamic_center) * 1.0
+        single_side_aerodynamic_center[0] = (
+            single_side_aerodynamic_center[0] - self.mean_aerodynamic_chord * 0.25
+        )
         if self.symmetric == True:
             aerodynamic_center[1] = 0
         aerodynamic_center[0] = single_side_aerodynamic_center[0]

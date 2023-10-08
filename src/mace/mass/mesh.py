@@ -18,7 +18,9 @@ def scale(factors, vecs):
     return (factors * np.repeat(vecs[np.newaxis], len(factors), axis=0).T).T
 
 
-def gen_profile(profil_innen, profil_außen, start_innen, end_innen, start_außen, end_außen):
+def gen_profile(
+    profil_innen, profil_außen, start_innen, end_innen, start_außen, end_außen
+):
     innen_strecke = end_innen - start_innen
     außen_strecke = end_außen - start_außen
     innen_außen = (start_außen - start_innen) / np.linalg.norm(
@@ -46,6 +48,7 @@ def get_profil(airfoil: str) -> np.ndarray:
         data = re.findall(r"([01]\.\d+) +([0\-]{1,2}\.\d+)", f.read())
     profil = [list(map(float, point)) for point in data]
     return np.asarray(profil)
+
 
 @cache
 def get_profil_thickness(airfoil: str) -> float:
