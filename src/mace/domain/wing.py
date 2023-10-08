@@ -127,10 +127,11 @@ class Wing:
         self.n_chordwise: int = 10
         self.c_space: int = 1  # = cos
         self.n_spanwise: int = 20
-        self.s_space: int = (
-            -2
-        )  # = -sin, good for straight, elliptical or slightly tapered wings, in other cases cos (1)
-
+        self.s_space: int = -2  # = -sin, good for straight, elliptical or slightly tapered wings, in other cases cos (1)
+        
+        # Mass estimation
+        self.number_of_parts = 1
+        
     def add_segment(self, segment: WingSegment) -> None:
         """
         Add a segment to the wing

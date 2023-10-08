@@ -1,6 +1,6 @@
 from mace.domain.wing import Wing, WingSegment
 from mace.domain.fuselage import Fuselage, FuselageSegment
-from mace.domain.landing_gear import LandingGear, Wheel
+from mace.domain.landing_gear import LandingGear, Wheel, Strut
 from mace.domain.vehicle import Vehicle
 from mace.aero.implementations.avl.athenavortexlattice import AVL
 import numpy as np
@@ -102,11 +102,12 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag40") -> V
 
     # Resize Wing
     l_ht = horizontal_stabilizer.origin[0] - main_wing.origin[0]
+
     v_ht = 0.75  # 0.583*2 * 1.414
     horizontal_stabilizer.aspect_ratio = 7.0
     horizontal_stabilizer.get_stabilizer_area_from_volume_coefficient(
-        v_ht, l_ht, S_ref, MAC
-    )
+        v_ht, l_ht, S_ref, MAC)
+
     horizontal_stabilizer.build(resize_x_offset_from_hinge_angle=True)
 
     vehicle.add_wing("horizontal_stabilizer", horizontal_stabilizer)
@@ -201,7 +202,6 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag40") -> V
 
     wheel1 = Wheel()
     wheel1.diameter = 0.1
-    wheel1.mass = 0.05
     wheel1.drag_correction = 1.5
     wheel1.origin = np.array(
         [x_minus_offset - 0.1, 0.0, -(Height - wheel1.diameter / 2.0)]
@@ -210,7 +210,6 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag40") -> V
 
     wheel2 = Wheel()
     wheel2.diameter = 0.16
-    wheel2.mass = 0.05
     wheel2.drag_correction = 1.5
     wheel2.origin = np.array(
         [
@@ -223,7 +222,6 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag40") -> V
 
     wheel3 = Wheel()
     wheel3.diameter = wheel2.diameter
-    wheel3.mass = wheel2.mass
     wheel3.drag_correction = 1.5
     wheel3.origin = np.array(
         [vehicle.center_of_gravity[0] + 0.1, -wheel2.origin[1], wheel2.origin[2]]
@@ -231,16 +229,20 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag40") -> V
     wheel3.origin[1] = -wheel2.origin[1]
     landing_gear.add_wheel(wheel3)
 
-    landing_gear.finalize()
+    strut = Strut()
+    strut.mass = 0.08
+    strut.origin = np.array([vehicle.center_of_gravity[0] + 0.1, 0, wheel2.origin[2]])
+    landing_gear.add_strut(strut)
 
-    landing_gear.effective_drag_length = 0.0
-    landing_gear.length_specific_cd = 0.0033
+    landing_gear.finalize()
 
     vehicle.landing_gear = landing_gear
 
     ####################################################################################################################
+    vehicle.build()
     vehicle.get_reference_values()
     vehicle.get_stability_derivatives()
+    vehicle.transport_box_dimensions()
 
     for wing in vehicle.wings.values():
         S = wing.reference_area
@@ -256,7 +258,6 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag40") -> V
     vehicle.plot_vehicle(azim=230, elev=30)
 
     return vehicle
-
 
 if __name__ == "__main__":
     vehicle_setup()
