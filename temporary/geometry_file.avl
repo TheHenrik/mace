@@ -99,19 +99,19 @@ SECTION
 1.05  0.0  0.0  0.13768  0.020-2
 
 AFIL  0.0  1.0
-D:\Dokumente\Programming\Python\mace\data/airfoils/ht14.dat
+/Users/jannik/Documents/GitHub/mace/data/airfoils/ht14.dat
 
 SECTION
 #Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
 1.05727  0.15246  0.12793  0.12557  0.020-2
 
 AFIL  0.0  1.0
-D:\Dokumente\Programming\Python\mace\data/airfoils/ht14.dat
+/Users/jannik/Documents/GitHub/mace/data/airfoils/ht14.dat
 
 SECTION
 #Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
 1.09296  0.30492  0.25585  0.06609  0.0
 
 AFIL  0.0  1.0
-D:\Dokumente\Programming\Python\mace\data/airfoils/ht14.dat
+/Users/jannik/Documents/GitHub/mace/data/airfoils/ht14.dat
 
