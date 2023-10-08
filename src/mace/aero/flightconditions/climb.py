@@ -6,7 +6,11 @@ from mace.aero.generalfunctions import GeneralFunctions
 from mace.aero.implementations.aero import Aerodynamics
 from mace.domain import params
 from mace.domain.vehicle import Vehicle
-
+from mace.aero.implementations.aero import Aerodynamics
+from mace.aero.implementations.airfoil_analyses import Airfoil
+from mace.aero.generalfunctions import GeneralFunctions
+import mace.aero.generalfunctions as functions
+import time
 
 class Climb:
     def __init__(self, plane: Vehicle):
@@ -21,8 +25,9 @@ class Climb:
         self.cl_step = 0.05
         self.v_tolerance = 0.1
         self.it_max = 20
-
-        self.flap_angle = 0.0
+        
+        self.flap_angle = 0.
+        self.optimize_flap_angle = True
 
     def v_climb(self, current_thrust, cl, cd) -> (float, float):
         """
@@ -104,6 +109,7 @@ class Climb:
 
         for i, CL in enumerate(CL_list):
 
+
             # v_iteration_start aus Horizontalflug bestimmen
             if i == 0:
                 V = ((2 * self.mass * self.g) / (CL * self.rho * self.s_ref)) ** 0.5
@@ -112,28 +118,31 @@ class Climb:
 
             it = 0
             while not_in_tolerance and it < it_max:
+                if self.optimize_flap_angle:
+                    c_length = self.plane.reference_values.c_ref
+                    re = functions.get_reynolds_number(V, c_length)
+                    airfoil = Airfoil(self.plane.wings['main_wing'].airfoil)
+                    self.flap_angle = airfoil.check_for_best_flap_setting(re, CL)
 
                 Aero.evaluate(V=V, CL=CL, FLAP=self.flap_angle)
                 CD = self.plane.aero_coeffs.drag_coeff.cd_tot
+
 
                 T = thrust(V)
 
                 V2 = self.v_climb(T, CL, CD)
 
+
                 it += 1
                 not_in_tolerance = abs(V - V2) >= v_tolerance
                 V = V2
+
             sin = self.sin_gamma(T, V**2, CD)
             cos = self.cos_gamma(V**2, CL)
             gamma = self.gamma(sin, cos)
             V_vertical = self.v_vertical(V, sin)
 
             results = np.array([CL, V, V_vertical, gamma])
-            # CD_ind = self.plane.aero_coeffs.drag_coeff.cd_ind
-            # CD_vis = self.plane.aero_coeffs.drag_coeff.cd_visc
-            # CD_fus = self.plane.aero_coeffs.drag_coeff.cd_fuse
-            # CD_wheel = self.plane.aero_coeffs.drag_coeff.cd_wheels
-            # print(V_vertical, CD_ind, CD_vis, CD_fus, CD_wheel)
             if i == 0:
                 climb_data = results
             else:
@@ -173,9 +182,11 @@ class Climb:
         """
         Returns a gained height. Needs therefore a timespan and an additional value.
         """
+        time0 = time.time()
         v_vertical_max = self.plane.flight_conditions.climb.results.v_vertical_max
         if v_vertical_max is None:
             v_vertical_max = self.get_v_v_max()
 
         height = h0 + v_vertical_max * delta_t
+        print("Time needed for calculation: ", time.time() - time0)
         return height

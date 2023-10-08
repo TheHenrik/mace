@@ -5,27 +5,18 @@ import numpy as np
 
 from mace.domain.fuselage import Fuselage, FuselageSegment
 from mace.domain.landing_gear import LandingGear, Wheel
-from mace.domain.results import (
-    AeroCoeffs,
-    Avl,
-    AvlInputs,
-    AvlOutputs,
-    Cd,
-    Cl,
-    Climb,
-    ClimbResults,
-    FlightConditions,
-    HorizontalFlight,
-    HorizontalFlightResults,
-)
-from mace.domain.wing import Wing, WingSegment
-
-
+from mace.domain.results import FlightConditions, Climb, ClimbResults, Avl, AvlInputs, AvlOutputs, AeroCoeffs, Cl, \
+    Cd, HorizontalFlight, HorizontalFlightResults
+from mace.aero.implementations.avl import geometry_and_mass_files_v2 as geometry_and_mass_files
+from mace.aero.implementations.avl.athenavortexlattice import AVL
+import matplotlib.pyplot as plt
+import numpy as np
 class Vehicle:
     def __init__(self):
         self.tag = "Vehicle"
-        self.mass = 0.0
-        self.center_of_gravity = [0.0, 0.0, 0.0]
+        self.payload = 0.
+        self.mass = 0.
+        self.center_of_gravity = [0., 0., 0.]
         self.wings = {}
         self.fuselages = {}
         self.reference_values = ReferenceValues
@@ -248,11 +239,41 @@ class Vehicle:
 
         # Anzeigen des Plots
         plt.show()
-    
-    def build(self):
-        # TODO Stabilität Untersuchung
-        pass
+        
+    def get_stability_derivatives(self):
+        '''
+        Uses AVL to calculate stability derivatives, neutral point and static margin
+        '''
+        mass_file = geometry_and_mass_files.MassFile(self)
+        mass_file.build_mass_file()
+        
+        geometry_file = geometry_and_mass_files.GeometryFile(self)
+        geometry_file.z_sym = 0
+        geometry_file.build_geometry_file()
 
+        avl = AVL(self)
+        CLa, Cma, Cnb, XNP, SM = avl.get_stability_data()
+
+        return CLa, Cma, Cnb, XNP, SM
+
+    def build(self):
+        '''
+        Variables:
+            1. Horizontal tailplane volume coefficient
+            2. Vertical tailplane volume coefficient
+            3. Fuselage nose length -> CG
+            4. CG -> Landing gear position
+            5. CG -> Cargo Bay position
+        Iterate to fullfill all of the following requirements:
+            1. CG == 40%MAC -> CG
+            2. Static margin == 0.08 (or Cma == 0.7) -> HT Volume Coeff
+            3. Cnb == 0.045 -> VT Volume Coeff
+            4. CG -> Fuselage nose length
+            5. CG -> Landing gear position
+            6. CG -> Cargo Bay position
+        '''
+
+        pass
 
 @dataclass()
 class Propulsion:

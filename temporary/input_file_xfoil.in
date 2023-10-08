@@ -1,10 +1,10 @@
-LOAD /Users/jannik/Documents/GitHub/mace/data/airfoils/acc22.dat
+LOAD /Users/jannik/Documents/GitHub/mace/data/airfoils/jx-gp-055.dat
 OPER
 Visc 970000.0
 PACC
 /Users/jannik/Documents/GitHub/mace/temporary/polar_file.txt
 
-ITER 100
+ITER 150
 ASeq 0 15 0.1
 
 

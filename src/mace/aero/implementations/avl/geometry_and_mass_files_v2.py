@@ -1,4 +1,6 @@
 import os
+# from mace.domain.vehicle import Vehicle
+from mace.domain.params import Units, Constants
 from pathlib import Path
 
 from mace.domain.params import Constants, Units
@@ -8,7 +10,7 @@ from mace.domain.vehicle import Vehicle
 
 
 class GeometryFile:
-    def __init__(self, plane: Vehicle) -> None:
+    def __init__(self, plane) -> None:
         self.plane = plane
         self.z_sym = 0
 
@@ -149,8 +151,6 @@ class GeometryFile:
             GeometryFile.build_geo_surface(self, geometry_file)
 
         # self.plane.avl.inputs.avl_file = file_path
-        print("AVL Geometry File built successfully")
-
 
 # ========== Mass File ==========
 
@@ -332,7 +332,7 @@ class MassFile:
     shifted by delta(x) = 0.2.  Data lines 3-5 revert back to the defaults.
     """
 
-    def __init__(self, plane: Vehicle) -> None:
+    def __init__(self, plane) -> None:
         self.plane = plane
 
     def build_mass_of_components(self, mass_file, n_o_comp):
@@ -541,7 +541,6 @@ class MassFile:
             MassFile.build_mass_table(self, mass_file)
 
         # self.plane.avl.inputs.mass_file = file_path
-        print("AVL Mass File built successfully")
 
 
 # ========== Test ===========
