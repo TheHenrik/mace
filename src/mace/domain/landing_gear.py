@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from mace.domain import params
+from typing import List
 
 
 class Wheel:

@@ -11,6 +11,8 @@ def estimate_mass_plane(plane: Vehicle):
     mass = defaultdict()
     weighted_cog = defaultdict()
 
+    # TODO Use iter
+
     mass["main_wing"], weighted_cog["main_wing"] = \
         estimate_mass_wing(plane.wings["main_wing"])
     mass["h_stablizer"], weighted_cog["h_stabilizer"] = \
@@ -35,6 +37,9 @@ def estimate_mass_plane(plane: Vehicle):
 
 
 def estimate_mass_wing(wing: Wing):
+    # TODO Streckungsfaktor
+    # TODO Verbinder
+
     masses = []
     cogs = []
     for segment in wing.segments:
@@ -67,7 +72,9 @@ def estimate_mass_fuselage(fuselage: Fuselage):
     lenght = len(fuselage.segments)
     mass = 0
     area = 0
-    # TODO Implement other shapes
+    # TODO Fix distance function
+    # TODO Add mesh calc
+
     if not fuselage.segments[0].shape == "rectangular":
         raise ValueError(f"Shape not implemented {fuselage.segments[0].shape}")
     for i in range(lenght-1):
@@ -77,7 +84,8 @@ def estimate_mass_fuselage(fuselage: Fuselage):
         h2 = fuselage.segments[i+1].height
         area += (w1+h1+w2+h2)*abs(fuselage.segments[i].origin[0]-fuselage.segments[i+1].origin[0])
 
-    # TODO MOve to class
+    # TODO Move to class
+    # TODO Calc extern of fuse
     mass += area * 80 * 2.2 / 1000
     # Battery
     mass += 0.250

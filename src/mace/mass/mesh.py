@@ -3,6 +3,8 @@ from functools import cache
 
 import numpy as np
 from pathlib import Path
+from collections import defaultdict
+
 
 def tri_area(first: np.ndarray, second: np.ndarray, third: np.ndarray):
     return np.sum(np.linalg.norm(np.cross(second - first, third - first), axis=1)) / 2
@@ -38,16 +40,19 @@ def gen_profile(profil_innen, profil_außen, start_innen, end_innen, start_auße
 
 
 @cache
-def get_profil(airfoil: str) -> list:
+def get_profil(airfoil: str) -> np.ndarray:
     file_location = Path(f"{Path(__file__).parents[3]}/data/airfoils/{airfoil}.dat")
     with open(file_location, "rt") as f:
-        raw_data = f.read()
-        data = re.findall(r"([01].\d+) +([0\-].\d+)", raw_data)
+        data = re.findall(r"([01]\.\d+) +([0\-]{1,2}\.\d+)", f.read())
+    profil = [list(map(float, point)) for point in data]
+    return np.asarray(profil)
 
-    profil = []
-    for point in data:
-        profil.append(list(map(float, point)))
-
+@cache
+def get_profil_thickness(airfoil: str) -> float:
+    file_location = Path(f"{Path(__file__).parents[3]}/data/airfoils/{airfoil}.dat")
+    with open(file_location, "rt") as f:
+        data = re.findall(r"([01]\.\d+) +([0\-]{1,2}\.\d+)", f.read())
+    profil = [list(map(float, point)) for point in data]
     return np.asarray(profil)
 
 
@@ -76,3 +81,7 @@ def mesh(profil_innen, profil_außen):
     area += tri_area(iu1s, au2s, au1s)
 
     return area, volume
+
+
+if __name__ == "__main__":
+    print(get_profil_thickness("ag19"))

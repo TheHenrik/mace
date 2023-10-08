@@ -8,11 +8,10 @@ from mace.domain.general_functions import rotate_vector
 rad = np.pi / 180
 
 
-
 class Spar:
     lenght: int = None
     height: int = None
-
+    rovings: int = None
 
 
 class WingSegmentBuild:

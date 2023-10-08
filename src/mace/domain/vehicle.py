@@ -248,6 +248,10 @@ class Vehicle:
 
         # Anzeigen des Plots
         plt.show()
+    
+    def build(self):
+        # TODO Stabilität Untersuchung
+        pass
 
 
 @dataclass()
