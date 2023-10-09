@@ -1,3 +1,5 @@
+# Absolete
+
 from mace.mass.mesh import gen_profile, get_profil, mesh
 from mace.domain.vehicle import Vehicle
 from mace.domain.fuselage import Fuselage
@@ -11,30 +13,16 @@ def estimate_mass_plane(plane: Vehicle):
     mass = defaultdict()
     weighted_cog = defaultdict()
 
-    # TODO Use iter
-
-    mass["main_wing"], weighted_cog["main_wing"] = estimate_mass_wing(
-        plane.wings["main_wing"]
-    )
-    mass["h_stablizer"], weighted_cog["h_stabilizer"] = estimate_mass_wing(
-        plane.wings["horizontal_stabilizer"]
-    )
-    mass["v_stabilizer"], weighted_cog["v_stabalizer"] = estimate_mass_wing(
-        plane.wings["vertical_stabilizer"]
-    )
-
-    mass["fuselage"], weighted_cog["fuselage"] = estimate_mass_fuselage(
-        plane.fuselages["fuselage"]
-    )
+    for name, wing in plane.wings.items():
+        mass[name], weighted_cog[name] = estimate_mass_wing(wing)
+    
+    for name, fuselage in plane.fuselages.items():
+        mass[name], weighted_cog[name] = estimate_mass_fuselage(fuselage)
 
     mass["landing_gear"], weighted_cog["landing_gear"] = (
         plane.landing_gear.mass,
         plane.landing_gear.center_of_gravity,
     )
-
-    # TODO Add cargo bay
-    # mass["cargo_bay"], weighted_cog["cargo_bay"] = \
-    #     0.3, np.array([0,0,0])
 
     plane.mass = sum(mass.values())
     plane.center_of_gravity = sum(weighted_cog.values()) / plane.mass

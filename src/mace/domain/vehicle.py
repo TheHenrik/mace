@@ -25,6 +25,7 @@ from mace.aero.implementations.avl import (
 from mace.aero.implementations.avl.athenavortexlattice import AVL
 import matplotlib.pyplot as plt
 import numpy as np
+from collections import defaultdict
 
 
 class Vehicle:
@@ -288,9 +289,39 @@ class Vehicle:
             5. CG -> Landing gear position
             6. CG -> Cargo Bay position
         """
-
+        self.get_mass()
+        self.calc_load()
+        self.calc_load()
+        # plane = estimate_mass_plane(plane)
         pass
 
+    def get_mass(self):
+        mass = defaultdict()
+        weighted_cog = defaultdict()
+
+        for name, wing in self.wings.items():
+            mass[name], weighted_cog[name] = wing.get_mass()
+        
+        for name, fuselage in self.fuselages.items():
+            mass[name], weighted_cog[name] = fuselage.get_mass()
+
+        mass["landing_gear"], weighted_cog["landing_gear"] = (
+            self.landing_gear.mass,
+            self.landing_gear.center_of_gravity,
+        )
+
+        self.mass = sum(mass.values())
+        self.center_of_gravity = sum(weighted_cog.values()) / self.mass
+
+    def calc_load(self):
+        main_wing: Wing = self.wings["main_wing"]
+        half_wing_span = main_wing.segments[-1].nose_outer[1]
+        mass = 0
+        for segment in main_wing.segments:
+            rovings_count = segment.get_rovings(self.mass, half_wing_span)
+            mass += segment.span * rovings_count * 0.05
+
+        self.mass += 2 * mass
 
 @dataclass()
 class Propulsion:

@@ -1,9 +1,11 @@
 import math
-
+from mace.mass.mesh import gen_profile, get_profil, mesh
 import matplotlib.pyplot as plt
 import numpy as np
 
 from mace.domain.general_functions import rotate_vector
+from mace.mass.spar import moment_at_position
+
 
 rad = np.pi / 180
 
@@ -76,8 +78,17 @@ class WingSegment:
         self.area = (self.inner_chord + self.outer_chord) * self.span / 2
         return self.area
 
-    def get_mass(self, volume: float, area: float):
-        mass = 0
+    def get_mass(self):
+        mass = 0   
+        profil_innen, profil_außen = gen_profile(
+            get_profil(self.inner_airfoil),
+            get_profil(self.outer_airfoil),
+            self.nose_inner,
+            self.back_inner,
+            self.nose_outer,
+            self.back_outer,
+        )
+        area, volume = mesh(profil_innen, profil_außen)
         if self.wsb.build_type == "Positiv":
             mass += volume * self.wsb.density
         elif self.wsb.build_type == "Balsa":
@@ -88,7 +99,21 @@ class WingSegment:
         mass += area * self.wsb.surface_weight
         for material in self.wsb.materials:
             mass += material * area
-        return mass
+        cog = np.array([0, 0, 0]) * mass
+        return mass, cog
+    
+    def get_rovings(self, total_mass: float, plane_half_wing_span):
+        max_height = self.inner_chord * 0.05
+        D100 = moment_at_position(total_mass, self.nose_inner[1], plane_half_wing_span)
+        sigma = 700 / (1_000**2)
+        H100 = D100 / sigma
+        C100 = 10 / 1_000
+        G100 = max_height - 0.4 / 1_000
+        J100 = np.cbrt(((C100 * (G100**3)) - (6 * G100 * H100)) / C100)
+        K100 = (G100 - J100) / 2
+        m = K100 * C100 * 10
+        n = np.ceil(m)
+        return n
 
 
 class Wing:
@@ -496,6 +521,19 @@ class Wing:
         plt.axis("equal")
         plt.grid(True)
         plt.show()
+
+    def get_mass(self):
+        masses = []
+        cogs = []
+        for segment in self.segments:
+            tmp_mass, tmp_cogs = segment.get_mass()
+            masses.append(tmp_mass)
+            cogs.append(tmp_cogs)
+        if not self.spar is None:
+            masses.append(self.spar.mass)
+        self.mass = 2 * sum(masses)
+        cog = sum(cogs) / self.mass
+        return self.mass, cog
 
 
 # Example usage:

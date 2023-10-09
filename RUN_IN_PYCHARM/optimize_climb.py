@@ -18,8 +18,6 @@ if __name__ == "__main__":
     # Define Aircraft Geometry
     Aircraft = vehicle_setup()
 
-    mass = get_mass_plane(Aircraft)
-
     # Build AVL input files
     geometry_and_mass_files.GeometryFile(Aircraft).build_geometry_file()
     geometry_and_mass_files.MassFile(Aircraft).build_mass_file()

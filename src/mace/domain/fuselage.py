@@ -79,6 +79,34 @@ class Fuselage:
 
         return C_D_fuse
 
+    def get_mass(self):
+        lenght = len(self.segments)
+        mass = 0
+        area = 0 # TODO Fix distance function
+        # TODO Add mesh calc
+
+        if not self.segments[0].shape == "rectangular":
+            raise ValueError(f"Shape not implemented {self.segments[0].shape}")
+        for i in range(lenght - 1):
+            w1 = self.segments[i].width
+            h1 = self.segments[i].height
+            w2 = self.segments[i + 1].width
+            h2 = self.segments[i + 1].height
+            area += (w1 + h1 + w2 + h2) * abs(
+                self.segments[i].origin[0] - self.segments[i + 1].origin[0]
+            )
+
+        # TODO Move to class
+        # TODO Calc extern of fuse
+        mass += area * 80 * 2.2 / 1000
+        # Battery
+        mass += 0.250
+        # Motor
+        mass += 0.175
+        # Regler
+        mass += 0.093
+        return mass, np.array([0, 0, 0])
+
 
 if __name__ == "__main__":
     Re_L = 3e6

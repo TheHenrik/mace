@@ -1,3 +1,6 @@
+# Absolete
+
+
 from mace.domain.plane import Plane
 from mace.mass.mass_estimation import estimate_mass_plane
 from mace.mass.spar import calc_load

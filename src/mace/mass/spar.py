@@ -2,14 +2,6 @@ import numpy as np
 
 from mace.domain.plane import Plane, Wing, WingSegment
 
-
-def max_weight(plane: Plane, load_case=0):
-    # Case with cargo == 0.7kg:
-    if load_case == 0:
-        weight = (plane.mass + 0.7) * 9.81
-    return weight
-
-
 def moment_at_position(mass: float, position: float, half_wing_span: float):
     moment = (half_wing_span - position) * mass * 10
     if position < 0.1 * half_wing_span:
