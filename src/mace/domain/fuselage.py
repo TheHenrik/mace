@@ -4,7 +4,14 @@ from mace.domain import params
 
 
 class FuselageSegment:
-    def __init__(self):
+    profile: np.ndarray
+
+    def __init__(self, origin, shape, *args):
+        if shape == "rectangular":
+            dx = args[0]/2
+            dy = args[1]/2
+            dz = 0
+            p = []
         self.width: float = 0.0
         self.height: float = 0.0
         self.origin: np.ndarray = np.array([0.0, 0.0, 0.0])
@@ -82,7 +89,7 @@ class Fuselage:
     def get_mass(self):
         lenght = len(self.segments)
         mass = 0
-        area = 0 # TODO Fix distance function
+        area = 0
         # TODO Add mesh calc
 
         if not self.segments[0].shape == "rectangular":

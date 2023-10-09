@@ -5,9 +5,9 @@ Vehicle
 0         0         -0.25     
 
 #Sref	Cref	Bref
-0.6       0.21125   3.0       
+0.6304    0.28056   2.32      
 #Xref	Yref	Zref
-0.112     0.0       0.0       
+0.13      0.0       0.0       
 
 #======================
 SURFACE
@@ -29,50 +29,40 @@ ANGLE
 #--------------------
 SECTION
 #Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
-0.0  0.0  0.0  0.24837  0.020-2
+0.0  0.0  0.0  0.32  0.020-2
 
 AFIL  0.0  1.0
-/Users/jannik/Documents/GitHub/mace/data/airfoils/ag40.dat
+D:\Dokumente\Programming\Python\mace\data/airfoils/acc22.dat
 
 CONTROL
 #Cname	Cgain	Xhinge	HingeVec	 	 	SgnDup
 flap	1.0	0.75	0. 0. 0.	1.0
 SECTION
 #Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
-0.00666  0.71042  0.01218  0.22353  0.020-2
+0.01531  0.51942  0.00854  0.299  0.020-2
 
 AFIL  0.0  1.0
-/Users/jannik/Documents/GitHub/mace/data/airfoils/ag40.dat
+D:\Dokumente\Programming\Python\mace\data/airfoils/acc22.dat
 
 CONTROL
 #Cname	Cgain	Xhinge	HingeVec	 	 	SgnDup
 flap	1.0	0.75	0. 0. 0.	1.0
 SECTION
 #Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
-0.03707  1.1823  0.05242  0.17386  0.020-2
+0.08127  0.84916  0.0351  0.26  0.020-2
 
 AFIL  0.0  1.0
-/Users/jannik/Documents/GitHub/mace/data/airfoils/ag40.dat
+D:\Dokumente\Programming\Python\mace\data/airfoils/acc22.dat
 
 CONTROL
 #Cname	Cgain	Xhinge	HingeVec	 	 	SgnDup
 flap	1.0	0.75	0. 0. 0.	1.0
 SECTION
 #Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
-0.08951  1.41824  0.07125  0.09935  0.020-2
+0.22313  1.15748  0.05714  0.14  0
 
 AFIL  0.0  1.0
-/Users/jannik/Documents/GitHub/mace/data/airfoils/ag40.dat
-
-CONTROL
-#Cname	Cgain	Xhinge	HingeVec	 	 	SgnDup
-flap	1.0	0.75	0. 0. 0.	1.0
-SECTION
-#Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
-0.1256  1.49689  0.07687  0.04967  0
-
-AFIL  0.0  1.0
-/Users/jannik/Documents/GitHub/mace/data/airfoils/ag40.dat
+D:\Dokumente\Programming\Python\mace\data/airfoils/acc22.dat
 
 CONTROL
 #Cname	Cgain	Xhinge	HingeVec	 	 	SgnDup
@@ -96,22 +86,50 @@ ANGLE
 #--------------------
 SECTION
 #Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
-1.05  0.0  0.0  0.13768  0.020-2
+0.761  0.0  0.18  0.25  0.020-2
 
 AFIL  0.0  1.0
-/Users/jannik/Documents/GitHub/mace/data/airfoils/ht14.dat
+D:\Dokumente\Programming\Python\mace\data/airfoils/ht14.dat
 
 SECTION
 #Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
-1.05727  0.15246  0.12793  0.12557  0.020-2
+0.761  0.17  0.18  0.228  0.020-2
 
 AFIL  0.0  1.0
-/Users/jannik/Documents/GitHub/mace/data/airfoils/ht14.dat
+D:\Dokumente\Programming\Python\mace\data/airfoils/ht14.dat
 
 SECTION
 #Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
-1.09296  0.30492  0.25585  0.06609  0.0
+0.761  0.34  0.18  0.12  0.0
 
 AFIL  0.0  1.0
-/Users/jannik/Documents/GitHub/mace/data/airfoils/ht14.dat
+D:\Dokumente\Programming\Python\mace\data/airfoils/ht14.dat
+
+SURFACE
+vertical_stabilizer
+10  1  20  -2
+
+Component
+3
+
+TRANSLATE
+0	0	0
+
+ANGLE
+0.00000
+
+#--------------------
+SECTION
+#Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
+0.74  0.0  0.0  0.25  0.020-2
+
+AFIL  0.0  1.0
+D:\Dokumente\Programming\Python\mace\data/airfoils/ht14.dat
+
+SECTION
+#Xle	Yle	Zle	Chord	Ainc	Nspanwise	Sspace
+0.76  0.0  0.18  0.23  0.0
+
+AFIL  0.0  1.0
+D:\Dokumente\Programming\Python\mace\data/airfoils/ht14.dat
 
