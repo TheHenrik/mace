@@ -95,9 +95,7 @@ class Fuselage:
             area += (w1 + h1 + w2 + h2) * abs(
                 self.segments[i].origin[0] - self.segments[i + 1].origin[0]
             )
-
-        # TODO Move to class
-        # TODO Calc extern of fuse
+        # TODO Add class for stuff
         mass += area * 80 * 2.2 / 1000
         # Battery
         mass += 0.250
