@@ -79,6 +79,7 @@ class WingSegment:
         return self.area
 
     def get_mass(self):
+        # TODO Find COG
         mass = 0   
         profil_innen, profil_außen = gen_profile(
             get_profil(self.inner_airfoil),
@@ -103,6 +104,7 @@ class WingSegment:
         return mass, cog
     
     def get_rovings(self, total_mass: float, plane_half_wing_span):
+        # TODO Change var names
         max_height = self.inner_chord * 0.05
         D100 = moment_at_position(total_mass, self.nose_inner[1], plane_half_wing_span)
         sigma = 700 / (1_000**2)

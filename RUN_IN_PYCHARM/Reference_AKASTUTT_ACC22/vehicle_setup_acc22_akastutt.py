@@ -156,6 +156,7 @@ def vehicle_setup() -> Vehicle:
     x_minus_offset = 0.19
     x_plus_offset = 0.55
 
+    # TODO Change to fit new init
     segment = FuselageSegment()
     segment.origin[0] = -0.148 - x_minus_offset
     segment.width = 0.04
@@ -243,6 +244,8 @@ def vehicle_setup() -> Vehicle:
     landing_gear.length_specific_cd = 0.0033
 
     vehicle.landing_gear = landing_gear
+
+    # TODO Add misc
     ####################################################################################################################
     # PLOT
 
@@ -251,8 +254,8 @@ def vehicle_setup() -> Vehicle:
     vehicle.plot_vehicle(azim=0, elev=90)
     # vehicle.plot_vehicle(azim=90, elev=0)
 
-    vehicle.get_stability_derivatives()
-
+    # vehicle.get_stability_derivatives()
+    vehicle.build()
     return vehicle
 
 

@@ -1,35 +1,41 @@
 import numpy as np
 
 from mace.domain import params
+from mace.utils.mesh import mesh
 
 
 class FuselageSegment:
     profile: np.ndarray
+    circumference: float
+    shape: str
+    width: float
+    height: float
 
-    def __init__(self, origin, shape, *args):
+    def __init__(self, origin, shape, width, height):    
+        self.width = width
+        self.height = height
         if shape == "rectangular":
-            dx = args[0]/2
-            dy = args[1]/2
-            dz = 0
-            p = []
-        self.width: float = 0.0
-        self.height: float = 0.0
-        self.origin: np.ndarray = np.array([0.0, 0.0, 0.0])
-        self.shape: str = "rectangular"  # 'elliptical'
-        self.circumference: float = 0.0
-
-    def get_circumference(self):
-        if self.shape == "rectangular":
-            circumference = 2 * self.width + 2 * self.height
-        if self.shape == "elliptical":
-            lbda = self.width - self.height / (self.width + self.height)
-            circumference = (
+            dx = 0
+            dy = self.width/2
+            dz = self.height/2
+            p1 = origin + np.array([dx, +dy, +dz])
+            p2 = origin + np.array([dx, -dy, +dz])
+            p3 = origin + np.array([dx, -dy, -dz])
+            p4 = origin + np.array([dx, +dy, -dz])
+            self.profile = np.array([p1,p2,p3,p4])
+            self.circumference = 2 * (self.height + self.width)
+            self.shape = shape
+        elif shape == "elliptical":
+            angle = np.linspace(0, 2*np.pi, 100)
+            p = [np.array([0, np.sin(a)*self.height, np.cos(a)*self.width]) for a in angle]
+            self.profile = np.array(p)
+            lbda = self.height - self.width / (self.width + self.height)
+            self.circumference = (
                 np.pi
                 * (self.width + self.height)
                 * (1 + 3 * lbda**2 / (10 + (4 - 3 * lbda**2) ** 0.5))
             )
-        self.circumference = circumference
-        return circumference
+            self.shape = shape
 
 
 class Fuselage:
@@ -90,26 +96,15 @@ class Fuselage:
         lenght = len(self.segments)
         mass = 0
         area = 0
-        # TODO Add mesh calc
+        volume = 0
 
-        if not self.segments[0].shape == "rectangular":
-            raise ValueError(f"Shape not implemented {self.segments[0].shape}")
         for i in range(lenght - 1):
-            w1 = self.segments[i].width
-            h1 = self.segments[i].height
-            w2 = self.segments[i + 1].width
-            h2 = self.segments[i + 1].height
-            area += (w1 + h1 + w2 + h2) * abs(
-                self.segments[i].origin[0] - self.segments[i + 1].origin[0]
-            )
-        # TODO Add class for stuff
+            a, b = mesh(self.segments[i], self.segments[i+1])
+            mass += a
+            volume += b
+            
         mass += area * 80 * 2.2 / 1000
-        # Battery
-        mass += 0.250
-        # Motor
-        mass += 0.175
-        # Regler
-        mass += 0.093
+
         return mass, np.array([0, 0, 0])
 
 

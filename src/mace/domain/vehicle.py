@@ -54,8 +54,13 @@ class Vehicle:
         self.propulsion = Propulsion
         self.landing_gear = LandingGear()
 
+        self.miscs = []
+
     def add_wing(self, position: str, wing: Wing):
         self.wings[position] = wing
+
+    def add_misc(self, name, mass, position):
+        self.miscs.append(Misc(name, mass, position))
 
     def add_fuselage(self, position: str, fuselage: Fuselage):
         self.fuselages[position] = fuselage
@@ -296,6 +301,7 @@ class Vehicle:
         pass
 
     def get_mass(self):
+        # TODO Add misc, fix stuff
         mass = defaultdict()
         weighted_cog = defaultdict()
 
@@ -383,3 +389,10 @@ class AvlOutputs:
 class Avl:
     inputs: AvlInputs = None
     outputs: AvlOutputs = None
+
+
+@dataclass 
+class Misc:
+    name: str
+    weight: float
+    position: np.ndarray
