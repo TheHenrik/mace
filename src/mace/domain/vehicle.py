@@ -291,7 +291,7 @@ class Vehicle:
         """
         self.get_mass()
         self.calc_load()
-        self.calc_load()
+        # self.calc_load()
         # plane = estimate_mass_plane(plane)
         pass
 

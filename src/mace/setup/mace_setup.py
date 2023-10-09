@@ -1,4 +1,3 @@
-from mace.algo.calculate_plane import calculate_plane
 from mace.domain.parser import TOMLParser
 from mace.domain.plane import Plane
 from mace.setup.airfoils import populate_airfoils
@@ -16,12 +15,7 @@ class Project:
             self.planes.append(TOMLParser(plane_location).get("Plane"))
 
     def calculate(self, verbose=False):
-        planes = []
-        for plane in self.planes:
-            planes.append(calculate_plane(plane))
-            if verbose:
-                print(f"The weight of the plane is approx. {plane.mass} kg!")
-        self.planes = planes
+        pass
 
     def evaluate(self):
         pass
@@ -31,7 +25,7 @@ class Project:
 
     def benchmark(self):
         print(f"Size on Disk of Plane: {getsize(self)}")
-        performance_time(10_000, calculate_plane, self.planes[0])
+        performance_time(10_000, print, self.planes[0])
         performance_report(
-            performance_time, 1_000, calculate_plane, self.planes[0], output=None
+            performance_time, 1_000, print, self.planes[0], output=None
         )

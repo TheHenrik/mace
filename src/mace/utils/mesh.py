@@ -88,3 +88,4 @@ def mesh(profil_innen, profil_außen):
 
 if __name__ == "__main__":
     print(get_profil_thickness("ag19"))
+

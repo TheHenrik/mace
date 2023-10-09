@@ -9,7 +9,6 @@ from mace.aero.implementations.avl import (
 )
 from mace.domain.parser import PlaneParser
 
-from mace.mass.mass import get_mass_plane
 
 if __name__ == "__main__":
     # Define Analysis
