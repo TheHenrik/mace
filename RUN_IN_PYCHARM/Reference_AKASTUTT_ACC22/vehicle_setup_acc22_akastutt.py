@@ -156,7 +156,6 @@ def vehicle_setup() -> Vehicle:
     x_minus_offset = 0.19
     x_plus_offset = 0.55
 
-    # TODO Change to fit new init
     origin = np.array([-0.148 - x_minus_offset, 0, 0])
     width = 0.04
     height = 0.04
@@ -245,7 +244,8 @@ def vehicle_setup() -> Vehicle:
 
     vehicle.landing_gear = landing_gear
 
-    # TODO Add misc
+    ####################################################################################################################
+    # Miscellaneous
 
     vehicle.add_misc("Battery", 0.150, np.ndarray([0,0,0]))
     vehicle.add_misc("Regeler", 0.050, np.ndarray([0,0,0]))
@@ -260,6 +260,10 @@ def vehicle_setup() -> Vehicle:
     # vehicle.plot_vehicle(azim=90, elev=0)
 
     # vehicle.get_stability_derivatives()
+
+    ####################################################################################################################
+    # Build and return
+    
     vehicle.build()
     return vehicle
 

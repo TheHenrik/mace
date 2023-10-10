@@ -320,8 +320,8 @@ class Vehicle:
         self.mass = sum(mass.values())
         self.center_of_gravity = sum(weighted_cog.values()) / self.mass
 
-    def calc_load(self):
-        main_wing: Wing = self.wings["main_wing"]
+    def calc_load(self, wing: str = "main_wing"):
+        main_wing: Wing = self.wings[wing]
         half_wing_span = main_wing.segments[-1].nose_outer[1]
         for segment in main_wing.segments:
             segment.get_rovings(self.mass, half_wing_span)

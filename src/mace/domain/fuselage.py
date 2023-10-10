@@ -95,22 +95,18 @@ class Fuselage:
         return C_D_fuse
 
     def get_mass(self):
+        # TODO Add cog calc
         lenght = len(self.segments)
-        mass = 0
-        area = 0
-        volume = 0
-
+        area, volume = 0, 0, 0
         for i in range(lenght - 1):
             a, b = mesh(self.segments[i], self.segments[i+1])
-            mass += a
+            area += a
             volume += b
-            
-        mass += area * 80 * 2.2 / 1000
-        self.mass = mass
+        self.mass = area * 80 * 2.2 / 1000
         self.volume = volume
         self.area = area
 
-        return mass, np.array([0, 0, 0])
+        return self.mass, np.array([0, 0, 0])
 
 
 if __name__ == "__main__":
