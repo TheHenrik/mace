@@ -296,11 +296,10 @@ class Vehicle:
         """
         self.get_mass()
         self.calc_load()
-        # self.calc_load()
-        # plane = estimate_mass_plane(plane)
-        pass
+        self.get_mass()
+        self.calc_load()
 
-    def get_mass(self):
+    def get_mass(self): 
         # TODO Add misc, fix stuff
         mass = defaultdict()
         weighted_cog = defaultdict()
@@ -316,18 +315,19 @@ class Vehicle:
             self.landing_gear.center_of_gravity,
         )
 
+        for misc in self.miscs:
+            mass[misc.name] = misc.mass
+            weighted_cog[misc.name] = misc.postion
+
         self.mass = sum(mass.values())
         self.center_of_gravity = sum(weighted_cog.values()) / self.mass
 
     def calc_load(self):
         main_wing: Wing = self.wings["main_wing"]
         half_wing_span = main_wing.segments[-1].nose_outer[1]
-        mass = 0
         for segment in main_wing.segments:
-            rovings_count = segment.get_rovings(self.mass, half_wing_span)
-            mass += segment.span * rovings_count * 0.05
+            segment.get_rovings(self.mass, half_wing_span)
 
-        self.mass += 2 * mass
 
 @dataclass()
 class Propulsion:

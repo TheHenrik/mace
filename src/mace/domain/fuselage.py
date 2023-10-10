@@ -10,10 +10,12 @@ class FuselageSegment:
     shape: str
     width: float
     height: float
+    origin: np.ndarray
 
     def __init__(self, origin, shape, width, height):    
         self.width = width
         self.height = height
+        self.origin = origin
         if shape == "rectangular":
             dx = 0
             dy = self.width/2
@@ -46,8 +48,8 @@ class Fuselage:
         self.segments = []
         self.drag_correction: float = 2.6
 
-    def add_segment(self, segment: FuselageSegment) -> None:
-        self.segments.append(segment)
+    def add_segment(self, origin, shape, width, height) -> None:
+        self.segments.append(FuselageSegment(origin, shape, width, height))
 
     def get_wetted_area(self):
         A_wetted = 0.0

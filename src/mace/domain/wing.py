@@ -34,6 +34,8 @@ class WingSegment:
     """
     Wing Segment Class
     """
+    mass: float = None
+    roving_count: int = None
 
     def __init__(self) -> None:
         """
@@ -96,11 +98,17 @@ class WingSegment:
             mass += volume * self.wsb.density * 0.5
         elif self.wsb.build_type == "Negativ":
             mass += 0
+        if not self.roving_count is None:
+            mass += self.span * self.roving_count * 0.05
+
+        self.mass += 2 * mass
 
         mass += area * self.wsb.surface_weight
         for material in self.wsb.materials:
             mass += material * area
         cog = np.array([0, 0, 0]) * mass
+        self.mass = mass
+        self.cog = cog
         return mass, cog
     
     def get_rovings(self, total_mass: float, plane_half_wing_span):
@@ -115,6 +123,7 @@ class WingSegment:
         K100 = (G100 - J100) / 2
         m = K100 * C100 * 10
         n = np.ceil(m)
+        self.roving_count = n
         return n
 
 
@@ -531,8 +540,6 @@ class Wing:
             tmp_mass, tmp_cogs = segment.get_mass()
             masses.append(tmp_mass)
             cogs.append(tmp_cogs)
-        if not self.spar is None:
-            masses.append(self.spar.mass)
         self.mass = 2 * sum(masses)
         cog = sum(cogs) / self.mass
         return self.mass, cog

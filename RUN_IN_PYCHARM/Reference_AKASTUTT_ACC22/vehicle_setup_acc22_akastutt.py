@@ -157,47 +157,47 @@ def vehicle_setup() -> Vehicle:
     x_plus_offset = 0.55
 
     # TODO Change to fit new init
-    segment = FuselageSegment()
-    segment.origin[0] = -0.148 - x_minus_offset
-    segment.width = 0.04
-    segment.height = 0.04
-    fuselage.add_segment(segment)
+    origin = np.array([-0.148 - x_minus_offset, 0, 0])
+    width = 0.04
+    height = 0.04
+    shape = "rectangular"
+    fuselage.add_segment(origin, shape, width, height)
 
-    segment = FuselageSegment()
-    segment.origin[0] = -0.1 - x_minus_offset
-    segment.width = 0.085
-    segment.height = 0.107
-    fuselage.add_segment(segment)
+    origin = np.array([-0.1 - x_minus_offset, 0, 0])
+    width = 0.085
+    height = 0.107
+    shape = "rectangular"
+    fuselage.add_segment(origin, shape, width, height)
 
-    segment = FuselageSegment()
-    segment.origin[0] = -0.05 - x_minus_offset
-    segment.width = 0.099
-    segment.height = 0.139
-    fuselage.add_segment(segment)
+    origin = np.array([-0.05 - x_minus_offset, 0, 0])
+    width = 0.099
+    height = 0.139
+    shape = "rectangular"
+    fuselage.add_segment(origin, shape, width, height)
 
-    segment = FuselageSegment()
-    segment.origin[0] = 0.0 - x_minus_offset
-    segment.width = 0.102
-    segment.height = 0.151
-    fuselage.add_segment(segment)
+    origin = np.array([-0.0 - x_minus_offset, 0, 0])
+    width = 0.102
+    height = 0.151
+    shape = "rectangular"
+    fuselage.add_segment(origin, shape, width, height)
 
-    segment = FuselageSegment()
-    segment.origin[0] = 0.0 + x_plus_offset
-    segment.width = 0.102
-    segment.height = 0.151
-    fuselage.add_segment(segment)
+    origin = np.array([0.0 + x_plus_offset, 0, 0])
+    width = 0.102
+    height = 0.151
+    shape = "rectangular"
+    fuselage.add_segment(origin, shape, width, height)
 
-    segment = FuselageSegment()
-    segment.origin[0] = 0.38 + x_plus_offset
-    segment.width = 0.061
-    segment.height = 0.084
-    fuselage.add_segment(segment)
+    origin = np.array([0.38 + x_plus_offset, 0, 0])
+    width = 0.061
+    height = 0.084
+    shape = "rectangular"
+    fuselage.add_segment(origin, shape, width, height)
 
-    segment = FuselageSegment()
-    segment.origin[0] = 0.38 + 0.088 + x_plus_offset
-    segment.width = 0.04
-    segment.height = 0.04
-    fuselage.add_segment(segment)
+    origin = np.array([0.38 + 0.088 + x_plus_offset, 0, 0])
+    width = 0.04
+    height = 0.04
+    shape = "rectangular"
+    fuselage.add_segment(origin, shape, width, height)
 
     fuselage.build()
     print("f_length: %.3f m" % fuselage.length)
@@ -246,12 +246,17 @@ def vehicle_setup() -> Vehicle:
     vehicle.landing_gear = landing_gear
 
     # TODO Add misc
+
+    vehicle.add_misc("Battery", 0.150, np.ndarray([0,0,0]))
+    vehicle.add_misc("Regeler", 0.050, np.ndarray([0,0,0]))
+    vehicle.add_misc("Servo", 0.050, np.ndarray([0,0,0]))
+
     ####################################################################################################################
     # PLOT
 
     # vehicle.plot_vehicle(azim=180, elev=0)
-    vehicle.plot_vehicle(azim=230, elev=30)
-    vehicle.plot_vehicle(azim=0, elev=90)
+    # vehicle.plot_vehicle(azim=230, elev=30)
+    # vehicle.plot_vehicle(azim=0, elev=90)
     # vehicle.plot_vehicle(azim=90, elev=0)
 
     # vehicle.get_stability_derivatives()
