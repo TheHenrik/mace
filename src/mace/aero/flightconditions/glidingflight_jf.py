@@ -1,8 +1,10 @@
 import math
+
 import numpy as np
+
+from mace.aero.implementations.aero import Aerodynamics
 from mace.domain import params
 from mace.domain.vehicle import Vehicle
-from mace.aero.implementations.aero import Aerodynamics
 
 
 class GlidingFlight:

@@ -9,7 +9,6 @@ from mace.aero.implementations.avl import (
 )
 from mace.domain.parser import PlaneParser
 
-
 if __name__ == "__main__":
     # Define Analysis
     climb_time = 50.0

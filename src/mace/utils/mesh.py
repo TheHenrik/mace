@@ -1,9 +1,9 @@
 import re
+from collections import defaultdict
 from functools import cache
+from pathlib import Path
 
 import numpy as np
-from pathlib import Path
-from collections import defaultdict
 
 
 def tri_area(first: np.ndarray, second: np.ndarray, third: np.ndarray):

@@ -1,31 +1,29 @@
+from collections import defaultdict
 from dataclasses import dataclass
 
 import matplotlib.pyplot as plt
 import numpy as np
 
-from mace.domain.wing import Wing, WingSegment
-from mace.domain.fuselage import Fuselage, FuselageSegment
-from mace.domain.landing_gear import LandingGear, Wheel
-from mace.domain.results import (
-    FlightConditions,
-    Climb,
-    ClimbResults,
-    Avl,
-    AvlInputs,
-    AvlOutputs,
-    AeroCoeffs,
-    Cl,
-    Cd,
-    HorizontalFlight,
-    HorizontalFlightResults,
-)
 from mace.aero.implementations.avl import (
     geometry_and_mass_files_v2 as geometry_and_mass_files,
 )
 from mace.aero.implementations.avl.athenavortexlattice import AVL
-import matplotlib.pyplot as plt
-import numpy as np
-from collections import defaultdict
+from mace.domain.fuselage import Fuselage, FuselageSegment
+from mace.domain.landing_gear import LandingGear, Wheel
+from mace.domain.results import (
+    AeroCoeffs,
+    Avl,
+    AvlInputs,
+    AvlOutputs,
+    Cd,
+    Cl,
+    Climb,
+    ClimbResults,
+    FlightConditions,
+    HorizontalFlight,
+    HorizontalFlightResults,
+)
+from mace.domain.wing import Wing, WingSegment
 
 
 class Vehicle:

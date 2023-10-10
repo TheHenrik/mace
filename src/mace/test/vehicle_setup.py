@@ -1,8 +1,9 @@
-from mace.domain.wing import Wing, WingSegment
+import numpy as np
+
 from mace.domain.fuselage import Fuselage, FuselageSegment
 from mace.domain.landing_gear import LandingGear, Wheel
 from mace.domain.vehicle import Vehicle
-import numpy as np
+from mace.domain.wing import Wing, WingSegment
 
 
 def vehicle_setup() -> Vehicle:

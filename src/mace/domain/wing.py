@@ -1,11 +1,11 @@
 import math
-from mace.utils.mesh import gen_profile, get_profil, mesh
+
 import matplotlib.pyplot as plt
 import numpy as np
 
 from mace.domain.general_functions import rotate_vector
+from mace.utils.mesh import gen_profile, get_profil, mesh
 from mace.utils.weight import moment_at_position
-
 
 rad = np.pi / 180
 

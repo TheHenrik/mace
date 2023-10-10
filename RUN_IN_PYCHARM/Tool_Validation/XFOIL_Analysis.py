@@ -1,8 +1,10 @@
-from mace.aero.implementations.airfoil_analyses import Airfoil
+import os
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import numpy as np
-from pathlib import Path
-import os
+
+from mace.aero.implementations.airfoil_analyses import Airfoil
 
 if __name__ == "__main__":
     airfoil_name = "ag40"

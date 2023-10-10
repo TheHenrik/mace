@@ -1,16 +1,15 @@
+import time
+
 import numpy as np
 from scipy.interpolate import interp1d
 from scipy.optimize import bisect
 
+import mace.aero.generalfunctions as functions
 from mace.aero.generalfunctions import GeneralFunctions
 from mace.aero.implementations.aero import Aerodynamics
+from mace.aero.implementations.airfoil_analyses import Airfoil
 from mace.domain import params
 from mace.domain.vehicle import Vehicle
-from mace.aero.implementations.aero import Aerodynamics
-from mace.aero.generalfunctions import GeneralFunctions
-import mace.aero.generalfunctions as functions
-from mace.aero.implementations.airfoil_analyses import Airfoil
-import time
 
 
 class HorizontalFlight:
