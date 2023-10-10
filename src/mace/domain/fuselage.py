@@ -97,9 +97,9 @@ class Fuselage:
     def get_mass(self):
         # TODO Add cog calc
         lenght = len(self.segments)
-        area, volume = 0, 0, 0
+        area, volume = 0, 0
         for i in range(lenght - 1):
-            a, b = mesh(self.segments[i], self.segments[i+1])
+            a, b = mesh(self.segments[i].profile, self.segments[i+1].profile)
             area += a
             volume += b
         self.mass = area * 80 * 2.2 / 1000

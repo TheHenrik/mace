@@ -57,7 +57,7 @@ def get_profil_thickness(airfoil: str) -> float:
     with open(file_location, "rt") as f:
         data = re.findall(r"([01]\.\d+) +([0\-]{1,2}\.\d+)", f.read())
     profil = [list(map(float, point)) for point in data]
-    th = [profil[i]-profil[-i] for i in range(len(profil)//2)]
+    th = [profil[i][1]-profil[-i][1] for i in range(len(profil)//2)]
     return max(th)
 
 
@@ -89,5 +89,5 @@ def mesh(profil_innen, profil_außen):
 
 
 if __name__ == "__main__":
-    print(get_profil_thickness("ag19"))
+    print(get_profil_thickness("e222"))
 

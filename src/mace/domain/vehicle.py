@@ -315,7 +315,7 @@ class Vehicle:
 
         for misc in self.miscs:
             mass[misc.name] = misc.mass
-            weighted_cog[misc.name] = misc.postion
+            weighted_cog[misc.name] = misc.position
 
         self.mass = sum(mass.values())
         self.center_of_gravity = sum(weighted_cog.values()) / self.mass
@@ -392,5 +392,5 @@ class Avl:
 @dataclass 
 class Misc:
     name: str
-    weight: float
+    mass: float
     position: np.ndarray
