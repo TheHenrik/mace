@@ -1,28 +1,43 @@
 import numpy as np
 
 from mace.domain import params
+from mace.utils.mesh import mesh
 
 
 class FuselageSegment:
-    def __init__(self):
-        self.width: float = 0.0
-        self.height: float = 0.0
-        self.origin: np.ndarray = np.array([0.0, 0.0, 0.0])
-        self.shape: str = "rectangular"  # 'elliptical'
-        self.circumference: float = 0.0
+    profile: np.ndarray
+    circumference: float
+    shape: str
+    width: float
+    height: float
+    origin: np.ndarray
 
-    def get_circumference(self):
-        if self.shape == "rectangular":
-            circumference = 2 * self.width + 2 * self.height
-        if self.shape == "elliptical":
-            lbda = self.width - self.height / (self.width + self.height)
-            circumference = (
+    def __init__(self, origin, shape, width, height):    
+        self.width = width
+        self.height = height
+        self.origin = origin
+        if shape == "rectangular":
+            dx = 0
+            dy = self.width/2
+            dz = self.height/2
+            p1 = origin + np.array([dx, +dy, +dz])
+            p2 = origin + np.array([dx, -dy, +dz])
+            p3 = origin + np.array([dx, -dy, -dz])
+            p4 = origin + np.array([dx, +dy, -dz])
+            self.profile = np.array([p1,p2,p3,p4])
+            self.circumference = 2 * (self.height + self.width)
+            self.shape = shape
+        elif shape == "elliptical":
+            angle = np.linspace(0, 2*np.pi, 100)
+            p = [np.array([0, np.sin(a)*self.height, np.cos(a)*self.width]) for a in angle]
+            self.profile = np.array(p)
+            lbda = self.height - self.width / (self.width + self.height)
+            self.circumference = (
                 np.pi
                 * (self.width + self.height)
                 * (1 + 3 * lbda**2 / (10 + (4 - 3 * lbda**2) ** 0.5))
             )
-        self.circumference = circumference
-        return circumference
+            self.shape = shape
 
 
 class Fuselage:
@@ -33,8 +48,8 @@ class Fuselage:
         self.segments = []
         self.drag_correction: float = 2.6
 
-    def add_segment(self, segment: FuselageSegment) -> None:
-        self.segments.append(segment)
+    def add_segment(self, origin, shape, width, height) -> None:
+        self.segments.append(FuselageSegment(origin, shape, width, height))
 
     def get_wetted_area(self):
         A_wetted = 0.0
@@ -78,6 +93,20 @@ class Fuselage:
         C_D_fuse = self.drag_correction * C_D_wet * S_wet / S_ref
 
         return C_D_fuse
+
+    def get_mass(self):
+        # TODO Add cog calc
+        lenght = len(self.segments)
+        area, volume = 0, 0
+        for i in range(lenght - 1):
+            a, b = mesh(self.segments[i].profile, self.segments[i+1].profile)
+            area += a
+            volume += b
+        self.mass = area * 80 * 2.2 / 1000
+        self.volume = volume
+        self.area = area
+
+        return self.mass, np.array([0, 0, 0])
 
 
 if __name__ == "__main__":

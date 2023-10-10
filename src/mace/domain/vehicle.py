@@ -1,30 +1,29 @@
+from collections import defaultdict
 from dataclasses import dataclass
 
 import matplotlib.pyplot as plt
 import numpy as np
 
-from mace.domain.wing import Wing, WingSegment
-from mace.domain.fuselage import Fuselage, FuselageSegment
-from mace.domain.landing_gear import LandingGear, Wheel
-from mace.domain.results import (
-    FlightConditions,
-    Climb,
-    ClimbResults,
-    Avl,
-    AvlInputs,
-    AvlOutputs,
-    AeroCoeffs,
-    Cl,
-    Cd,
-    HorizontalFlight,
-    HorizontalFlightResults,
-)
 from mace.aero.implementations.avl import (
     geometry_and_mass_files_v2 as geometry_and_mass_files,
 )
 from mace.aero.implementations.avl.athenavortexlattice import AVL
-import matplotlib.pyplot as plt
-import numpy as np
+from mace.domain.fuselage import Fuselage, FuselageSegment
+from mace.domain.landing_gear import LandingGear, Wheel
+from mace.domain.results import (
+    AeroCoeffs,
+    Avl,
+    AvlInputs,
+    AvlOutputs,
+    Cd,
+    Cl,
+    Climb,
+    ClimbResults,
+    FlightConditions,
+    HorizontalFlight,
+    HorizontalFlightResults,
+)
+from mace.domain.wing import Wing, WingSegment
 
 
 class Vehicle:
@@ -53,8 +52,13 @@ class Vehicle:
         self.propulsion = Propulsion
         self.landing_gear = LandingGear()
 
+        self.miscs = []
+
     def add_wing(self, position: str, wing: Wing):
         self.wings[position] = wing
+
+    def add_misc(self, name, mass, position):
+        self.miscs.append(Misc(name, mass, position))
 
     def add_fuselage(self, position: str, fuselage: Fuselage):
         self.fuselages[position] = fuselage
@@ -288,8 +292,39 @@ class Vehicle:
             5. CG -> Landing gear position
             6. CG -> Cargo Bay position
         """
+        self.get_mass()
+        self.calc_load()
+        self.get_mass()
+        self.calc_load()
 
-        pass
+    def get_mass(self): 
+        # TODO fix stuff
+        mass = defaultdict()
+        weighted_cog = defaultdict()
+
+        for name, wing in self.wings.items():
+            mass[name], weighted_cog[name] = wing.get_mass()
+        
+        for name, fuselage in self.fuselages.items():
+            mass[name], weighted_cog[name] = fuselage.get_mass()
+
+        mass["landing_gear"], weighted_cog["landing_gear"] = (
+            self.landing_gear.mass,
+            self.landing_gear.center_of_gravity,
+        )
+
+        for misc in self.miscs:
+            mass[misc.name] = misc.mass
+            weighted_cog[misc.name] = misc.position
+
+        self.mass = sum(mass.values())
+        self.center_of_gravity = sum(weighted_cog.values()) / self.mass
+
+    def calc_load(self, wing: str = "main_wing"):
+        main_wing: Wing = self.wings[wing]
+        half_wing_span = main_wing.segments[-1].nose_outer[1]
+        for segment in main_wing.segments:
+            segment.get_rovings(self.mass, half_wing_span)
 
     def transport_box_dimensions(self):
         '''
@@ -388,3 +423,10 @@ class AvlOutputs:
 class Avl:
     inputs: AvlInputs = None
     outputs: AvlOutputs = None
+
+
+@dataclass 
+class Misc:
+    name: str
+    mass: float
+    position: np.ndarray

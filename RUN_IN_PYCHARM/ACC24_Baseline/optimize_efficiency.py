@@ -1,12 +1,12 @@
+import matplotlib.pyplot as plt
+import numpy as np
 from vehicle_setup import vehicle_setup
-from mace.domain.parser import PlaneParser
+
 from mace.aero.flightconditions.glidingflight_jf import GlidingFlight
 from mace.aero.implementations.avl import (
     geometry_and_mass_files_v2 as geometry_and_mass_files,
 )
-import matplotlib.pyplot as plt
-import numpy as np
-
+from mace.domain.parser import PlaneParser
 
 if __name__ == "__main__":
     # Define Aircraft Geometry

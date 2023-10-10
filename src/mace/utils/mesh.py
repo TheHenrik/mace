@@ -1,9 +1,9 @@
 import re
+from collections import defaultdict
 from functools import cache
+from pathlib import Path
 
 import numpy as np
-from pathlib import Path
-from collections import defaultdict
 
 
 def tri_area(first: np.ndarray, second: np.ndarray, third: np.ndarray):
@@ -52,11 +52,13 @@ def get_profil(airfoil: str) -> np.ndarray:
 
 @cache
 def get_profil_thickness(airfoil: str) -> float:
+    # TODO Test function
     file_location = Path(f"{Path(__file__).parents[3]}/data/airfoils/{airfoil}.dat")
     with open(file_location, "rt") as f:
         data = re.findall(r"([01]\.\d+) +([0\-]{1,2}\.\d+)", f.read())
     profil = [list(map(float, point)) for point in data]
-    return np.asarray(profil)
+    th = [profil[i][1]-profil[-i][1] for i in range(len(profil)//2)]
+    return max(th)
 
 
 def mesh(profil_innen, profil_außen):
@@ -87,4 +89,5 @@ def mesh(profil_innen, profil_außen):
 
 
 if __name__ == "__main__":
-    print(get_profil_thickness("ag19"))
+    print(get_profil_thickness("e222"))
+

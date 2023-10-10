@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from mace.domain.general_functions import rotate_vector
+from mace.utils.mesh import gen_profile, get_profil, mesh
+from mace.utils.weight import moment_at_position
 
 rad = np.pi / 180
 
@@ -32,6 +34,8 @@ class WingSegment:
     """
     Wing Segment Class
     """
+    mass: float = None
+    roving_count: int = None
 
     def __init__(self) -> None:
         """
@@ -76,19 +80,49 @@ class WingSegment:
         self.area = (self.inner_chord + self.outer_chord) * self.span / 2
         return self.area
 
-    def get_mass(self, volume: float, area: float):
-        mass = 0
+    def get_mass(self):
+        # TODO Find COG
+        mass = 0   
+        profil_innen, profil_außen = gen_profile(
+            get_profil(self.inner_airfoil),
+            get_profil(self.outer_airfoil),
+            self.nose_inner,
+            self.back_inner,
+            self.nose_outer,
+            self.back_outer,
+        )
+        area, volume = mesh(profil_innen, profil_außen)
         if self.wsb.build_type == "Positiv":
             mass += volume * self.wsb.density
         elif self.wsb.build_type == "Balsa":
             mass += volume * self.wsb.density * 0.5
         elif self.wsb.build_type == "Negativ":
             mass += 0
+        if not self.roving_count is None:
+            mass += self.span * self.roving_count * 0.02
 
         mass += area * self.wsb.surface_weight
         for material in self.wsb.materials:
             mass += material * area
-        return mass
+        cog = np.array([0, 0, 0]) * mass
+        self.mass = mass
+        self.cog = cog
+        return mass, cog
+    
+    def get_rovings(self, total_mass: float, plane_half_wing_span):
+        # TODO Change var names
+        max_height = self.inner_chord * 0.05
+        D100 = moment_at_position(total_mass, self.nose_inner[1], plane_half_wing_span)
+        sigma = 700 / (1_000**2)
+        H100 = D100 / sigma
+        C100 = 10 / 1_000
+        G100 = max_height - 0.4 / 1_000
+        J100 = np.cbrt(((C100 * (G100**3)) - (6 * G100 * H100)) / C100)
+        K100 = (G100 - J100) / 2
+        m = K100 * C100 * 10
+        n = np.ceil(m)
+        self.roving_count = n
+        return n
 
 
 class Wing:
@@ -497,6 +531,17 @@ class Wing:
         plt.axis("equal")
         plt.grid(True)
         plt.show()
+
+    def get_mass(self):
+        masses = []
+        cogs = []
+        for segment in self.segments:
+            tmp_mass, tmp_cogs = segment.get_mass()
+            masses.append(tmp_mass)
+            cogs.append(tmp_cogs)
+        self.mass = 2 * sum(masses)
+        cog = sum(cogs) / self.mass
+        return 2*self.mass, 2*cog
 
 
 # Example usage:

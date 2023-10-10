@@ -1,16 +1,14 @@
 import math
+import time
 
 import numpy as np
 
+import mace.aero.generalfunctions as functions
 from mace.aero.generalfunctions import GeneralFunctions
-from mace.aero.implementations.aero import Aerodynamics
-from mace.domain import params
-from mace.domain.vehicle import Vehicle
 from mace.aero.implementations.aero import Aerodynamics
 from mace.aero.implementations.airfoil_analyses import Airfoil
-from mace.aero.generalfunctions import GeneralFunctions
-import mace.aero.generalfunctions as functions
-import time
+from mace.domain import params
+from mace.domain.vehicle import Vehicle
 
 
 class Climb:

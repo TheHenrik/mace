@@ -1,14 +1,14 @@
+import matplotlib.pyplot as plt
 from vehicle_setup import vehicle_setup
-from mace.domain.parser import PlaneParser
-from mace.aero.flightconditions.horizontalflight import HorizontalFlight
+
 from mace.aero.flightconditions.climb_scipy import Climb
-from mace.aero.flightconditions.takeoff_jf import TakeOff
 from mace.aero.flightconditions.efficiency_flight_low_fid import EfficiencyFlight
+from mace.aero.flightconditions.horizontalflight import HorizontalFlight
+from mace.aero.flightconditions.takeoff_jf import TakeOff
 from mace.aero.implementations.avl import (
     geometry_and_mass_files_v2 as geometry_and_mass_files,
 )
-import matplotlib.pyplot as plt
-
+from mace.domain.parser import PlaneParser
 
 if __name__ == "__main__":
     payload = 3.0

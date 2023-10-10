@@ -1,17 +1,14 @@
-from mace.domain.vehicle import Vehicle
-from mace.domain import params
-from mace.aero.implementations.aero import Aerodynamics
-from mace.aero.generalfunctions import GeneralFunctions
-from mace.aero.implementations.airfoil_analyses import Airfoil
-import mace.aero.generalfunctions as functions
-from scipy.optimize import fsolve
-from scipy.optimize import root_scalar
-from scipy.optimize import minimize_scalar
-from scipy.optimize import minimize
-from skopt import dummy_minimize
-from skopt import gp_minimize, BayesSearchCV
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.optimize import fsolve, minimize, minimize_scalar, root_scalar
+from skopt import BayesSearchCV, dummy_minimize, gp_minimize
+
+import mace.aero.generalfunctions as functions
+from mace.aero.generalfunctions import GeneralFunctions
+from mace.aero.implementations.aero import Aerodynamics
+from mace.aero.implementations.airfoil_analyses import Airfoil
+from mace.domain import params
+from mace.domain.vehicle import Vehicle
 
 
 class EfficiencyFlight:
@@ -215,10 +212,10 @@ class EfficiencyFlight:
 
 
 if __name__ == "__main__":
-    from mace.test.vehicle_setup import vehicle_setup
     from mace.aero.implementations.avl import (
         geometry_and_mass_files_v2 as geometry_and_mass_files,
     )
+    from mace.test.vehicle_setup import vehicle_setup
 
     Aircraft = vehicle_setup()
 
