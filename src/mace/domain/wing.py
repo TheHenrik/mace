@@ -99,9 +99,7 @@ class WingSegment:
         elif self.wsb.build_type == "Negativ":
             mass += 0
         if not self.roving_count is None:
-            mass += self.span * self.roving_count * 0.05
-
-        self.mass += 2 * mass
+            mass += self.span * self.roving_count * 0.02
 
         mass += area * self.wsb.surface_weight
         for material in self.wsb.materials:
@@ -542,7 +540,7 @@ class Wing:
             cogs.append(tmp_cogs)
         self.mass = 2 * sum(masses)
         cog = sum(cogs) / self.mass
-        return self.mass, cog
+        return 2*self.mass, 2*cog
 
 
 # Example usage:

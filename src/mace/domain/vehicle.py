@@ -300,7 +300,7 @@ class Vehicle:
         self.calc_load()
 
     def get_mass(self): 
-        # TODO Add misc, fix stuff
+        # TODO fix stuff
         mass = defaultdict()
         weighted_cog = defaultdict()
 

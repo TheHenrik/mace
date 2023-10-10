@@ -106,6 +106,9 @@ class Fuselage:
             volume += b
             
         mass += area * 80 * 2.2 / 1000
+        self.mass = mass
+        self.volume = volume
+        self.area = area
 
         return mass, np.array([0, 0, 0])
 
