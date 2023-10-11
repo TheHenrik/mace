@@ -251,27 +251,32 @@ def vehicle_setup() -> Vehicle:
     vehicle.landing_gear = landing_gear
 
     ####################################################################################################################
-    # Miscellaneous
+    # MISCELLANEOUS
 
     vehicle.add_misc("Battery", 0.150, np.array([0,0,0]))
     vehicle.add_misc("Regeler", 0.050, np.array([0,0,0]))
     vehicle.add_misc("Servo", 0.050, np.array([0,0,0]))
 
     ####################################################################################################################
+    # BUILD
+    
+    vehicle.build()
+    
+    ####################################################################################################################
     # PLOT
 
     # vehicle.plot_vehicle(azim=180, elev=0)
-    # vehicle.plot_vehicle(azim=230, elev=30)
+    vehicle.plot_vehicle(azim=230, elev=30)
     # vehicle.plot_vehicle(azim=0, elev=90)
     # vehicle.plot_vehicle(azim=90, elev=0)
 
     # vehicle.get_stability_derivatives()
 
-    ####################################################################################################################
-    # Build and return
-    
-    vehicle.build()
     vehicle.print_mass_table()
+
+    ####################################################################################################################
+    # RETURN
+
     return vehicle
 
 
