@@ -36,6 +36,7 @@ class WingSegment:
     """
     mass: float = None
     roving_count: int = None
+    mass_breakdown: dict = None
 
     def __init__(self) -> None:
         """
@@ -81,8 +82,10 @@ class WingSegment:
         return self.area
 
     def get_mass(self):
-        # TODO Find COG
+        # TODO Better COG
+        # TODO Make me not ugly
         mass = 0   
+        self.mass_breakdown = {}
         profil_innen, profil_außen = gen_profile(
             get_profil(self.inner_airfoil),
             get_profil(self.outer_airfoil),
@@ -91,23 +94,31 @@ class WingSegment:
             self.nose_outer,
             self.back_outer,
         )
-        area, volume = mesh(profil_innen, profil_außen)
+        area, volume, cog = mesh(profil_innen, profil_außen)
         if self.wsb.build_type == "Positiv":
             mass += volume * self.wsb.density
         elif self.wsb.build_type == "Balsa":
             mass += volume * self.wsb.density * 0.5
         elif self.wsb.build_type == "Negativ":
             mass += 0
+        if not mass == 0:
+             self.mass_breakdown["Kern"] = mass
+        
         if not self.roving_count is None:
-            mass += self.span * self.roving_count * 0.02
+            t = self.span * self.roving_count * 0.02
+            mass += t
+            self.mass_breakdown["Holm"] = t
 
+        a = mass
         mass += area * self.wsb.surface_weight
         for material in self.wsb.materials:
             mass += material * area
-        cog = np.array([0, 0, 0]) * mass
+
+        self.mass_breakdown["Schale"] = mass - a
+
         self.mass = mass
         self.cog = cog
-        return mass, cog
+        return self.mass, self.cog * self.mass
     
     def get_rovings(self, total_mass: float, plane_half_wing_span):
         # TODO Change var names
@@ -538,9 +549,10 @@ class Wing:
             tmp_mass, tmp_cogs = segment.get_mass()
             masses.append(tmp_mass)
             cogs.append(tmp_cogs)
-        self.mass = 2 * sum(masses)
-        cog = sum(cogs) / self.mass
-        return 2*self.mass, 2*cog
+        faktor = 2 if self.symmetric else 1
+        self.mass = faktor * sum(masses)
+        self.cog = sum(cogs) / self.mass
+        return self.mass, self.cog * self.mass * np.array([2,0,2])
 
 
 # Example usage:

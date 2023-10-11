@@ -271,6 +271,7 @@ def vehicle_setup() -> Vehicle:
     # Build and return
     
     vehicle.build()
+    vehicle.print_mass_table()
     return vehicle
 
 

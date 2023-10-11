@@ -98,15 +98,18 @@ class Fuselage:
         # TODO Add cog calc
         lenght = len(self.segments)
         area, volume = 0, 0
+        cog = np.array([0.,0.,0.])
         for i in range(lenght - 1):
-            a, b = mesh(self.segments[i].profile, self.segments[i+1].profile)
+            a, b, c = mesh(self.segments[i].profile, self.segments[i+1].profile)
+            cog += c * area
             area += a
             volume += b
         self.mass = area * 80 * 2.2 / 1000
         self.volume = volume
         self.area = area
+        self.cog = cog*area
 
-        return self.mass, np.array([0, 0, 0])
+        return self.mass, cog * self.mass
 
 
 if __name__ == "__main__":

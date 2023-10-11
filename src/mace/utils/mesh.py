@@ -6,12 +6,16 @@ from pathlib import Path
 import numpy as np
 
 
-def tri_area(first: np.ndarray, second: np.ndarray, third: np.ndarray):
+def tri_area(first: np.ndarray, second: np.ndarray, third: np.ndarray) -> float:
     return np.sum(np.linalg.norm(np.cross(second - first, third - first), axis=1)) / 2
 
 
-def tri_volume(first: np.ndarray, second: np.ndarray, third: np.ndarray):
+def tri_volume(first: np.ndarray, second: np.ndarray, third: np.ndarray) -> float:
     return np.sum(np.cross(first, second) * third) / 6
+
+
+def tri_point(first: np.ndarray, second: np.ndarray, third: np.ndarray) -> np.ndarray:
+    return (np.linalg.norm(np.cross(second - first, third - first), axis=1) @ (first+second+third)) / 6
 
 
 def scale(factors, vecs):
@@ -85,7 +89,14 @@ def mesh(profil_innen, profil_außen):
     area += tri_area(iu1s, iu2s, au2s)
     area += tri_area(iu1s, au2s, au1s)
 
-    return area, volume
+    p = np.array([0.,0.,0.])
+    p += tri_point(io1s, io2s, ao2s)
+    p += tri_point(io1s, ao2s, ao1s)
+    p += tri_point(iu1s, iu2s, au2s)
+    p += tri_point(iu1s, au2s, au1s)
+    p /= area
+
+    return area, volume, p
 
 
 if __name__ == "__main__":
