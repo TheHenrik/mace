@@ -8,7 +8,7 @@ from mace.domain.wing import Wing, WingSegment, WingSegmentBuild
 
 def vehicle_setup() -> Vehicle:
     vehicle = Vehicle()
-    vehicle.mass = 2.7 + 2.4
+    vehicle.mass = 2.7 + 2.3
     vehicle.center_of_gravity = [0.130, 0.0, 0.0]
 
     ####################################################################################################################
@@ -81,7 +81,7 @@ def vehicle_setup() -> Vehicle:
     segment.inner_chord = 0.25
     segment.outer_chord = 0.228
     segment.flap_chord_ratio = 0.4
-    segment.wsb = WingSegmentBuild("Positiv", 0.2, 30, density=35)
+    segment.wsb = WingSegmentBuild("Positiv", 0.2, 30, core_material_density=35)
     horizontal_stabilizer.add_segment(segment)
 
     # Segment
@@ -89,7 +89,7 @@ def vehicle_setup() -> Vehicle:
     segment.inner_chord = 0.228
     segment.outer_chord = 0.12
     segment.flap_chord_ratio = 0.4
-    segment.wsb = WingSegmentBuild("Positiv", 0.2, 30,density=35)
+    segment.wsb = WingSegmentBuild("Positiv", 0.2, 30, core_material_density=35)
     horizontal_stabilizer.add_segment(segment)
 
     # Resize Wing
@@ -117,7 +117,7 @@ def vehicle_setup() -> Vehicle:
     segment.outer_chord = 0.23
     segment.outer_x_offset = 0.02
     segment.flap_chord_ratio = 0.4
-    segment.wsb = WingSegmentBuild("Positiv", 0.2, 30, density=35)
+    segment.wsb = WingSegmentBuild("Positiv", 0.2, 30, core_material_density=35)
     vertical_stabilizer.add_segment(segment)
 
     # Resize Wing
@@ -253,9 +253,11 @@ def vehicle_setup() -> Vehicle:
     ####################################################################################################################
     # Miscellaneous
 
-    vehicle.add_misc("Battery", 0.150, np.array([0,0,0]))
-    vehicle.add_misc("Regeler", 0.050, np.array([0,0,0]))
-    vehicle.add_misc("Servo", 0.050, np.array([0,0,0]))
+    vehicle.add_misc("Battery", 0.201, np.array([0,0,0]))   # SLS Quantum 2200mAh 3S 60C : 201gr inkl. Kabel
+    vehicle.add_misc("ESC", 0.093, np.array([0,0,0]))       # YGE 95A : 93gr inkl. Kabel
+    vehicle.add_misc("Servo", 0.092, np.array([0,0,0]))     # 6 Servos a 12gr + 20gr Kabel
+    vehicle.add_misc("Receiver", 0.010, np.array([0,0,0]))  # bel. Hersteller circa 10gr
+    vehicle.add_misc("Motor", 0.175, np.array([0,0,0]))     # T-Motor AT2826 900KV : 175gr inkl. Kabel
 
     ####################################################################################################################
     # PLOT
@@ -270,7 +272,7 @@ def vehicle_setup() -> Vehicle:
     ####################################################################################################################
     # Build and return
     
-    vehicle.build()
+    #vehicle.build()
     return vehicle
 
 

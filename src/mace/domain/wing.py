@@ -4,11 +4,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from mace.domain.general_functions import rotate_vector
-from mace.utils.mesh import gen_profile, get_profil, mesh
+from mace.utils.mesh import gen_profile, get_profil, mesh, get_profil_thickness
 from mace.utils.weight import moment_at_position
 
 rad = np.pi / 180
-
 
 class Spar:
     lenght: int = None
@@ -23,11 +22,11 @@ class WingSegmentBuild:
     density: str = None
     spar: Spar = None
 
-    def __init__(self, typ, surface, *args, density=0) -> None:
-        self.build_type = typ
-        self.surface_weight = surface
+    def __init__(self, build_type, surface_weight, *args, core_material_density=0) -> None:
+        self.build_type = build_type
+        self.surface_weight = surface_weight
         self.materials = np.array(args) / 1_000 * 2.2
-        self.density = density
+        self.density = core_material_density
 
 
 class WingSegment:
@@ -111,7 +110,8 @@ class WingSegment:
     
     def get_rovings(self, total_mass: float, plane_half_wing_span):
         # TODO Change var names
-        max_height = self.inner_chord * 0.05
+        airfoil_thickness_to_chord = get_profil_thickness(self.inner_airfoil)
+        max_height = self.inner_chord * airfoil_thickness_to_chord
         D100 = moment_at_position(total_mass, self.nose_inner[1], plane_half_wing_span)
         sigma = 700 / (1_000**2)
         H100 = D100 / sigma
@@ -475,6 +475,7 @@ class Wing:
         self.span = self.get_span()
         self.aspect_ratio = self.get_aspect_ratio()
         self.mean_aerodynamic_chord = self.get_mean_aerodynamic_chord()
+        self.neutral_point = self.get_neutral_point()
 
     def plot_wing_geometry(self):
         """
@@ -539,7 +540,7 @@ class Wing:
             tmp_mass, tmp_cogs = segment.get_mass()
             masses.append(tmp_mass)
             cogs.append(tmp_cogs)
-        self.mass = 2 * sum(masses)
+        self.mass = sum(masses)
         cog = sum(cogs) / self.mass
         return 2*self.mass, 2*cog
 

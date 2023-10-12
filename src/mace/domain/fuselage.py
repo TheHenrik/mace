@@ -52,20 +52,25 @@ class Fuselage:
         self.segments.append(FuselageSegment(origin, shape, width, height))
 
     def get_wetted_area(self):
+        # A_wetted = 0.0
+        # for i, segment in enumerate(self.segments):
+        #     if i == 0:
+        #         last_segment_circumference = segment.get_circumference()
+        #         last_segment_x = segment.origin[0]
+        #     else:
+        #         last_segment_circumference = this_segment_circumference
+        #         last_segment_x = this_segment_x
+        #     this_segment_circumference = segment.get_circumference()
+        #     this_segment_x = segment.origin[0]
+        #     length = abs(this_segment_x - last_segment_x)
+        #     A_wetted += (
+        #         length * (last_segment_circumference + this_segment_circumference) / 2
+        #     )
+
         A_wetted = 0.0
-        for i, segment in enumerate(self.segments):
-            if i == 0:
-                last_segment_circumference = segment.get_circumference()
-                last_segment_x = segment.origin[0]
-            else:
-                last_segment_circumference = this_segment_circumference
-                last_segment_x = this_segment_x
-            this_segment_circumference = segment.get_circumference()
-            this_segment_x = segment.origin[0]
-            length = abs(this_segment_x - last_segment_x)
-            A_wetted += (
-                length * (last_segment_circumference + this_segment_circumference) / 2
-            )
+        for i in range(len(self.segments) - 1):
+            a, b = mesh(self.segments[i].profile, self.segments[i + 1].profile)
+            A_wetted += a
         return A_wetted
 
     def build(self):
@@ -102,7 +107,7 @@ class Fuselage:
             a, b = mesh(self.segments[i].profile, self.segments[i+1].profile)
             area += a
             volume += b
-        self.mass = area * 80 * 2.2 / 1000
+        self.mass = area * 320 * 2.2 / 1000
         self.volume = volume
         self.area = area
 

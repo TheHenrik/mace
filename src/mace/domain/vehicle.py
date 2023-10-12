@@ -292,10 +292,10 @@ class Vehicle:
             5. CG -> Landing gear position
             6. CG -> Cargo Bay position
         """
-        self.get_mass()
-        self.calc_load()
-        self.get_mass()
-        self.calc_load()
+        for i in range(3):
+            self.calc_load()
+            self.get_mass()
+        self.mass += self.payload
 
     def get_mass(self): 
         # TODO fix stuff
@@ -324,7 +324,7 @@ class Vehicle:
         main_wing: Wing = self.wings[wing]
         half_wing_span = main_wing.segments[-1].nose_outer[1]
         for segment in main_wing.segments:
-            segment.get_rovings(self.mass, half_wing_span)
+            segment.get_rovings(self.mass + self.payload, half_wing_span)
 
     def transport_box_dimensions(self):
         '''
@@ -355,7 +355,7 @@ class Vehicle:
         box_length = 1.4 - box_height - box_width
 
         for wing in self.wings.values():
-            wing.number_of_parts = np.ceil(wing.span / box_length)
+            wing.number_of_parts = int(np.ceil(wing.span / box_length))
             print(f'Wing {wing.tag} has {wing.number_of_parts} parts')
 
         print(f'Box height: %.2f m' % box_height)
