@@ -4,12 +4,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from mace.domain.general_functions import rotate_vector
-from mace.utils.mesh import gen_profile, get_profil, mesh
+from mace.utils.mesh import gen_profile, get_profil, mesh, get_profil_thickness
 from mace.utils.weight import moment_at_position
 from collections import defaultdict
 
 rad = np.pi / 180
-
 
 class Spar:
     lenght: int = None
@@ -24,11 +23,11 @@ class WingSegmentBuild:
     density: str = None
     spar: Spar = None
 
-    def __init__(self, typ, surface, *args, density=0) -> None:
-        self.build_type = typ
-        self.surface_weight = surface
+    def __init__(self, build_type, surface_weight, *args, core_material_density=0) -> None:
+        self.build_type = build_type
+        self.surface_weight = surface_weight
         self.materials = np.array(args) / 1_000 * 2.2
-        self.density = density
+        self.density = core_material_density
 
 
 class WingSegment:
@@ -121,8 +120,8 @@ class WingSegment:
     
     def get_rovings(self, total_mass: float, plane_half_wing_span):
         # TODO Change var names
-        # FIXME
-        max_height = self.inner_chord * 0.05
+        airfoil_thickness_to_chord = get_profil_thickness(self.inner_airfoil)
+        max_height = self.inner_chord * airfoil_thickness_to_chord
         D100 = moment_at_position(total_mass, self.nose_inner[1], plane_half_wing_span)
         sigma = 700 / (10**6)
         H100 = D100 / sigma
@@ -172,10 +171,11 @@ class Wing:
         self.n_chordwise: int = 10
         self.c_space: int = 1  # = cos
         self.n_spanwise: int = 20
-        self.s_space: int = (
-            -2
-        )  # = -sin, good for straight, elliptical or slightly tapered wings, in other cases cos (1)
-
+        self.s_space: int = -2  # = -sin, good for straight, elliptical or slightly tapered wings, in other cases cos (1)
+        
+        # Mass estimation
+        self.number_of_parts = 1
+        
     def add_segment(self, segment: WingSegment) -> None:
         """
         Add a segment to the wing
@@ -485,6 +485,7 @@ class Wing:
         self.span = self.get_span()
         self.aspect_ratio = self.get_aspect_ratio()
         self.mean_aerodynamic_chord = self.get_mean_aerodynamic_chord()
+        self.neutral_point = self.get_neutral_point()
 
     def plot_wing_geometry(self):
         """

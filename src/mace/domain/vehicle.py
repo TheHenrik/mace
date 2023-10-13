@@ -293,10 +293,10 @@ class Vehicle:
             5. CG -> Landing gear position
             6. CG -> Cargo Bay position
         """
-        self.get_mass()
-        self.calc_load()
-        self.get_mass()
-        self.calc_load()
+        for i in range(3):
+            self.calc_load()
+            self.get_mass()
+        self.mass += self.payload
 
     def get_mass(self): 
         mass = defaultdict()
@@ -327,8 +327,45 @@ class Vehicle:
         main_wing: Wing = self.wings[wing]
         half_wing_span = main_wing.segments[-1].nose_outer[1]
         for segment in main_wing.segments:
-            segment.get_rovings(self.mass, half_wing_span)
+            segment.get_rovings(self.mass + self.payload, half_wing_span)
 
+    def transport_box_dimensions(self):
+        '''
+        Checks if the box dimensions are correct
+        '''
+        box_height: float = 0
+        box_width: float = 0
+        box_length: float = 0
+        airfoil_thickness_to_chord: float = 0.1
+
+        for wing in self.wings.values():
+            for segment in wing.segments:
+                box_height = max(box_height, segment.inner_chord, segment.outer_chord)
+                box_width += segment.inner_chord * airfoil_thickness_to_chord
+        pass
+
+        for fuse in self.fuselages.values():
+            fuse_other_dimension = 0
+            for segment in fuse.segments:
+                if segment.width > segment.height:
+                    box_height = max(box_height, segment.width)
+                    fuse_other_dimension = max(fuse_other_dimension, segment.height)
+                else:
+                    box_height = max(box_height, segment.height)
+                    fuse_other_dimension = max(fuse_other_dimension, segment.width)
+            box_width += fuse_other_dimension
+
+        box_length = 1.4 - box_height - box_width
+
+        for wing in self.wings.values():
+            wing.number_of_parts = int(np.ceil(wing.span / box_length))
+            print(f'Wing {wing.tag} has {wing.number_of_parts} parts')
+
+        print(f'Box height: %.2f m' % box_height)
+        print(f'Box width: %.2f m' % box_width)
+        print(f'Box length: %.2f m' % box_length)
+        print('\n')
+    
     def print_mass_table(self, to_file=False, fmt="simple"):
         if to_file:
             print("Not yet implemented")

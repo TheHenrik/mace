@@ -23,30 +23,49 @@ class Wheel:
         )
         return C_D_wheel
 
+    def get_mass(self):
+        self.mass = 1.1875 * self.diameter**2 + 0.0413 * self.diameter
+        return self.mass
+    
+class Strut:
+    def __init__(self):
+        self.mass: float = 0.
+        self.origin: np.ndarray = np.array([0., 0., 0.])
+        self.effective_drag_length: float = 0.
+        self.length_specific_cd: float = 0.0033
+
 
 class LandingGear:
     def __init__(self):
         self.mass: float = 0.0
         self.center_of_gravity: np.ndarray = np.array([0.0, 0.0, 0.0])
         self.wheels: List[Wheel] = []
-        self.height: float = 0.0
-        self.effective_drag_length: float = 0.0
-        self.length_specific_cd: float = 0.0
+        self.struts: List[Strut] = []
+        self.height: float = 0.
+
 
     def add_wheel(self, wheel: Wheel):
         self.wheels.append(wheel)
+        
+    def add_strut(self, strut: Strut):
+        self.struts.append(strut)
 
     def finalize(self):
         for wheel in self.wheels:
+            wheel.get_mass()
             self.mass += wheel.mass
             self.center_of_gravity += wheel.mass * wheel.origin
+        for strut in self.struts:
+            self.mass += strut.mass
+            self.center_of_gravity += strut.mass * strut.origin
         self.center_of_gravity /= self.mass
 
     def get_drag_coefficient(self, V, S_ref):
         cd = 0.0
         for wheel in self.wheels:
             cd += wheel.get_drag_coefficient(V, S_ref)
-            cd += self.effective_drag_length * self.length_specific_cd / S_ref
+        for strut in self.struts:
+            cd += strut.effective_drag_length * strut.length_specific_cd / S_ref
         return cd
 
     def plot(self, color="b"):
