@@ -296,7 +296,6 @@ class Vehicle:
         for i in range(3):
             self.calc_load()
             self.get_mass()
-        self.mass += self.payload
 
     def get_mass(self): 
         mass = defaultdict()
