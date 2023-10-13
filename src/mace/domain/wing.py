@@ -118,18 +118,17 @@ class WingSegment:
         self.cog = sum(self.cog_breakdown.values())/self.mass
         return self.mass, self.cog * self.mass
     
-    def get_rovings(self, total_mass: float, plane_half_wing_span):
+    def get_rovings(self, total_mass: float, plane_half_wing_span: float):
         # TODO Change var names
-        airfoil_thickness_to_chord = get_profil_thickness(self.inner_airfoil)
-        max_height = self.inner_chord * airfoil_thickness_to_chord
+        max_height = self.inner_chord * get_profil_thickness(self.inner_airfoil)
         D100 = moment_at_position(total_mass, self.nose_inner[1], plane_half_wing_span)
-        sigma = 700 / (10**6)
+        sigma = 700 * (10**6)
         H100 = D100 / sigma
         C100 = 10 / 1_000
         G100 = max_height - 0.4 / 1_000
         J100 = np.cbrt(((C100 * (G100**3)) - (6 * G100 * H100)) / C100)
         K100 = (G100 - J100) / 2
-        m = K100 * C100 * 10
+        m = K100 * C100 * 10**6
         n = np.ceil(m)
         self.roving_count = n
         return n

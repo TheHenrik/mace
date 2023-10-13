@@ -269,12 +269,13 @@ def vehicle_setup() -> Vehicle:
 
     # vehicle.get_stability_derivatives()
 
+    vehicle.build()
+    
     vehicle.print_mass_table()
 
     ####################################################################################################################
     # Build and return
     
-    #vehicle.build()
     return vehicle
 
 
