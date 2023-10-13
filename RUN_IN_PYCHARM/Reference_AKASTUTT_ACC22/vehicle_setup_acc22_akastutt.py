@@ -266,7 +266,7 @@ def vehicle_setup() -> Vehicle:
     # PLOT
 
     # vehicle.plot_vehicle(azim=180, elev=0)
-    vehicle.plot_vehicle(azim=230, elev=30)
+    # vehicle.plot_vehicle(azim=230, elev=30)
     # vehicle.plot_vehicle(azim=0, elev=90)
     # vehicle.plot_vehicle(azim=90, elev=0)
 

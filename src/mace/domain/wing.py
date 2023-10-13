@@ -6,6 +6,7 @@ import numpy as np
 from mace.domain.general_functions import rotate_vector
 from mace.utils.mesh import gen_profile, get_profil, mesh
 from mace.utils.weight import moment_at_position
+from collections import defaultdict
 
 rad = np.pi / 180
 
@@ -36,7 +37,8 @@ class WingSegment:
     """
     mass: float = None
     roving_count: int = None
-    mass_breakdown: dict = None
+    mass_breakdown: defaultdict = None
+    cog_breakdown: defaultdict = None
 
     def __init__(self) -> None:
         """
@@ -82,10 +84,8 @@ class WingSegment:
         return self.area
 
     def get_mass(self):
-        # TODO Better COG
-        # TODO Make me not ugly
-        mass = 0   
         self.mass_breakdown = {}
+        self.cog_breakdown = {}
         profil_innen, profil_außen = gen_profile(
             get_profil(self.inner_airfoil),
             get_profil(self.outer_airfoil),
@@ -95,29 +95,28 @@ class WingSegment:
             self.back_outer,
         )
         area, volume, cog = mesh(profil_innen, profil_außen)
+
         if self.wsb.build_type == "Positiv":
-            mass += volume * self.wsb.density
+            self.mass_breakdown["Kern"] = volume * self.wsb.density
         elif self.wsb.build_type == "Balsa":
-            mass += volume * self.wsb.density * 0.5
+            self.mass_breakdown["Kern"] = volume * self.wsb.density * 0.1
         elif self.wsb.build_type == "Negativ":
-            mass += 0
-        if not mass == 0:
-             self.mass_breakdown["Kern"] = mass
-        
+            self.mass_breakdown["Kern"] = 0
+        self.cog_breakdown["Kern"] = self.nose_inner + (self.nose_outer-self.nose_inner)*0.5+(self.back_inner-self.nose_inner)*0.33
+        self.cog_breakdown["Kern"] *= self.mass_breakdown["Kern"]
+
         if not self.roving_count is None:
-            t = self.span * self.roving_count * 0.02
-            mass += t
-            self.mass_breakdown["Holm"] = t
+            self.mass_breakdown["Holm"] = self.span * self.roving_count * 0.02
+            self.cog_breakdown["Holm"] = self.nose_inner + (self.nose_outer-self.nose_inner)*0.5+(self.back_inner-self.nose_inner)*0.25
+            self.cog_breakdown["Holm"] *= self.mass_breakdown["Holm"]
 
-        a = mass
-        mass += area * self.wsb.surface_weight
+        self.mass_breakdown["Schale"] = area * self.wsb.surface_weight
         for material in self.wsb.materials:
-            mass += material * area
+            self.mass_breakdown["Schale"] += material * area
+        self.cog_breakdown["Schale"] = cog * self.mass_breakdown["Schale"]
 
-        self.mass_breakdown["Schale"] = mass - a
-
-        self.mass = mass
-        self.cog = cog
+        self.mass = sum(self.mass_breakdown.values())
+        self.cog = sum(self.cog_breakdown.values())/self.mass
         return self.mass, self.cog * self.mass
     
     def get_rovings(self, total_mass: float, plane_half_wing_span):

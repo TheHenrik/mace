@@ -340,6 +340,8 @@ class Vehicle:
             for i, segment in enumerate(wing.segments):
                 data.append(["", i, "", f"{segment.mass*1000:.0f}"])
                 for name, mass in segment.mass_breakdown.items():
+                    if mass == 0:
+                        continue
                     data.append(["", "", name, f"{mass*1000:.0f}"])
         
         for name, fuselage in self.fuselages.items():
