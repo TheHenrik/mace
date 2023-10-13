@@ -95,7 +95,6 @@ class Fuselage:
         return C_D_fuse
 
     def get_mass(self):
-        # TODO Add cog calc
         lenght = len(self.segments)
         area, volume = 0, 0
         cog = np.array([0.,0.,0.])

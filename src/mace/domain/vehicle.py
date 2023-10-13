@@ -299,7 +299,6 @@ class Vehicle:
         self.calc_load()
 
     def get_mass(self): 
-        # TODO fix stuff
         mass = defaultdict()
         weighted_cog = defaultdict()
 
@@ -317,6 +316,8 @@ class Vehicle:
         for misc in self.miscs:
             mass[misc.name] = misc.mass
             weighted_cog[misc.name] = misc.position
+
+        mass["payload"] = self.payload
 
         self.mass = sum(mass.values())
         self.center_of_gravity = sum(weighted_cog.values()) / self.mass
@@ -349,6 +350,8 @@ class Vehicle:
         
         for misc in self.miscs:
             data.append([misc.name, "", "", f"{Colour.BLUE}{misc.mass*1000:.0f}{Colour.END}"])
+
+        data.append(["Payload", "", "", f"{Colour.BLUE}{self.payload*1000:.0f}{Colour.END}"])
 
         data.append(SEPARATING_LINE)
         data.append([f"{Colour.RED}Gesamt{Colour.END}", "", "", f"{Colour.RED}{self.mass*1000:.0f}{Colour.END}"])

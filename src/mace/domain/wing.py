@@ -121,9 +121,10 @@ class WingSegment:
     
     def get_rovings(self, total_mass: float, plane_half_wing_span):
         # TODO Change var names
+        # FIXME
         max_height = self.inner_chord * 0.05
         D100 = moment_at_position(total_mass, self.nose_inner[1], plane_half_wing_span)
-        sigma = 700 / (1_000**2)
+        sigma = 700 / (10**6)
         H100 = D100 / sigma
         C100 = 10 / 1_000
         G100 = max_height - 0.4 / 1_000

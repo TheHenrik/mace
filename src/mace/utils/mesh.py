@@ -56,7 +56,6 @@ def get_profil(airfoil: str) -> np.ndarray:
 
 @cache
 def get_profil_thickness(airfoil: str) -> float:
-    # TODO Test function
     file_location = Path(f"{Path(__file__).parents[3]}/data/airfoils/{airfoil}.dat")
     with open(file_location, "rt") as f:
         data = re.findall(r"([01]\.\d+) +([0\-]{1,2}\.\d+)", f.read())
