@@ -1,0 +1,81 @@
+@startuml
+skinparam useBetaStyle true
+skinparam linetype ortho
+
+<style>
+    classDiagram{
+        FontColor Black
+        BackgroundColor White
+        LineThickness 2
+        LineColor Black
+        RoundCorner 10
+    }
+</style>
+class EmpennageType {
+typ: TEmpennage | VEmpennage
+}
+TEmpennage <-- EmpennageType
+class Fuselage {
+profile: FuselageProfile
+length: int
+mass: float
+}
+FuselageProfile <-- Fuselage
+class FuselageProfile {
+height: int
+width: int
+position: int
+}
+class Plane {
+name: str
+empennage: EmpennageType
+wing: Wing
+fuselage: Fuselage
+mass: float
+propulsion: Propulsion
+landing_gear: LandingGear
+aero_coeffs: AeroCoeffs
+avl: Avl
+flightconditions: FlightConditions
+}
+EmpennageType <-- Plane
+Wing <-- Plane
+Fuselage <-- Plane
+class TEmpennage {
+elevator: list[WingSegment]
+rudder: list[WingSegment]
+mass: float
+}
+WingSegment <-- TEmpennage
+WingSegment <-- TEmpennage
+class Wing {
+segments: list[WingSegment]
+airfoil: str
+mass: float
+n_chordwise: int
+c_space: int
+n_spanwise: int
+s_space: int
+x_scale: float
+y_scale: float
+z_scale: float
+x_translate: float
+y_translate: float
+z_translate: float
+twist_angle: float
+l_comp: float
+}
+WingSegment <-- Wing
+class WingSegment {
+nose_inner: ndarray
+nose_outer: ndarray
+back_inner: ndarray
+back_outer: ndarray
+area: float
+volume: float
+a_inc: float
+a_inc_outer: float
+n_spanwise: int
+s_space: int
+}
+@enduml

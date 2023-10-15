@@ -1,0 +1,1 @@
+gleitzahl = 15

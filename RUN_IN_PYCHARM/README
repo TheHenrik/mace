@@ -1,0 +1,17 @@
+Stand 2023-8-6
+
+Die auszuführenden Files befinden sich im Ordner RUN_IN_PYCHARM.
+Jedes Flugzeug ist in einem eigenen Ordner gespeichert und besteht aus einem main.py File und einem vehicle_setup.py File.
+Im vehicle_setup.py File wird das Flugzeug definiert. Im main.py File wird das Flugzeug anhand einer vorgegebenen Mission bewertet.
+Auszuführen ist hierbei nur das main.py File. Die vehicle_setup.py Files werden automatisch importiert.
+
+Troubleshooting:
+
+Das Programm läuft auf Mac OS Ventura unter Python 3.11. Die notwendigen Python-Packages sind zu importieren.
+Außerdem läuft wohl XFOIL und AVL nicht in dieser Form unter Windows.
+Deshalb:
+AVL für Windows herunterladen und den Pfad in mace/src/mace/aero/implementations/avl/athenavortexlattice.py anpassen.
+XFOIL für Windows herunterladen und den Pfad in mace/src/mace/aero/implementations/xfoil/xfoilpolars.py anpassen.
+
+Dann müsste es laufen. Im schlechtesten Fall sind die Output-Files von AVL unter Windows minimal anders.
+Dann muss das geometry_and_mass_files_v2.py file angepasst werden. -> Am Besten Bescheid geben

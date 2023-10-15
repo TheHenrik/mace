@@ -1,0 +1,114 @@
+# TOML
+
+[Plane]
+name = "Gregors Testplane"
+wing = "Wing"
+mass = [5.626, 0.1, 0, 0]
+propulsion = "Propulsion"
+aero_coeffs = "AeroCoeffs"
+reference_values = "ReferenceValues"
+avl = "Avl"
+flightconditions = "FlightConditions"
+
+[Wing]
+airfoil = "Airfoil"
+segments = "WingSegment"
+
+    [WingSegment.one]
+    nose_inner = [0.0,0.0,0.0]
+    nose_outer = [0.002,0.52,0.0]
+    back_inner = [0.292,0.0,0.0]
+    back_outer = [0.292,0.52,0.0]
+    a_inc = 0
+    a_inc_outer = 0
+    inner_airfoil = "Airfoil"
+    outer_airfoil = "Airfoil"
+
+    [WingSegment.two]
+    nose_inner = [0.002,0.52,0.0]
+    nose_outer = [0.045,0.84,0.0]
+    back_inner = [0.292,0.52,0.0]
+    back_outer = [0.275,0.84,0.0]
+    a_inc = 0
+    a_inc_outer = 0
+    inner_airfoil = "Airfoil"
+    outer_airfoil = "Airfoil"
+
+    [WingSegment.three]
+    nose_inner = [0.045,0.84,0.0]
+    nose_outer = [0.15,1.032,0.0]
+    back_inner = [0.275,0.84,0.0]
+    back_outer = [0.23,1.032,0.0]
+    a_inc = 0
+    a_inc_outer = 0
+    inner_airfoil = "Airfoil"
+    outer_airfoil = "Airfoil"
+
+[Airfoil]
+type = "Naca"
+name = "ag19"
+
+[AirfoilFile]
+filepath = "/Users/jannik/Documents/GitHub/mace/data/airfoils/ag19.dat"
+
+[Naca]
+number_of_naca = 12
+filepath = "/Users/jannik/Documents/GitHub/mace/data/airfoils/ag19.dat"
+
+[Propulsion]
+thrust = [[0, 16.7], [8, 15.2], [12, 14.1], [16, 12.4], [20, 11], [30, 9], [50, 5], [70, 3], [90, 2], [110, 1], [130, 0]]
+
+[ReferenceValues]
+s_ref = 0.53
+c_ref = 0.268
+b_ref = 2.064
+h = 0.2
+b = 2.064
+lambd_k = 3.65
+lambd_g = 8.09
+
+[AeroCoeffs]
+lift_coeff = "Cl"
+drag_coeff = "Cd"
+
+[Cl]
+cl_roll = 0.7
+
+[Cd]
+
+[Avl]
+inputs = "AvlInputs"
+outputs = "AvlOutputs"
+
+[AvlInputs]
+
+[AvlOutputs]
+
+[FlightConditions]
+takeoff = "TakeOff"
+climb = "Climb"
+horizontalflight = "HorizontalFlight"
+glidingflight = "GlidingFlight"
+
+[TakeOff]
+my = 0.16
+cd_viscous = 0.02
+results = "TakeOffResults"
+
+[TakeOffResults]
+
+[Climb]
+results = "ClimbResults"
+
+[ClimbResults]
+
+[HorizontalFlight]
+results = "HorizontalFlightResults"
+
+[HorizontalFlightResults]
+
+[GlidingFlight]
+results = "GlidingFlightResults"
+
+[GlidingFlightResults]
+
