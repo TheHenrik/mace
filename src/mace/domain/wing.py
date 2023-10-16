@@ -16,6 +16,18 @@ class Spar:
     rovings: int = None
 
 
+
+class WingBinder:
+    position: float
+    height: float
+    mass: float
+    roving_count: float
+
+    def __init__(self, position, height) -> None:
+        self.position = position
+        self.height = height
+
+
 class WingSegmentBuild:
     materials: np.ndarray = None
     build_type: str = None
@@ -553,6 +565,33 @@ class Wing:
         self.mass = faktor * sum(masses)
         self.cog = sum(cogs) / self.mass
         return self.mass, self.cog * self.mass * np.array([2,0,2])
+    
+    def get_height_position(self, position: float)->float:
+        for segment in self.segments:
+            if segment.nose_outer[1] < position and segment.nose_inner[1] > position:
+                continue
+            l = (np.sqrt(np.sum(segment.nose_inner-segment.back_inner))\
+                * (segment.nose_inner[1]-position)\
+                + np.sqrt(np.sum(segment.nose_outer-segment.back_outer))\
+                * (segment.nose_inner[1]-position)) / 2
+            th = get_profil_thickness(segment.inner_airfoil)
+            return l*th
+        return 0
+    
+    def part_wing_into(self, into_parts: int):
+        wing_span = self.segments[-1].nose_outer[1]
+        part_len = 2 * wing_span / into_parts
+        pos = [- wing_span + (i+1) * part_len for i in range(into_parts-1)]
+        self.part_wing(pos, mirror=False)
+    
+    def part_wing(self, positions: list[float], mirror: bool = True):
+        self.wing_binder = []
+        if mirror:
+            rev = [-pos for pos in positions if not pos == 0]
+            positions.extend(rev)
+        for position in positions:
+            h = self.get_height_position(position)
+            self.wing_binder.append(WingBinder(position, h))
 
 
 # Example usage:
