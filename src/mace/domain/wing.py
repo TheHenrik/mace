@@ -16,16 +16,37 @@ class Spar:
     rovings: int = None
 
 
-
 class WingBinder:
     position: float
     height: float
     mass: float
     roving_count: float
 
-    def __init__(self, position, height) -> None:
+    def __init__(self, position, height, moment_at_position) -> None:
         self.position = position
         self.height = height
+        self.get_rovings(moment_at_position)
+        self.get_mass()
+
+    def get_mass(self,):
+        self.mass = self.roving_count * 0.02
+        self.mass += self.height * 0.01
+
+    def get_rovings(self, moment_at_position):
+        # TODO Test me pls
+        max_height = self.height
+        D100 = moment_at_position
+        sigma = 700 * (10**6)
+        H100 = D100 / sigma
+        C100 = 10 / 1_000
+        G100 = max_height - 0.4 / 1_000
+        J100 = np.cbrt(((C100 * (G100**3)) - (6 * G100 * H100)) / C100)
+        K100 = (G100 - J100) / 2
+        m = K100 * C100 * 10**6
+        n = np.ceil(m)
+        self.roving_count = n
+        return n
+
 
 
 class WingSegmentBuild:
@@ -578,20 +599,23 @@ class Wing:
             return l*th
         return 0
     
-    def part_wing_into(self, into_parts: int):
+    def part_wing_into(self, into_parts: int, override=False):
         wing_span = self.segments[-1].nose_outer[1]
         part_len = 2 * wing_span / into_parts
         pos = [- wing_span + (i+1) * part_len for i in range(into_parts-1)]
-        self.part_wing(pos, mirror=False)
+        self.part_wing(pos, mirror=False, override=override)
     
-    def part_wing(self, positions: list[float], mirror: bool = True):
-        self.wing_binder = []
+    def part_wing(self, positions: list[float], half_wing_span, mirror=True, override=False):
+        if self.wing_binder is None or override:
+            self.wing_binder = []
         if mirror:
             rev = [-pos for pos in positions if not pos == 0]
             positions.extend(rev)
         for position in positions:
-            h = self.get_height_position(position)
-            self.wing_binder.append(WingBinder(position, h))
+            height = self.get_height_position(position)
+            moment = moment_at_position(self.mass, position, half_wing_span)
+            self.wing_binder.append(WingBinder(position, height, moment))
+
 
 
 # Example usage:
