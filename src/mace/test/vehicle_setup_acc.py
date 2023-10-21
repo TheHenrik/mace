@@ -10,7 +10,7 @@ from mace.domain.vehicle import Vehicle
 from mace.domain.wing import Wing, WingSegment, WingSegmentBuild
 
 
-def vehicle_setup(payload=3.0, span=3., aspect_ratio=15.0, airfoil="ag19") -> Vehicle:
+def vehicle_setup(payload=3.0, span=3., aspect_ratio=15.0, airfoil="ag45c") -> Vehicle:
     vehicle = Vehicle()
     vehicle.payload = payload
     vehicle.mass = 2.0 * (span / 3.0) ** 2
@@ -124,7 +124,7 @@ def vehicle_setup(payload=3.0, span=3., aspect_ratio=15.0, airfoil="ag19") -> Ve
     vehicle.add_wing("horizontal_stabilizer", horizontal_stabilizer)
     ####################################################################################################################
     # PROPULSION
-    tool_path = Path(__file__).resolve().parents[2]
+    tool_path = Path(__file__).resolve().parents[3]
     prop_surrogate_path = os.path.join(
         tool_path, "data", "prop_surrogates", "aeronaut14x8.csv"
     )
@@ -182,25 +182,6 @@ def vehicle_setup(payload=3.0, span=3., aspect_ratio=15.0, airfoil="ag19") -> Ve
     cargo_bay.build()
     print("f_length: %.3f m" % cargo_bay.length)
     vehicle.add_fuselage("cargo_bay", cargo_bay)
-    ####################################################################################################################
-    # PYLON
-    pylon = Wing()
-    pylon.tag = "pylon"
-    pylon.origin = [0.03, 0., -0.02]
-    pylon.airfoil = "ht14"
-
-    # Segment
-    segment = WingSegment()
-    segment.inner_chord = 0.15
-    segment.outer_chord = 0.15
-    segment.span = - (-Height + cargo_bay_height / 2 + 0.05) - 0.02 - cargo_bay_height/2
-    segment.dihedral = -90.
-    segment.wsb = empennage_construction
-    pylon.add_segment(segment)
-
-    pylon.build(resize_x_offset_from_hinge_angle=False)
-
-    vehicle.add_wing("pylon", pylon)
     ####################################################################################################################
     # LANDING GEAR
     landing_gear = LandingGear()
