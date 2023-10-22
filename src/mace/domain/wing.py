@@ -67,8 +67,8 @@ class WingSegment:
     """
     mass: float = None
     roving_count: int = None
-    mass_breakdown: defaultdict = None
-    cog_breakdown: defaultdict = None
+    mass_breakdown: defaultdict[str, float] = None
+    cog_breakdown: defaultdict[str, np.ndarray] = None
 
     def __init__(self) -> None:
         """
@@ -170,6 +170,7 @@ class Wing:
     Wing Class
     """
     wing_binder: list[WingBinder]= None
+    segments: list[WingSegment] = None
 
     def __init__(self) -> None:
         """
