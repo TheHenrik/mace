@@ -28,6 +28,7 @@ from tabulate import tabulate, SEPARATING_LINE
 
 
 class Vehicle:
+    wings: dict[str, Wing] = None
     def __init__(self):
         self.tag = "Vehicle"
         self.payload = 0.0
@@ -296,6 +297,7 @@ class Vehicle:
         for i in range(3):
             self.calc_load()
             self.get_mass()
+            self.print_mass_table()
 
     def get_mass(self): 
         mass = defaultdict()
@@ -365,15 +367,13 @@ class Vehicle:
         print(f'Box length: %.2f m' % box_length)
         print('\n')
     
-    def print_mass_table(self, to_file=False, fmt="simple"):
-        if to_file:
-            print("Not yet implemented")
-        
+    def print_mass_table(self, fmt="simple"):
         header = [f"{Colour.GREEN}Komponente{Colour.END}", "", "", f"{Colour.GREEN}Masse [g]{Colour.END}"]
         data = []
-
         for name, wing in self.wings.items():
             data.append([name, "", "", f"{Colour.BLUE}{wing.mass*1000:.0f}{Colour.END}"])
+            if not wing.wing_binder is None:
+                data.append(["", "Flächenverbinder", "", f"{sum(wb.mass for wb in wing.wing_binder)}"])
             for i, segment in enumerate(wing.segments):
                 data.append(["", i, "", f"{segment.mass*1000:.0f}"])
                 for name, mass in segment.mass_breakdown.items():

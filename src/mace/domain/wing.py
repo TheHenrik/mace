@@ -29,8 +29,8 @@ class WingBinder:
         self.get_mass()
 
     def get_mass(self,):
-        CONST = 0.02
-        self.mass = self.roving_count * 0.02 * self.height * CONST 
+        CONST = 35  / 1_000 * 0.2
+        self.mass = self.roving_count * self.height * CONST 
 
     def get_rovings(self, moment_at_position):
         # TODO Test me pls
@@ -136,7 +136,7 @@ class WingSegment:
         self.cog_breakdown["Kern"] *= self.mass_breakdown["Kern"]
 
         if not self.roving_count is None:
-            self.mass_breakdown["Holm"] = self.span * (self.roving_count * 0.02 + 0.02)
+            self.mass_breakdown["Holm"] = self.span * (self.roving_count * 0.008 + 0.015)
             self.cog_breakdown["Holm"] = self.nose_inner + (self.nose_outer-self.nose_inner)*0.5+(self.back_inner-self.nose_inner)*0.25
             self.cog_breakdown["Holm"] *= self.mass_breakdown["Holm"]
 
@@ -169,6 +169,7 @@ class Wing:
     """
     Wing Class
     """
+    wing_binder: list[WingBinder]= None
 
     def __init__(self) -> None:
         """
@@ -580,6 +581,11 @@ class Wing:
             tmp_mass, tmp_cogs = segment.get_mass()
             masses.append(tmp_mass)
             cogs.append(tmp_cogs)
+        if not self.wing_binder is None:
+            for wb in self.wing_binder:
+                masses.append(wb.mass)
+                cogs.append(np.array(0, wb.position, 0))
+
         faktor = 2 if self.symmetric else 1
         self.mass = faktor * sum(masses)
         self.cog = sum(cogs) / self.mass

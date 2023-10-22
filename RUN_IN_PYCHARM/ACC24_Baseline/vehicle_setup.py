@@ -239,8 +239,9 @@ def vehicle_setup(payload=3.0, span=3., aspect_ratio=15.0, airfoil="ag19") -> Ve
     vehicle.add_misc("Motor", 0.175, np.array([0, 0, 0]))  # T-Motor AT2826 900KV : 175gr inkl. Kabel
     
     ####################################################################################################################
-    
+
     vehicle.build()
+    vehicle.print_mass_table()
     vehicle.get_reference_values()
     vehicle.get_stability_derivatives()
     vehicle.transport_box_dimensions()
@@ -252,6 +253,7 @@ def vehicle_setup(payload=3.0, span=3., aspect_ratio=15.0, airfoil="ag19") -> Ve
         vehicle.plot_vehicle(azim=0, elev=90)
         vehicle.plot_vehicle(azim=90, elev=0)
     vehicle.plot_vehicle(azim=230, elev=30)
+
 
     return vehicle
 

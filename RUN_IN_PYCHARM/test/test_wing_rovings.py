@@ -7,11 +7,11 @@ def main():
 
     ws = WingSegment()
 
-    ws.inner_airfoil = "acc22"
-    ws.nose_inner = np.array([0,0.5,0])
+    ws.inner_airfoil = "ag19"
+    ws.nose_inner = np.array([0,0.,0])
     ws.inner_chord = 0.322
 
-    print(ws.get_rovings(3.0, 1.1))
+    print(ws.get_rovings(5.0, 1.1))
 
 
 
