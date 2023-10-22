@@ -253,11 +253,19 @@ def vehicle_setup() -> Vehicle:
     ####################################################################################################################
     # MISCELLANEOUS
 
-    vehicle.add_misc("Battery", 0.201, np.array([0,0,0]))   # SLS Quantum 2200mAh 3S 60C : 201gr inkl. Kabel
-    vehicle.add_misc("ESC", 0.093, np.array([0,0,0]))       # YGE 95A : 93gr inkl. Kabel
-    vehicle.add_misc("Servo", 0.092, np.array([0,0,0]))     # 6 Servos a 12gr + 20gr Kabel
-    vehicle.add_misc("Receiver", 0.010, np.array([0,0,0]))  # bel. Hersteller circa 10gr
-    vehicle.add_misc("Motor", 0.175, np.array([0,0,0]))     # T-Motor AT2826 900KV : 175gr inkl. Kabel
+    vehicle.add_misc(
+        "Battery", 0.201, np.array([0, 0, 0])
+    )  # SLS Quantum 2200mAh 3S 60C : 201gr inkl. Kabel
+    vehicle.add_misc("ESC", 0.093, np.array([0, 0, 0]))  # YGE 95A : 93gr inkl. Kabel
+    vehicle.add_misc(
+        "Servo", 0.092, np.array([0, 0, 0])
+    )  # 6 Servos a 12gr + 20gr Kabel
+    vehicle.add_misc(
+        "Receiver", 0.010, np.array([0, 0, 0])
+    )  # bel. Hersteller circa 10gr
+    vehicle.add_misc(
+        "Motor", 0.175, np.array([0, 0, 0])
+    )  # T-Motor AT2826 900KV : 175gr inkl. Kabel
 
     ####################################################################################################################
     # PLOT
@@ -270,12 +278,12 @@ def vehicle_setup() -> Vehicle:
     # vehicle.get_stability_derivatives()
 
     vehicle.build()
-    
+
     vehicle.print_mass_table()
 
     ####################################################################################################################
     # Build and return
-    
+
     return vehicle
 
 

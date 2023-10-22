@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 import matplotlib.pyplot as plt
 import numpy as np
+from tabulate import SEPARATING_LINE, tabulate
 
 from mace.aero.implementations.avl import (
     geometry_and_mass_files_v2 as geometry_and_mass_files,
@@ -24,11 +25,11 @@ from mace.domain.results import (
     HorizontalFlightResults,
 )
 from mace.domain.wing import Wing, WingSegment
-from tabulate import tabulate, SEPARATING_LINE
 
 
 class Vehicle:
     wings: dict[str, Wing] = None
+
     def __init__(self):
         self.tag = "Vehicle"
         self.payload = 0.0
@@ -298,13 +299,13 @@ class Vehicle:
             self.calc_load()
             self.get_mass()
 
-    def get_mass(self): 
+    def get_mass(self):
         mass = defaultdict()
         weighted_cog = defaultdict()
 
         for name, wing in self.wings.items():
             mass[name], weighted_cog[name] = wing.get_mass()
-        
+
         for name, fuselage in self.fuselages.items():
             mass[name], weighted_cog[name] = fuselage.get_mass()
 
@@ -330,9 +331,9 @@ class Vehicle:
             segment.get_rovings(self.mass + self.payload, half_wing_span)
 
     def transport_box_dimensions(self):
-        '''
+        """
         Checks if the box dimensions are correct
-        '''
+        """
         box_height: float = 0
         box_width: float = 0
         box_length: float = 0
@@ -359,52 +360,80 @@ class Vehicle:
 
         for wing in self.wings.values():
             wing.number_of_parts = int(np.ceil(wing.span / box_length))
-            print(f'Wing {wing.tag} has {wing.number_of_parts} parts')
+            print(f"Wing {wing.tag} has {wing.number_of_parts} parts")
 
-        print(f'Box height: %.2f m' % box_height)
-        print(f'Box width: %.2f m' % box_width)
-        print(f'Box length: %.2f m' % box_length)
-        print('\n')
-    
+        print(f"Box height: %.2f m" % box_height)
+        print(f"Box width: %.2f m" % box_width)
+        print(f"Box length: %.2f m" % box_length)
+        print("\n")
+
     def print_mass_table(self, fmt="simple"):
-        header = [f"{Colour.GREEN}Komponente{Colour.END}", "", "", f"{Colour.GREEN}Masse [g]{Colour.END}"]
+        header = [
+            f"{Colour.GREEN}Komponente{Colour.END}",
+            "",
+            "",
+            f"{Colour.GREEN}Masse [g]{Colour.END}",
+        ]
         data = []
         for name, wing in self.wings.items():
-            data.append([name, "", "", f"{Colour.BLUE}{wing.mass*1000:.0f}{Colour.END}"])
+            data.append(
+                [name, "", "", f"{Colour.BLUE}{wing.mass*1000:.0f}{Colour.END}"]
+            )
             if not wing.wing_binder is None:
-                data.append(["", "Flächenverbinder", "", f"{sum(wb.mass for wb in wing.wing_binder)}"])
+                data.append(
+                    [
+                        "",
+                        "Flächenverbinder",
+                        "",
+                        f"{sum(wb.mass for wb in wing.wing_binder)}",
+                    ]
+                )
             for i, segment in enumerate(wing.segments):
                 data.append(["", i, "", f"{segment.mass*1000:.0f}"])
                 for name, mass in segment.mass_breakdown.items():
                     if mass == 0:
                         continue
                     data.append(["", "", name, f"{mass*1000:.0f}"])
-        
-        for name, fuselage in self.fuselages.items():
-            data.append([name, "", "", f"{Colour.BLUE}{fuselage.mass*1000:.0f}{Colour.END}"])
-        
-        for misc in self.miscs:
-            data.append([misc.name, "", "", f"{Colour.BLUE}{misc.mass*1000:.0f}{Colour.END}"])
 
-        data.append(["Payload", "", "", f"{Colour.BLUE}{self.payload*1000:.0f}{Colour.END}"])
+        for name, fuselage in self.fuselages.items():
+            data.append(
+                [name, "", "", f"{Colour.BLUE}{fuselage.mass*1000:.0f}{Colour.END}"]
+            )
+
+        for misc in self.miscs:
+            data.append(
+                [misc.name, "", "", f"{Colour.BLUE}{misc.mass*1000:.0f}{Colour.END}"]
+            )
+
+        data.append(
+            ["Payload", "", "", f"{Colour.BLUE}{self.payload*1000:.0f}{Colour.END}"]
+        )
 
         data.append(SEPARATING_LINE)
-        data.append([f"{Colour.RED}Gesamt{Colour.END}", "", "", f"{Colour.RED}{self.mass*1000:.0f}{Colour.END}"])
+        data.append(
+            [
+                f"{Colour.RED}Gesamt{Colour.END}",
+                "",
+                "",
+                f"{Colour.RED}{self.mass*1000:.0f}{Colour.END}",
+            ]
+        )
         print()
         print(tabulate(data, header, fmt))
 
 
 class Colour:
-    PURPLE = '\033[95m'
-    CYAN = '\033[96m'
-    DARKCYAN = '\033[36m'
-    BLUE = '\033[94m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-    END = '\033[0m'    
+    PURPLE = "\033[95m"
+    CYAN = "\033[96m"
+    DARKCYAN = "\033[36m"
+    BLUE = "\033[94m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    RED = "\033[91m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
+    END = "\033[0m"
+
 
 @dataclass()
 class Propulsion:
@@ -468,7 +497,7 @@ class Avl:
     outputs: AvlOutputs = None
 
 
-@dataclass 
+@dataclass
 class Misc:
     name: str
     mass: float

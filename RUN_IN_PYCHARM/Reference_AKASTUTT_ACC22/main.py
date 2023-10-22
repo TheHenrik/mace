@@ -17,9 +17,9 @@ if __name__ == "__main__":
 
     # Define Aircraft Geometry
     Aircraft = vehicle_setup()
-    Aircraft.mass = 5.
-    print('vehicle.mass', Aircraft.mass)
-    #Aircraft.mass += 3.
+    Aircraft.mass = 5.0
+    print("vehicle.mass", Aircraft.mass)
+    # Aircraft.mass += 3.
     mass_file = geometry_and_mass_files.MassFile(Aircraft)
     mass_file.build_mass_file()
 

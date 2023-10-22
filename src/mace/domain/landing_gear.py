@@ -26,12 +26,13 @@ class Wheel:
     def get_mass(self):
         self.mass = 1.1875 * self.diameter**2 + 0.0413 * self.diameter
         return self.mass
-    
+
+
 class Strut:
     def __init__(self):
-        self.mass: float = 0.
-        self.origin: np.ndarray = np.array([0., 0., 0.])
-        self.effective_drag_length: float = 0.
+        self.mass: float = 0.0
+        self.origin: np.ndarray = np.array([0.0, 0.0, 0.0])
+        self.effective_drag_length: float = 0.0
         self.length_specific_cd: float = 0.0033
 
 
@@ -41,12 +42,11 @@ class LandingGear:
         self.center_of_gravity: np.ndarray = np.array([0.0, 0.0, 0.0])
         self.wheels: List[Wheel] = []
         self.struts: List[Strut] = []
-        self.height: float = 0.
-
+        self.height: float = 0.0
 
     def add_wheel(self, wheel: Wheel):
         self.wheels.append(wheel)
-        
+
     def add_strut(self, strut: Strut):
         self.struts.append(strut)
 

@@ -15,7 +15,10 @@ def tri_volume(first: np.ndarray, second: np.ndarray, third: np.ndarray) -> floa
 
 
 def tri_point(first: np.ndarray, second: np.ndarray, third: np.ndarray) -> np.ndarray:
-    return (np.linalg.norm(np.cross(second - first, third - first), axis=1) @ (first+second+third)) / 6
+    return (
+        np.linalg.norm(np.cross(second - first, third - first), axis=1)
+        @ (first + second + third)
+    ) / 6
 
 
 def scale(factors, vecs):
@@ -60,7 +63,7 @@ def get_profil_thickness(airfoil: str) -> float:
     with open(file_location, "rt") as f:
         data = re.findall(r"([01]\.\d+) +([0\-]{1,2}\.\d+)", f.read())
     profil = [list(map(float, point)) for point in data]
-    th = [profil[i][1]-profil[-i][1] for i in range(len(profil)//2)]
+    th = [profil[i][1] - profil[-i][1] for i in range(len(profil) // 2)]
     return max(th)
 
 
@@ -88,7 +91,7 @@ def mesh(profil_innen, profil_außen):
     area += tri_area(iu1s, iu2s, au2s)
     area += tri_area(iu1s, au2s, au1s)
 
-    p = np.array([0.,0.,0.])
+    p = np.array([0.0, 0.0, 0.0])
     p += tri_point(io1s, io2s, ao2s)
     p += tri_point(io1s, ao2s, ao1s)
     p += tri_point(iu1s, iu2s, au2s)
@@ -100,4 +103,3 @@ def mesh(profil_innen, profil_außen):
 
 if __name__ == "__main__":
     print(get_profil_thickness("acc22"))
-
