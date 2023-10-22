@@ -21,7 +21,9 @@ class AVL:
         self.geometry_file = Path(tool_path, "temporary", "geometry_file.avl")
         self.stability_file_name = Path(tool_path, "temporary", "stability_file.avl")
         self.mass_file = Path(tool_path, "temporary", "mass_file.mass")
-        self.stability_input_file_name = Path(tool_path, "temporary", "stability_input_file_avl.in")
+        self.stability_input_file_name = Path(
+            tool_path, "temporary", "stability_input_file_avl.in"
+        )
 
     def run_avl(
         self,
