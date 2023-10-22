@@ -14,22 +14,14 @@ class AVL:
     def __init__(self, plane):
         self.plane = plane
         tool_path = Path(__file__).resolve().parents[5]
-        self.avl_path = os.path.join(tool_path, "avl")
-        self.total_forces_file_name = os.path.join(
-            tool_path, "temporary/total_forces.avl"
-        )
-        self.strip_forces_file_name = os.path.join(
-            tool_path, "temporary/strip_forces.avl"
-        )
-        self.input_file_name = os.path.join(tool_path, "temporary/input_file_avl.in")
-        self.geometry_file = os.path.join(tool_path, "temporary/geometry_file.avl")
-        self.stability_file_name = os.path.join(
-            tool_path, "temporary/stability_file.avl"
-        )
-        self.mass_file = os.path.join(tool_path, "temporary/mass_file.mass")
-        self.stability_input_file_name = os.path.join(
-            tool_path, "temporary/stability_input_file_avl.in"
-        )
+        self.avl_path = Path(tool_path, "avl")
+        self.total_forces_file_name = Path(tool_path, "temporary", "total_forces.avl")
+        self.strip_forces_file_name = Path(tool_path, "temporary", "strip_forces.avl")
+        self.input_file_name = Path(tool_path, "temporary", "input_file_avl.in")
+        self.geometry_file = Path(tool_path, "temporary", "geometry_file.avl")
+        self.stability_file_name = Path(tool_path, "temporary", "stability_file.avl")
+        self.mass_file = Path(tool_path, "temporary", "mass_file.mass")
+        self.stability_input_file_name = Path(tool_path, "temporary", "stability_input_file_avl.in")
 
     def run_avl(
         self,
@@ -304,7 +296,7 @@ class AVL:
 
         # ---Run AVL---
         cmd = (
-            self.avl_path + " <" + self.stability_input_file_name
+            str(self.avl_path) + " <" + str(self.stability_input_file_name)
         )  # external command to run
         runsub.run_subprocess(cmd, timeout=15)
         list_of_process_ids = runsub.find_process_id_by_name("avl")
