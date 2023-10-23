@@ -72,7 +72,7 @@ class Fuselage:
 
         A_wetted = 0.0
         for i in range(len(self.segments) - 1):
-            a, b = mesh(self.segments[i].profile, self.segments[i + 1].profile)
+            a, b, _ = mesh(self.segments[i].profile, self.segments[i + 1].profile)
             A_wetted += a
         return A_wetted
 

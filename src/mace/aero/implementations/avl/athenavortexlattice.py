@@ -94,7 +94,7 @@ class AVL:
             input_file.write("QUIT\n")
 
         # ---Run AVL---
-        cmd = self.avl_path + " <" + self.input_file_name  # external command to run
+        cmd = str(self.avl_path) + " <" + str(self.input_file_name)  # external command to run
         runsub.run_subprocess(cmd, timeout=15)
         list_of_process_ids = runsub.find_process_id_by_name("avl")
         runsub.kill_subprocesses(list_of_process_ids)
