@@ -8,21 +8,27 @@ from mace.aero.implementations.avl.geometry_and_mass_files import GeometryFile, 
 
 # from mace.domain.vehicle import Vehicle
 from mace.domain.parser import PlaneParser
+from multiprocessing import current_process
 
 
 class AVL:
     def __init__(self, plane):
+        if current_process().name == "MainProcess":
+            pid = ""
+        else:
+            pid = "_" + current_process().pid
+
         self.plane = plane
         tool_path = Path(__file__).resolve().parents[5]
         self.avl_path = Path(tool_path, "avl")
-        self.total_forces_file_name = Path(tool_path, "temporary", "total_forces.avl")
-        self.strip_forces_file_name = Path(tool_path, "temporary", "strip_forces.avl")
-        self.input_file_name = Path(tool_path, "temporary", "input_file_avl.in")
-        self.geometry_file = Path(tool_path, "temporary", "geometry_file.avl")
-        self.stability_file_name = Path(tool_path, "temporary", "stability_file.avl")
-        self.mass_file = Path(tool_path, "temporary", "mass_file.mass")
+        self.total_forces_file_name = Path(tool_path, "temporary", f"total_forces{pid}.avl")
+        self.strip_forces_file_name = Path(tool_path, "temporary", f"strip_forces{pid}.avl")
+        self.input_file_name = Path(tool_path, "temporary", f"input_file_avl{pid}.in")
+        self.geometry_file = Path(tool_path, "temporary", f"geometry_file{pid}.avl")
+        self.stability_file_name = Path(tool_path, "temporary", f"stability_file{pid}.avl")
+        self.mass_file = Path(tool_path, "temporary", f"mass_file{pid}.mass")
         self.stability_input_file_name = Path(
-            tool_path, "temporary", "stability_input_file_avl.in"
+            tool_path, "temporary", f"stability_input_file_avl{pid}.in"
         )
 
     def run_avl(
