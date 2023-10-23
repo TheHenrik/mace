@@ -32,7 +32,7 @@ class WingBinder:
     def get_mass(
         self,
     ):
-        CONST = 35 / 1_000 * 0.2
+        CONST = 375 / 1_000 * 0.25
         self.mass = self.roving_count * self.height * CONST
 
     def get_rovings(self, moment_at_position):
