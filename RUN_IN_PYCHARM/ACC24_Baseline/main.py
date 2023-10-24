@@ -1,4 +1,8 @@
+from itertools import product
+from multiprocessing import Pool
+
 import matplotlib.pyplot as plt
+import numpy as np
 from vehicle_setup import vehicle_setup
 
 from mace.aero.flightconditions.climb_scipy import Climb
@@ -10,12 +14,19 @@ from mace.aero.implementations.avl import (
 )
 from mace.domain.parser import PlaneParser
 
-if __name__ == "__main__":
-    payload = 3.0
-    span = 3.0
-    aspect_ratio = 13.0
-    airfoil = "ag45c"
 
+def main():
+    payload = np.linspace(2.0, 3.0, num=2)
+    span = (3.0, 2.9)
+    aspect_ratio = (13.0,)
+    airfoil = ["ag45c", "ag19"]
+
+    with Pool() as p:
+        a = p.map(analysis, product(payload, span, aspect_ratio, airfoil))
+
+
+def analysis(args):
+    payload, span, aspect_ratio, airfoil = args
     # Define Analysis
     climb_time = 30.0
     cruise_time = 90.0
@@ -71,3 +82,8 @@ if __name__ == "__main__":
     V_max = cruise_analysis.get_maximum_velocity_scipy()
     s_cruise = V_max * cruise_time
     print("S Cruise: %.1f m" % s_cruise)
+
+
+if __name__ == "__main__":
+    main()
+    

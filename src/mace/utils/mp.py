@@ -1,6 +1,14 @@
 from multiprocessing import Pool, current_process
-from typing import Iterable, Callable
 from time import sleep
+from typing import Callable, Iterable
+
+
+def get_pid():
+    if current_process().name == "MainProcess":
+        return ""
+    else:
+        return "_" + str(current_process().pid)
+
 
 def mp(func: Callable, params: Iterable, processes: int | None = None):
     with Pool(processes=processes) as p:
