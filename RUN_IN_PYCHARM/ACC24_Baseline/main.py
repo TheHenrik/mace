@@ -12,7 +12,7 @@ from mace.aero.flightconditions.takeoff_jf import TakeOff
 from mace.aero.implementations.avl import (
     geometry_and_mass_files_v2 as geometry_and_mass_files,
 )
-from mace.domain.parser import PlaneParser
+
 
 
 def main():
