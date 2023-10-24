@@ -6,6 +6,13 @@ import time
 import psutil
 
 
+def _run_subprocess(cmd, path, input):
+    try:
+        return subprocess.run(cmd, capture_output=True, input=input)
+    except subprocess.TimeoutExpired:
+        pass
+
+
 def run_subprocess(cmd, timeout=5):
     """
     runs a subprocess with an external command cmd.
@@ -74,3 +81,7 @@ def kill_subprocesses(list_of_process_ids):
     else:
         pass
         # print("No running process found with given text")
+
+
+if __name__ == "__main__":
+    print(_run_subprocess("echo Hallo", None))
