@@ -9,7 +9,7 @@ from mace.aero.implementations.aero import Aerodynamics
 from mace.aero.implementations.airfoil_analyses import Airfoil
 from mace.domain import params
 from mace.domain.vehicle import Vehicle
-
+import logging
 
 class EfficiencyFlight:
     def __init__(self, Aircraft: Vehicle) -> None:

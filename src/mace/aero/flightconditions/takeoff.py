@@ -9,7 +9,7 @@ from mace.aero.implementations.avl.athenavortexlattice import AVL
 # from mace.domain import params as par
 # from mace.domain import plane as pl
 from mace.domain import Plane, params
-
+import logging
 
 class Takeoff:
     def __init__(self, plane: Plane):

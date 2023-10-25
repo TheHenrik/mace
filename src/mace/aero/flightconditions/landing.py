@@ -4,7 +4,7 @@ import numpy as np
 from mace.aero.flightconditions.takeoff import Takeoff
 from mace.aero.generalfunctions import GeneralFunctions
 from mace.domain import Plane, params
-
+import logging
 
 class Landing:
     def __init__(self, plane: Plane):
