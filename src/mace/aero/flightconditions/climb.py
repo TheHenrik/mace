@@ -9,7 +9,7 @@ from mace.aero.implementations.aero import Aerodynamics
 from mace.aero.implementations.airfoil_analyses import Airfoil
 from mace.domain import params
 from mace.domain.vehicle import Vehicle
-
+import logging
 
 class Climb:
     def __init__(self, plane: Vehicle):
@@ -184,5 +184,5 @@ class Climb:
             v_vertical_max = self.get_v_v_max()
 
         height = h0 + v_vertical_max * delta_t
-        print("Time needed for calculation: ", time.time() - time0)
+        logging.info("Time needed for calculation: ", time.time() - time0)
         return height

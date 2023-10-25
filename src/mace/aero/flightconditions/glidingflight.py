@@ -56,8 +56,8 @@ class GlidingFlight:
         self.plane.aero_coeffs.drag_coeff.cd_viscous = 0
 
         num = int(((cl_end - cl_start) / cl_step) + 1)
-        print(f"num = {num}, cl_start = {cl_start}, cl_end = {cl_end}")
-        print(np.linspace(cl_start, cl_end, num))
+        logging.debug(f"num = {num}, cl_start = {cl_start}, cl_end = {cl_end}")
+        logging.debug(np.linspace(cl_start, cl_end, num))
         for cl in np.linspace(cl_start, cl_end, num):
             # AVL -> cd_ind
             geometry_and_mass_files.GeometryFile(self.plane).build_geometry_file(1)

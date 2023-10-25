@@ -64,6 +64,6 @@ array = np.array(
 array_sort = np.argsort(array[:, 2])
 array = array[array_sort]
 # array[:, 2].argsort()
-print(array)
+logging.debug(array)
 
-print(np.linspace(0, 10, 11))
+logging.debug(np.linspace(0, 10, 11))

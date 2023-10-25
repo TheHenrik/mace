@@ -24,26 +24,26 @@ class Takeoff:
         self.my = self.plane.flightconditions.takeoff.my  # Rollreibungskoeffizient
         self.delta_a()
         self.delta_a = self.plane.flightconditions.takeoff.delta_a
-        print(self.delta_a)
+        logging.debug(self.delta_a)
         self.delta_w()
         self.delta_w = self.plane.flightconditions.takeoff.delta_w
-        print(self.delta_w)
+        logging.debug(self.delta_w)
         self.cl_roll = (
             self.plane.aero_coeffs.lift_coeff.cl_roll
         )  # initialisieren mit höherer Geschwindigkeit, cl sollte sich ja nicht ändern
-        print(self.cl_roll)
+        logging.debug(self.cl_roll)
         self.beta_a(self.cl_roll)
         self.beta_a = self.plane.flightconditions.takeoff.beta_a
-        print(self.beta_a)
+        logging.debug(self.beta_a)
         self.beta_w(self.cl_roll)
         self.beta_w = self.plane.flightconditions.takeoff.beta_w
-        print(self.beta_w)
+        logging.debug(self.beta_w)
         self.phi_a()
         self.phi_a = self.plane.flightconditions.takeoff.phi_a
-        print(self.phi_a)
+        logging.debug(self.phi_a)
         self.phi_w()
         self.phi_w = self.plane.flightconditions.takeoff.phi_w
-        print(self.phi_w)
+        logging.debug(self.phi_w)
 
         """self.plane.propulsion.thrust[0, :]
         self.plane.propulsion.thrust[1, :]"""  # initialisieren
@@ -80,7 +80,7 @@ class Takeoff:
         # viscous_drag = self.plane.aero_coeffs.drag_coeff.cd_viscous
         induced_drag = self.plane.aero_coeffs.drag_coeff.cd_ind
         cd_roll = viscous_drag + induced_drag * self.phi_a**2 * self.phi_w
-        print(f"cd_visc = {viscous_drag}, cd_ind = {induced_drag}, cd_roll = {cd_roll}")
+        logging.debug(f"cd_visc = {viscous_drag}, cd_ind = {induced_drag}, cd_roll = {cd_roll}")
         # cd_roll = cw_profil + cwi * phi_a**2 * phi_w
         return cd_roll
 
@@ -92,7 +92,7 @@ class Takeoff:
         drag = GeneralFunctions(self.plane).coefficient_to_lift_or_drag(
             current_velocity, cd_roll
         )
-        print(f"rolling_drag (profile) = {drag}")
+        logging.debug(f"rolling_drag (profile) = {drag}")
         return drag
 
         # ---Reibung---
@@ -207,8 +207,8 @@ class Takeoff:
         v_takeoff = self.v_start(v_min)
         v0 = 0
         num = int((v_takeoff - v0) // step)
-        print(f"step = {step}, number of steps = {num}")
-        print(f"v_array = {np.linspace(v0, v_takeoff, num + 1)}")
+        logging.debug(f"step = {step}, number of steps = {num}")
+        logging.debug(f"v_array = {np.linspace(v0, v_takeoff, num + 1)}")
         for element in np.linspace(
             v0, v_takeoff, num + 1
         ):  # v0 = 0, v_start, Anzahl der Inkremente für Diskretisierung
@@ -218,7 +218,7 @@ class Takeoff:
                 2 * num
             )  # eventuell quadratisch mitteln -> rechts der Mitte
 
-            print(f"current_velocity: {v}, v1 = {v1}, v2 = {v2}")
+            logging.debug(f"current_velocity: {v}, v1 = {v1}, v2 = {v2}")
             f = GeneralFunctions(self.plane).current_thrust(v)
 
             # delta, beta und phi sind bereits in __init__ berechnet
@@ -232,11 +232,11 @@ class Takeoff:
             if r < 0:
                 r = 0
 
-            print(
+            logging.debug(
                 f"v1 = {v1}, v2 = {v2}, f = {f}, w = {w}, a = {a}, G = {9.81 * self.mass[0]},r = {r}"
             )
-            print(f"delta_x = {self.delta_x(v1, v2, f, w, r)}")
-            print(f"delta_x < 0 : {self.delta_x(v1, v2, f, w, r) <= 0}")
+            logging.debug(f"delta_x = {self.delta_x(v1, v2, f, w, r)}")
+            logging.debug(f"delta_x < 0 : {self.delta_x(v1, v2, f, w, r) <= 0}")
 
             if self.delta_x(v1, v2, f, w, r) <= 0:
                 self.plane.flightconditions.takeoff.results.v_max_rolling = v1
@@ -247,14 +247,14 @@ class Takeoff:
             self.plane.flightconditions.takeoff.results.rolling_distance += (
                 self.delta_x(v1, v2, f, w, r)
             )
-            print(
+            logging.debug(
                 f"current rolling_distance: {self.plane.flightconditions.takeoff.results.rolling_distance}"
             )
             if v1 > v_timer_start:
                 self.plane.flightconditions.takeoff.results.rolling_time += (
                     self.delta_t(v1, v2, f, w, r)
                 )
-                print(
+                logging.debug(
                     f"current rolling_time: {self.plane.flightconditions.takeoff.results.rolling_time}"
                 )
 

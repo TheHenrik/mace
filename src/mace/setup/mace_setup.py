@@ -24,6 +24,6 @@ class Project:
         pass
 
     def benchmark(self):
-        print(f"Size on Disk of Plane: {getsize(self)}")
+        logging.debug(f"Size on Disk of Plane: {getsize(self)}")
         performance_time(10_000, print, self.planes[0])
         performance_report(performance_time, 1_000, print, self.planes[0], output=None)

@@ -10,7 +10,7 @@ from mace.aero.implementations.avl import (
 )
 from mace.domain import params
 from mace.domain.vehicle import Vehicle
-
+import logging
 
 class TakeOff:
     def __init__(self, plane: Vehicle):
@@ -78,6 +78,6 @@ class TakeOff:
                 CL_MAX = self.manual_cl_max
 
         if T >= 20:
-            print("Takeoff failed")
+            logging.info("Takeoff failed")
 
         return S, T

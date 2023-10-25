@@ -7,7 +7,7 @@ from mace.aero import generalfunctions
 # from mace.aero.implementations.avl import athenavortexlattice, geometry_and_mass_files
 # from mace.aero.implementations.viscousdrag import ViscousDrag
 from mace.domain import Plane, params
-
+import logging
 
 class TurningFlight:
     def __init__(self, plane: Plane):
@@ -72,7 +72,7 @@ class TurningFlight:
         elif v and cl:  # v, ca
 
             n = (cl * self.rho / 2 * v**2 * self.s_ref) / (self.mass * self.g)
-            print(f"n = {n}")
+            logging.debug(f"n = {n}")
             phi = math.degrees(math.acos(1 / n))
             r_k = (v**2) / (self.g * (n**2 - 1) ** 0.5)
             return v, r_k, cl, n, phi, self.turning_velocity(v, r_k)
@@ -133,10 +133,10 @@ class TurningFlight:
             return v, r_k, cl, n, phi, self.turning_velocity(v, r_k)
 
         elif n and phi:  # n, phi
-            print("error: n and phi are too less arguments")
+            logging.error("error: n and phi are too less arguments")
 
         else:
-            print("error: wrong arguments")
+            logging.error("error: wrong arguments")
 
     # ---Wendegeschwindigkeit und Wendedauer---
 
@@ -169,7 +169,7 @@ class TurningFlight:
         phi in degrees
         """
         if n is None and phi is None:
-            print("Bitte Parameter n oder phi ausfüllen.")
+            logging.warning("Bitte Parameter n oder phi ausfüllen.")
         elif n:
             phi = math.degrees(math.acos(1 / n))
         needed_thrust = cd / cl * (self.mass * self.g) / (math.cos(math.radians(phi)))
@@ -194,7 +194,7 @@ class TurningFlight:
             ** 0.5
             - v_0 / r_k
         )
-        print(f"delta = {delta},")
+        logging.debug(f"delta = {delta},")
         v_0_neu = excess_power / self.mass * delta + v_0
         return delta, v_0_neu
 
@@ -218,9 +218,9 @@ class TurningFlight:
         duration = 0
         distance1 = 0
         distance2 = 0
-        print(f"v_start = {v_start}")
+        logging.debug(f"v_start = {v_start}")
         current_velocity = v_start
-        print(f"velocity = {current_velocity}")
+        logging.debug(f"velocity = {current_velocity}")
         cl = float()
         r_k = float()
         number_of_steps = int((turn_angle // chi_inkrement) + 1)
@@ -232,7 +232,7 @@ class TurningFlight:
                 cl = lift_coefficient
                 r_k = self.turn_radius(v=current_velocity, cl=cl)
             if turn_radius:
-                print(f"velocity = {current_velocity}, turn_radius = {turn_radius}")
+                logging.debug(f"velocity = {current_velocity}, turn_radius = {turn_radius}")
                 cl = self.turn_radius(v=current_velocity, r_k=turn_radius)[2]
                 r_k = turn_radius
             elif phi:
@@ -242,25 +242,25 @@ class TurningFlight:
                 cl = self.turn_radius(v=current_velocity, n=load_factor)[2]
                 r_k = self.turn_radius(v=current_velocity, n=load_factor)
             else:
-                print("Error, too less arguments.")
+                logging.error("Error, too less arguments.")
             # drag estimation
             cd = generalfunctions.GeneralFunctions(self.plane).calcualate_drag(
                 cl, velocity=current_velocity
             )
 
-            print(f"cd = {cd}, cl = {cl}, thrust = {thrust}")
+            logging.debug(f"cd = {cd}, cl = {cl}, thrust = {thrust}")
             excess_power = generalfunctions.GeneralFunctions(self.plane).excess_power(
                 cd, cl, thrust
             )
-            print(f"excess_power = {excess_power}")
+            logging.debug(f"excess_power = {excess_power}")
             delta_time = self.delta_t(
                 r_k, excess_power, current_velocity, chi_inkrement
             )
             duration += delta_time[0]
             distance1 += delta_time[0] * current_velocity
-            print(f"velocity = {current_velocity}")
+            logging.debug(f"velocity = {current_velocity}")
             current_velocity = delta_time[1]
-            print(f"velocity = {current_velocity}")
+            logging.debug(f"velocity = {current_velocity}")
             distance2 += delta_time[0] * current_velocity
         distance = (distance1 + distance2) / 2
         finish_velocity = current_velocity

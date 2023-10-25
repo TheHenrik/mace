@@ -125,6 +125,6 @@ if __name__ == "__main__":
     c_w_2 = 0.455 / (np.log10(Re_L)) ** 2.58
     c_w_3 = 0.074 / Re_L**0.2
 
-    print(c_w_1)
-    print(c_w_2)
-    print(c_w_3)
+    logging.debug(c_w_1)
+    logging.debug(c_w_2)
+    logging.debug(c_w_3)

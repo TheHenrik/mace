@@ -360,12 +360,12 @@ class Vehicle:
 
         for wing in self.wings.values():
             wing.number_of_parts = int(np.ceil(wing.span / box_length))
-            print(f"Wing {wing.tag} has {wing.number_of_parts} parts")
+            logging.debug(f"Wing {wing.tag} has {wing.number_of_parts} parts")
 
-        print(f"Box height: %.2f m" % box_height)
-        print(f"Box width: %.2f m" % box_width)
-        print(f"Box length: %.2f m" % box_length)
-        print("\n")
+        logging.debug(f"Box height: %.2f m" % box_height)
+        logging.debug(f"Box width: %.2f m" % box_width)
+        logging.debug(f"Box length: %.2f m" % box_length)
+        logging.debug("\n")
 
     def print_mass_table(self, fmt="simple"):
         header = [
@@ -418,8 +418,8 @@ class Vehicle:
                 f"{Colour.RED}{self.mass*1000:.0f}{Colour.END}",
             ]
         )
-        print()
-        print(tabulate(data, header, fmt))
+        logging.debug()
+        logging.debug(tabulate(data, header, fmt))
 
 
 class Colour:

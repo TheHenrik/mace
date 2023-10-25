@@ -11,7 +11,7 @@ from mace.aero.implementations.aero import Aerodynamics
 from mace.aero.implementations.airfoil_analyses import Airfoil
 from mace.domain import params
 from mace.domain.vehicle import Vehicle
-
+import logging
 g = params.Constants.g
 rho = params.Constants.rho
 
@@ -100,11 +100,11 @@ class EfficiencyFlight:
         root = fsolve(func, [60, 13], xtol=1e-4)
         if np.all(np.isclose(func(root), [0.0, 0.0], atol=1e-1)):
             if print_results:
-                print("->   h1:", round(min(root[0], 100), 1), "v2:", round(root[1], 1))
+                logging.debug("->   h1:", round(min(root[0], 100), 1), "v2:", round(root[1], 1))
             return root
         else:
             if print_results:
-                print("-> No solution found")
+                logging.info("-> No solution found")
             return [0, 0]
 
     def optimizer(self, v0, h0, I=30):
@@ -137,11 +137,11 @@ class EfficiencyFlight:
             # print('points: ', round(points,5))
 
             if print_results:
-                print("\n")
-                print("v1: ", round(v1, 2), "t1: ", round(t1, 2), "I: ", I)
+                logging.debug("\n")
+                logging.debug("v1: ", round(v1, 2), "t1: ", round(t1, 2), "I: ", I)
                 self.equation_system(E0, v1, t1, I, print_results=True)
-                print("points: ", round(points, 5))
-                print("\n")
+                logging.debug("points: ", round(points, 5))
+                logging.debug("\n")
 
             return -points
 

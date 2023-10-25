@@ -5,7 +5,7 @@ import numpy as np
 
 from mace.aero.implementations import runsubprocess as runsub
 from mace.utils.mp import get_pid
-
+import logging
 # ---Inputs---
 
 
@@ -109,7 +109,7 @@ def get_xfoil_polar(
         elif cl_start is not None and cl_end is not None:
             input_file.write(f"CSeq {cl_start} {cl_end} {cl_step}\n")
         else:
-            print(f"wrong XFOIL inputs")  # Error
+            logging.error(f"wrong XFOIL inputs")  # Error
 
         input_file.write(f"\n\n")
         input_file.write(f"quit \n")
@@ -138,4 +138,4 @@ if __name__ == "__main__":
     n_iter = 80  # wenn keine Konvergenz reduzieren, Ergebnisse scheinen annähernd gleich zu bleiben
 
     polar_daten = get_xfoil_polar(airfoil_name, reynolds, cl=0.5)
-    print(polar_daten)
+    logging.debug(polar_daten)

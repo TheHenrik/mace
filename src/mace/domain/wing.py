@@ -238,18 +238,18 @@ class Wing:
         """
         Print the wing information
         """
-        print(f"Wing Name: {self.name}")
-        print("Segment Information:")
+        logging.debug(f"Wing Name: {self.name}")
+        logging.debug("Segment Information:")
         for i, segment in enumerate(self.segments):
-            print(f"Segment {i + 1}:")
-            print(f"    Inner Chord: {segment.inner_chord}")
-            print(f"    Outer Chord: {segment.outer_chord}")
-            print(f"    Inner Sweep: {segment.inner_x_offset}")
-            print(f"    Outer Sweep: {segment.outer_x_offset}")
-            print(f"    Inner Twist: {segment.inner_twist}")
-            print(f"    Outer Twist: {segment.outer_twist}")
-            print(f"    Dihedral: {segment.dihedral}")
-            print()
+            logging.debug(f"Segment {i + 1}:")
+            logging.debug(f"    Inner Chord: {segment.inner_chord}")
+            logging.debug(f"    Outer Chord: {segment.outer_chord}")
+            logging.debug(f"    Inner Sweep: {segment.inner_x_offset}")
+            logging.debug(f"    Outer Sweep: {segment.outer_x_offset}")
+            logging.debug(f"    Inner Twist: {segment.inner_twist}")
+            logging.debug(f"    Outer Twist: {segment.outer_twist}")
+            logging.debug(f"    Dihedral: {segment.dihedral}")
+            logging.debug()
 
     def get_area(self) -> float:
         """
@@ -405,7 +405,7 @@ class Wing:
         :param new_area: The new area of the wing.
         """
         if new_span is None and new_aspect_ratio is None and new_area is None:
-            print("No parameters specified. Wing will stay in original shape.")
+            logging.debug("No parameters specified. Wing will stay in original shape.")
         elif new_span is None and new_aspect_ratio is None:
             self.resize_to_given_area(new_area)
         elif new_span is None and new_area is None:
@@ -695,9 +695,9 @@ if __name__ == "__main__":
     AR = main_wing.aspect_ratio
 
     # Print wing properties
-    print(f"Area: {round(S, 4)}")
-    print(f"Span: {round(b, 3)}")
-    print(f"Aspect Ratio: {round(AR, 3)}")
+    logging.debug(f"Area: {round(S, 4)}")
+    logging.debug(f"Span: {round(b, 3)}")
+    logging.debug(f"Aspect Ratio: {round(AR, 3)}")
 
     # Plot wing geometry
     main_wing.plot_wing_geometry()

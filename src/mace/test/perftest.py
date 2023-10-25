@@ -10,9 +10,9 @@ def performance_time(repetitions, func, *args, output="toConsole", **kwargs):
     end = time.perf_counter()
     if output == "toConsole":
         took = end - start
-        print(f"took {took:.3f} s, ", end="")
-        print(f"{repetitions/took:.3f} it/s, ", end="")
-        print(f"{took/repetitions*1e3:.3f} ms/it")
+        logging.debug(f"took {took:.3f} s, ", end="")
+        logging.debug(f"{repetitions/took:.3f} it/s, ", end="")
+        logging.debug(f"{took/repetitions*1e3:.3f} ms/it")
         return
     return (end - start) / repetitions
 

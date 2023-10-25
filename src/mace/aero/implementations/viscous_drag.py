@@ -137,8 +137,8 @@ if __name__ == "__main__":
     CD = CDv + CDi
     L_D = CL / CD
 
-    print("V:  ", V)
-    print("CL:  %.4f" % CL)
-    print("CDv: %.4f" % CDv)
-    print("CDi: %.4f" % CDi)
-    print("L/D: %.4f" % L_D)
+    logging.debug("V:  ", V)
+    logging.debug("CL:  %.4f" % CL)
+    logging.debug("CDv: %.4f" % CDv)
+    logging.debug("CDi: %.4f" % CDi)
+    logging.debug("L/D: %.4f" % L_D)

@@ -20,14 +20,14 @@ def fn(x: int) -> int:
         pid = ""
     else:
         pid = current_process().pid
-    print(pid)
+    logging.debug(pid)
     sleep(1)
     return x * x
 
 
 def main():
-     print(fn(1))
-     print(mp(fn, range(6)))
+     logging.debug(fn(1))
+     logging.debug(mp(fn, range(6)))
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 
 import mace.aero.implementations.xfoil.xfoilpolars as xfoilpolars
-
+import logging
 
 class Airfoil:
     """
@@ -222,8 +222,8 @@ class Airfoil:
                 elif flap_angle == max(flap_angle_list):
                     cl_max = max(polar_data_re[i][:, 2])
             cl_list = np.arange(cl_min, cl_max, 0.05)
-            print("Reynolds number: ", re)
-            print("Lift coefficient list: ", cl_list)
+            logging.debug("Reynolds number: ", re)
+            logging.debug("Lift coefficient list: ", cl_list)
             for cl in cl_list:
                 cd = 1.0
                 for i, flap_angle in enumerate(flap_angle_list):
@@ -363,8 +363,8 @@ class Airfoil:
                 elif flap_angle == max(flap_angle_list):
                     cl_max = max(polar_data_re[i][:, 2])
             cl_list = np.arange(cl_min, cl_max, 0.05)
-            print("Reynolds number: ", re)
-            print("Lift coefficient list: ", cl_list)
+            logging.debug("Reynolds number: ", re)
+            logging.debug("Lift coefficient list: ", cl_list)
             for cl in cl_list:
                 cd = 1.0
                 for i, flap_angle in enumerate(flap_angle_list):
@@ -474,7 +474,7 @@ class Airfoil:
 
         if re > re_list[-1]:
             if self.print_re_warnings:
-                print(
+                logging.warning(
                     "Warning: Airfoil: %s -> Re=%.0f above max Re in surrogate model"
                     % (self.foil_name, re)
                 )
@@ -483,7 +483,7 @@ class Airfoil:
         if np.where(re_list >= re)[0][0] == 0:
             lower_re = re_list[np.where(re_list >= re)[0][0]]
             if self.print_re_warnings:
-                print(
+                logging.warning(
                     "Warning: Airfoil: %s -> Re=%.0f below min Re in surrogate model"
                     % (self.foil_name, re)
                 )
@@ -517,7 +517,7 @@ class Airfoil:
 
         if re > re_list[-1]:
             if self.print_re_warnings:
-                print(
+                logging.warning(
                     "Warning: Airfoil: %s -> Re=%.0f above max Re in surrogate model"
                     % (self.foil_name, re)
                 )
@@ -526,7 +526,7 @@ class Airfoil:
         if np.where(re_list >= re)[0][0] == 0:
             lower_re = re_list[np.where(re_list >= re)[0][0]]
             if self.print_re_warnings:
-                print(
+                logging.warning(
                     "Warning: Airfoil: %s -> Re=%.0f below min Re in surrogate model"
                     % (self.foil_name, re)
                 )
@@ -556,7 +556,7 @@ class Airfoil:
 
         if re > re_list[-1]:
             if self.print_re_warnings:
-                print(
+                logging.warning(
                     "Warning: Airfoil: %s -> Re=%.0f above max Re in surrogate model"
                     % (self.foil_name, re)
                 )
@@ -565,7 +565,7 @@ class Airfoil:
         if np.where(re_list >= re)[0][0] == 0:
             lower_re = re_list[np.where(re_list >= re)[0][0]]
             if self.print_re_warnings:
-                print(
+                logging.warning(
                     "Warning: Airfoil: %s -> Re=%.0f below min Re in surrogate model"
                     % (self.foil_name, re)
                 )
@@ -591,9 +591,9 @@ if __name__ == "__main__":
     ag19.re_list = np.array([100000, 200000])
 
     CD = ag19.get_cd(136000, 1.0)
-    print("CD:     %.3e" % CD)
+    logging.debug("CD:     %.3e" % CD)
 
     CL_max = ag19.get_cl_max(20000)
 
-    print("CL_max: %.3e" % CL_max)
-    print("CD:     %.3e" % CD)
+    logging.debug("CL_max: %.3e" % CL_max)
+    logging.debug("CD:     %.3e" % CD)

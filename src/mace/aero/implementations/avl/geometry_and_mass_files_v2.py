@@ -461,7 +461,7 @@ class MassFile:
         # print(self.plane.__dict__.items())
         else:  # noch nicht verwendbar
             for component in self.plane.__dict__.items():
-                print(hasattr(component, "mass"))
+                logging.debug(hasattr(component, "mass"))
                 if hasattr(component, "mass"):
                     MassFile.build_mass_of_components(self, mass_file, component)
 

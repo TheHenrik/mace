@@ -9,7 +9,7 @@ from mace.aero.implementations.avl.geometry_and_mass_files import GeometryFile, 
 # from mace.domain.vehicle import Vehicle
 from mace.domain.parser import PlaneParser
 from mace.utils.mp import get_pid
-
+import logging
 
 class AVL:
     def __init__(self, plane):
@@ -225,7 +225,7 @@ class AVL:
                     ):
                         values = np.fromstring(line, sep=" ")  # np.loadtxt(line)
                 else:
-                    print("No valid data format")
+                    logging.error("No valid data format")
             if strip_number == 0:
                 strip_forces = values
             else:
@@ -342,16 +342,16 @@ class AVL:
             XCG = XNP - SM * self.plane.wings["main_wing"].mean_aerodynamic_chord
             percentMAC = (XCG - (ac - 0.25 * l_mu)) / l_mu
 
-            print("\n")
-            print("CLa: %.3f" % CLa)
-            print("Cma: %.3f" % Cma)
-            print("Cnb: %.3f" % Cnb)
-            print("XNP: %.3f m" % XNP)
-            print("SM: %.1f %%" % (100 * SM))
-            print("l_mu: %.3f m" % l_mu)
-            print("XCG: %.3f m" % XCG)
-            print("percentMAC: %.1f %%" % (100 * percentMAC))
-            print("\n")
+            logging.debug("\n")
+            logging.debug("CLa: %.3f" % CLa)
+            logging.debug("Cma: %.3f" % Cma)
+            logging.debug("Cnb: %.3f" % Cnb)
+            logging.debug("XNP: %.3f m" % XNP)
+            logging.debug("SM: %.1f %%" % (100 * SM))
+            logging.debug("l_mu: %.3f m" % l_mu)
+            logging.debug("XCG: %.3f m" % XCG)
+            logging.debug("percentMAC: %.1f %%" % (100 * percentMAC))
+            logging.debug("\n")
 
             return CLa, Cma, Cnb, XNP, SM
 
@@ -484,7 +484,7 @@ def read_avl_output():
                 if line.startswith("{0}".format(strip_number + 1)) and "|" not in line:
                     values = line.split()
             else:
-                print("No valid data format")
+                logging.error("No valid data format")
         if strip_number == 0:
             strip_forces = np.array(values)
         else:
@@ -522,4 +522,4 @@ if __name__ == "__main__":
     AVL(plane).run_avl()
 
     AVL(plane).read_avl_output()
-    print(plane.avl.outputs.surface_dictionary)
+    logging.debug(plane.avl.outputs.surface_dictionary)
