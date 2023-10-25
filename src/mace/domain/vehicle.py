@@ -1,3 +1,4 @@
+import logging
 from collections import defaultdict
 from dataclasses import dataclass
 
@@ -25,7 +26,7 @@ from mace.domain.results import (
     HorizontalFlightResults,
 )
 from mace.domain.wing import Wing, WingSegment
-import logging
+
 
 class Vehicle:
     wings: dict[str, Wing] = None

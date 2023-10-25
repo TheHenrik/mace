@@ -1,3 +1,5 @@
+import logging
+
 from mace.domain.parser import TOMLParser
 from mace.domain.plane import Plane
 from mace.setup.airfoils import populate_airfoils

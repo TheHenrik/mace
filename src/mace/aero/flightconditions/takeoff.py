@@ -1,3 +1,4 @@
+import logging
 import math
 
 import numpy as np
@@ -9,7 +10,7 @@ from mace.aero.implementations.avl.athenavortexlattice import AVL
 # from mace.domain import params as par
 # from mace.domain import plane as pl
 from mace.domain import Plane, params
-import logging
+
 
 class Takeoff:
     def __init__(self, plane: Plane):
@@ -80,7 +81,9 @@ class Takeoff:
         # viscous_drag = self.plane.aero_coeffs.drag_coeff.cd_viscous
         induced_drag = self.plane.aero_coeffs.drag_coeff.cd_ind
         cd_roll = viscous_drag + induced_drag * self.phi_a**2 * self.phi_w
-        logging.debug(f"cd_visc = {viscous_drag}, cd_ind = {induced_drag}, cd_roll = {cd_roll}")
+        logging.debug(
+            f"cd_visc = {viscous_drag}, cd_ind = {induced_drag}, cd_roll = {cd_roll}"
+        )
         # cd_roll = cw_profil + cwi * phi_a**2 * phi_w
         return cd_roll
 

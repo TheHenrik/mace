@@ -1,3 +1,4 @@
+import logging
 import os  # operation system
 from pathlib import Path
 
@@ -9,7 +10,7 @@ from mace.aero.implementations.avl.geometry_and_mass_files import GeometryFile, 
 # from mace.domain.vehicle import Vehicle
 from mace.domain.parser import PlaneParser
 from mace.utils.mp import get_pid
-import logging
+
 
 class AVL:
     def __init__(self, plane):
@@ -17,11 +18,17 @@ class AVL:
         self.plane = plane
         tool_path = Path(__file__).resolve().parents[5]
         self.avl_path = Path(tool_path, "avl")
-        self.total_forces_file_name = Path(tool_path, "temporary", f"total_forces{pid}.avl")
-        self.strip_forces_file_name = Path(tool_path, "temporary", f"strip_forces{pid}.avl")
+        self.total_forces_file_name = Path(
+            tool_path, "temporary", f"total_forces{pid}.avl"
+        )
+        self.strip_forces_file_name = Path(
+            tool_path, "temporary", f"strip_forces{pid}.avl"
+        )
         self.input_file_name = Path(tool_path, "temporary", f"input_file_avl{pid}.in")
         self.geometry_file = Path(tool_path, "temporary", f"geometry_file{pid}.avl")
-        self.stability_file_name = Path(tool_path, "temporary", f"stability_file{pid}.avl")
+        self.stability_file_name = Path(
+            tool_path, "temporary", f"stability_file{pid}.avl"
+        )
         self.mass_file = Path(tool_path, "temporary", f"mass_file{pid}.mass")
         self.stability_input_file_name = Path(
             tool_path, "temporary", f"stability_input_file_avl{pid}.in"
@@ -96,7 +103,9 @@ class AVL:
             input_file.write("QUIT\n")
 
         # ---Run AVL---
-        cmd = str(self.avl_path) + " <" + str(self.input_file_name)  # external command to run
+        cmd = (
+            str(self.avl_path) + " <" + str(self.input_file_name)
+        )  # external command to run
         runsub._run_subprocess(cmd, timeout=15)
         # list_of_process_ids = runsub.find_process_id_by_name("avl")
         # runsub.kill_subprocesses(list_of_process_ids)

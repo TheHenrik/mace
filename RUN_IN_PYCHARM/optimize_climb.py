@@ -1,3 +1,5 @@
+import logging
+
 import matplotlib.pyplot as plt
 import numpy as np
 from vehicle_setup import vehicle_setup
@@ -8,7 +10,6 @@ from mace.aero.implementations.avl import (
     geometry_and_mass_files_v2 as geometry_and_mass_files,
 )
 from mace.domain.parser import PlaneParser
-import logging
 
 if __name__ == "__main__":
     # Define Analysis

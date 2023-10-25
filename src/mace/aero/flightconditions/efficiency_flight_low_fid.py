@@ -1,3 +1,4 @@
+import logging
 import time
 import warnings
 
@@ -11,7 +12,7 @@ from mace.aero.implementations.aero import Aerodynamics
 from mace.aero.implementations.airfoil_analyses import Airfoil
 from mace.domain import params
 from mace.domain.vehicle import Vehicle
-import logging
+
 g = params.Constants.g
 rho = params.Constants.rho
 
@@ -100,7 +101,9 @@ class EfficiencyFlight:
         root = fsolve(func, [60, 13], xtol=1e-4)
         if np.all(np.isclose(func(root), [0.0, 0.0], atol=1e-1)):
             if print_results:
-                logging.debug("->   h1:", round(min(root[0], 100), 1), "v2:", round(root[1], 1))
+                logging.debug(
+                    "->   h1:", round(min(root[0], 100), 1), "v2:", round(root[1], 1)
+                )
             return root
         else:
             if print_results:

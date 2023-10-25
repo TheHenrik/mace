@@ -1,3 +1,4 @@
+import logging
 import math
 
 import numpy as np
@@ -5,7 +6,7 @@ import numpy as np
 from mace.aero.implementations.avl import athenavortexlattice, geometry_and_mass_files
 from mace.aero.implementations.viscousdrag import ViscousDrag
 from mace.domain import Plane, params
-import logging
+
 
 class GlidingFlight:
     def __init__(self, plane: Plane):

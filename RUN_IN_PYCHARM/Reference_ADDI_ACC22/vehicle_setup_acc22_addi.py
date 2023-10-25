@@ -1,3 +1,5 @@
+import logging
+
 import numpy as np
 
 from mace.domain.fuselage import Fuselage, FuselageSegment
@@ -5,7 +7,7 @@ from mace.domain.landing_gear import LandingGear, Wheel
 from mace.domain.vehicle import Vehicle
 from mace.domain.wing import Wing, WingSegment
 
-import logging
+
 def vehicle_setup() -> Vehicle:
     vehicle = Vehicle()
     vehicle.mass = 5.626

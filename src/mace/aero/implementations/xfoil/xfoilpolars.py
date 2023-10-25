@@ -1,3 +1,4 @@
+import logging
 import os  # operation system
 from pathlib import Path
 
@@ -5,7 +6,7 @@ import numpy as np
 
 from mace.aero.implementations import runsubprocess as runsub
 from mace.utils.mp import get_pid
-import logging
+
 # ---Inputs---
 
 

@@ -1,9 +1,10 @@
+import logging
 import os
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
-import logging
+
 from mace.aero.implementations.airfoil_analyses import Airfoil
 
 tool_path = Path(__file__).resolve().parents[2]

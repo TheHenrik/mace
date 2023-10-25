@@ -1,10 +1,11 @@
+import logging
 import os
 from pathlib import Path
 
 import numpy as np
 
 import mace.aero.implementations.xfoil.xfoilpolars as xfoilpolars
-import logging
+
 
 class Airfoil:
     """

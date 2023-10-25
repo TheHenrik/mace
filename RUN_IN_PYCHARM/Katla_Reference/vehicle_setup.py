@@ -1,3 +1,4 @@
+import logging
 import os
 from pathlib import Path
 
@@ -8,7 +9,7 @@ from mace.domain.fuselage import Fuselage, FuselageSegment
 from mace.domain.landing_gear import LandingGear, Strut, Wheel
 from mace.domain.vehicle import Vehicle
 from mace.domain.wing import Wing, WingSegment, WingSegmentBuild
-import logging
+
 
 def vehicle_setup() -> Vehicle:
     vehicle = Vehicle()

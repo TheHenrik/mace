@@ -1,3 +1,4 @@
+import logging
 import math
 
 import numpy as np
@@ -10,7 +11,7 @@ from mace.aero.implementations.avl import (
 )
 from mace.domain import params
 from mace.domain.vehicle import Vehicle
-import logging
+
 
 class TakeOff:
     def __init__(self, plane: Vehicle):

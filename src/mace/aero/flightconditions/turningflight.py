@@ -1,3 +1,4 @@
+import logging
 import math
 
 import numpy as np
@@ -7,7 +8,7 @@ from mace.aero import generalfunctions
 # from mace.aero.implementations.avl import athenavortexlattice, geometry_and_mass_files
 # from mace.aero.implementations.viscousdrag import ViscousDrag
 from mace.domain import Plane, params
-import logging
+
 
 class TurningFlight:
     def __init__(self, plane: Plane):
@@ -232,7 +233,9 @@ class TurningFlight:
                 cl = lift_coefficient
                 r_k = self.turn_radius(v=current_velocity, cl=cl)
             if turn_radius:
-                logging.debug(f"velocity = {current_velocity}, turn_radius = {turn_radius}")
+                logging.debug(
+                    f"velocity = {current_velocity}, turn_radius = {turn_radius}"
+                )
                 cl = self.turn_radius(v=current_velocity, r_k=turn_radius)[2]
                 r_k = turn_radius
             elif phi:

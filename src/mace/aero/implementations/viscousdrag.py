@@ -1,9 +1,9 @@
+import logging
 import math
 import os
 from pathlib import Path
 
 import numpy as np
-import numpy.ma
 
 from mace.aero import generalfunctions
 from mace.aero.implementations.avl import athenavortexlattice

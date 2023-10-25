@@ -1,3 +1,5 @@
+import logging
+
 import matplotlib.pyplot as plt
 from vehicle_setup_acc22_addi import vehicle_setup
 
@@ -8,7 +10,7 @@ from mace.aero.implementations.avl import (
     geometry_and_mass_files_v2 as geometry_and_mass_files,
 )
 from mace.domain.parser import PlaneParser
-import logging
+
 if __name__ == "__main__":
     # Define Analysis
     climb_time = 60.0

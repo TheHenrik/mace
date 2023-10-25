@@ -1,7 +1,9 @@
+import logging
+
 import numpy as np
 
 from mace.domain.wing import Wing, WingBinder, WingSegment
-import logging
+
 
 def main():
     wing = Wing()
