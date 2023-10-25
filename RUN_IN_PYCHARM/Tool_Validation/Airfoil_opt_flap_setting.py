@@ -3,7 +3,7 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
-
+import logging
 from mace.aero.implementations.airfoil_analyses import Airfoil
 
 tool_path = Path(__file__).resolve().parents[2]
@@ -37,7 +37,7 @@ cds = np.zeros_like(cls)
 
 for i, cl in enumerate(cls):
     best_flap_angle = airfoil.check_for_best_flap_setting(re, cl)
-    print("cl: %.2f, flap angle: %.2f" % (cl, best_flap_angle))
+    logging.debug("cl: %.2f, flap angle: %.2f" % (cl, best_flap_angle))
     airfoil = Airfoil("ag19", flap_angle=best_flap_angle)
     cds[i] = airfoil.get_cd(re, cl)
 

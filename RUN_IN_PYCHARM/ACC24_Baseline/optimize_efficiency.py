@@ -7,6 +7,7 @@ from mace.aero.implementations.avl import (
     geometry_and_mass_files_v2 as geometry_and_mass_files,
 )
 from mace.domain.parser import PlaneParser
+import logging
 
 if __name__ == "__main__":
     # Define Aircraft Geometry
@@ -27,7 +28,7 @@ if __name__ == "__main__":
 
     for i, flap_angle in enumerate(flap_angles):
 
-        print("Analysis %s of %s" % (i + 1, len(flap_angles)))
+        logging.debug("Analysis %s of %s" % (i + 1, len(flap_angles)))
 
         efficiency_analysis.flap_angle = flap_angle
         efficiency_analysis.cl_start = 0.2

@@ -5,7 +5,7 @@ from mace.domain.landing_gear import LandingGear, Wheel
 from mace.domain.vehicle import Vehicle
 from mace.domain.wing import Wing, WingSegment
 
-
+import logging
 def vehicle_setup() -> Vehicle:
     vehicle = Vehicle()
     vehicle.mass = 5.626
@@ -115,7 +115,7 @@ def vehicle_setup() -> Vehicle:
 
     for wing in vehicle.wings.values():
         S = wing.reference_area
-        print("%s %.1f sqdm" % (wing.tag, S * 100))
+        logging.debug("%s %.1f sqdm" % (wing.tag, S * 100))
 
     ####################################################################################################################
     # PROPULSION
@@ -217,7 +217,7 @@ def vehicle_setup() -> Vehicle:
     # l_calc = 0.
     # for wheel in landing_gear.wheels:
     #     l_calc += (wheel.origin[1] ** 2 + wheel.origin[2] ** 2) ** 0.5 - vehicle.fuselages['fuselage'].diameter
-    # print("L_calc %.4f m" % l_calc)
+    # logging.debug("L_calc %.4f m" % l_calc)
     landing_gear.effective_drag_length = 0.3
     landing_gear.length_specific_cd = 0.0033
 

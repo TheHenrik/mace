@@ -8,13 +8,14 @@ from mace.domain.fuselage import Fuselage, FuselageSegment
 from mace.domain.landing_gear import LandingGear, Strut, Wheel
 from mace.domain.vehicle import Vehicle
 from mace.domain.wing import Wing, WingSegment, WingSegmentBuild
+import logging
 
 
 def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag19") -> Vehicle:
     vehicle = Vehicle()
     vehicle.payload = payload
     vehicle.mass = 2.0 * (span / 3.0) ** 2
-    print("M Empty: %.2f kg" % vehicle.mass)
+    logging.debug("M Empty: %.2f kg" % vehicle.mass)
     vehicle.mass += vehicle.payload
 
     vehicle.center_of_gravity = [0.112, 0.0, 0.0]
@@ -146,14 +147,14 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag19") -> V
     )
 
     fuselage.build()
-    print("f_length: %.3f m" % fuselage.length)
+    logging.debug("f_length: %.3f m" % fuselage.length)
     vehicle.add_fuselage("fuselage", fuselage)
     ####################################################################################################################
     # CARGO BAY
     cargo_bay = Fuselage()
     Height = 0.25
     cargo_bay_length = np.ceil(vehicle.payload / 0.17 / 3) * 0.06
-    print("cargo_bay_length: %.3f m" % cargo_bay_length)
+    logging.debug("cargo_bay_length: %.3f m" % cargo_bay_length)
     cargo_bay_height = 0.06
     cargo_bay_width = 0.2
     x_minus_offset = vehicle.center_of_gravity[0] - cargo_bay_length / 2
@@ -197,7 +198,7 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag19") -> V
     )
 
     cargo_bay.build()
-    print("f_length: %.3f m" % cargo_bay.length)
+    logging.debug("f_length: %.3f m" % cargo_bay.length)
     vehicle.add_fuselage("cargo_bay", cargo_bay)
     ####################################################################################################################
     # LANDING GEAR
@@ -270,7 +271,7 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag19") -> V
     vehicle.get_stability_derivatives()
     vehicle.transport_box_dimensions()
 
-    print("Vehicle Mass", round(vehicle.mass, 3))
+    logging.debug("Vehicle Mass", round(vehicle.mass, 3))
     # PLOT
     if __name__ == "__main__":
         vehicle.plot_vehicle(azim=180, elev=0)

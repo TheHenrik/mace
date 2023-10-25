@@ -4,6 +4,7 @@ from mace.domain.fuselage import Fuselage, FuselageSegment
 from mace.domain.landing_gear import LandingGear, Wheel
 from mace.domain.vehicle import Vehicle
 from mace.domain.wing import Wing, WingSegment, WingSegmentBuild
+import logging
 
 
 def vehicle_setup() -> Vehicle:
@@ -121,7 +122,7 @@ def vehicle_setup() -> Vehicle:
 
     for wing in vehicle.wings.values():
         S = wing.reference_area
-        print("%s %.1f sqdm" % (wing.tag, S * 100))
+        logging.debug("%s %.1f sqdm" % (wing.tag, S * 100))
 
     ####################################################################################################################
     # PROPULSION

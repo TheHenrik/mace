@@ -8,7 +8,7 @@ from mace.domain.fuselage import Fuselage, FuselageSegment
 from mace.domain.landing_gear import LandingGear, Strut, Wheel
 from mace.domain.vehicle import Vehicle
 from mace.domain.wing import Wing, WingSegment, WingSegmentBuild
-
+import logging
 
 def vehicle_setup() -> Vehicle:
     vehicle = Vehicle()
@@ -216,7 +216,7 @@ def vehicle_setup() -> Vehicle:
     )
 
     fuselage.build()
-    print("f_length: %.3f m" % fuselage.length)
+    logging.debug("f_length: %.3f m" % fuselage.length)
     vehicle.add_fuselage("fuselage", fuselage)
     ####################################################################################################################
 
@@ -230,10 +230,10 @@ def vehicle_setup() -> Vehicle:
     for wing in vehicle.wings.values():
         S = wing.reference_area
         ac = wing.neutral_point
-        print("%s %.1f sqdm" % (wing.tag, S * 100))
-        print(ac)
+        logging.debug("%s %.1f sqdm" % (wing.tag, S * 100))
+        logging.debug(ac)
 
-    print("Vehicle Mass", round(vehicle.mass, 3))
+    logging.debug("Vehicle Mass", round(vehicle.mass, 3))
     # PLOT
     if __name__ == "__main__":
         vehicle.plot_vehicle(azim=180, elev=0)

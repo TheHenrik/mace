@@ -8,7 +8,7 @@ from mace.aero.implementations.avl import (
     geometry_and_mass_files_v2 as geometry_and_mass_files,
 )
 from mace.domain.parser import PlaneParser
-
+import logging
 if __name__ == "__main__":
     # Define Analysis
     climb_time = 60.0
@@ -48,8 +48,8 @@ if __name__ == "__main__":
 
     H = climb_analysis.get_h_max(delta_t=climb_time - take_off_time - transition_time)
     v_s = H / (climb_time - take_off_time - transition_time)
-    print("V_s: %.3f m/s" % v_s)
-    print("H Climb: %.1f m" % H)
+    logging.debug("V_s: %.3f m/s" % v_s)
+    logging.debug("H Climb: %.1f m" % H)
 
     # Run Cruise Analysis
     cruise_analysis = HorizontalFlight(Aircraft)
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     cruise_analysis.cl_end = 0.7
 
     V_max = cruise_analysis.get_maximum_velocity()
-    print("V_max: %.1f m/s" % V_max)
+    logging.debug("V_max: %.1f m/s" % V_max)
     s_cruise = V_max * cruise_time
-    print("S Cruise: %.1f m" % s_cruise)
+    logging.debug("S Cruise: %.1f m" % s_cruise)
     cruise_analysis.plot_fv_diagramm()

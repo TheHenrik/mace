@@ -12,6 +12,7 @@ from mace.aero.flightconditions.takeoff_jf import TakeOff
 from mace.aero.implementations.avl import (
     geometry_and_mass_files_v2 as geometry_and_mass_files,
 )
+import logging
 
 
 
@@ -21,7 +22,7 @@ def main():
     aspect_ratio = (13.0,)
     airfoil = ["ag45c", "ag19"]
 
-    with Pool() as p:
+    with Pool(3) as p:
         a = p.map(analysis, product(payload, span, aspect_ratio, airfoil))
 
 
@@ -37,8 +38,8 @@ def analysis(args):
     Aircraft = vehicle_setup(
         payload=payload, span=span, aspect_ratio=aspect_ratio, airfoil=airfoil
     )
-    print("\n")
-    print("M Payload: %.2f kg" % Aircraft.payload)
+    logging.debug("\n")
+    logging.debug("M Payload: %.2f kg" % Aircraft.payload)
 
     # Build AVL Mass File
     mass_file = geometry_and_mass_files.MassFile(Aircraft)
@@ -57,7 +58,7 @@ def analysis(args):
     takeoff_analysis.v_wind = 1.0
     takeoff_analysis.v_start_counter = 1.333
     take_off_length, take_off_time = takeoff_analysis.evaluate()
-    print("S TakeOff: %.1f m" % take_off_length)
+    logging.debug("S TakeOff: %.1f m" % take_off_length)
 
     # Geometry File with zsym = 0
     geometry_file.z_sym = 0
@@ -70,7 +71,7 @@ def analysis(args):
         delta_t=climb_time - take_off_time - transition_time
     )
     climb_height = min(climb_height, 100.0)
-    print("H Climb: %.1f m, V IAS %.1f m/s" % (climb_height, climb_ias))
+    logging.debug("H Climb: %.1f m, V IAS %.1f m/s" % (climb_height, climb_ias))
 
     # Run Efficiency Analysis
     efficiency_flight = EfficiencyFlight(Aircraft)
@@ -81,7 +82,7 @@ def analysis(args):
     cruise_analysis.optimize_flap_angle = True
     V_max = cruise_analysis.get_maximum_velocity_scipy()
     s_cruise = V_max * cruise_time
-    print("S Cruise: %.1f m" % s_cruise)
+    logging.debug("S Cruise: %.1f m" % s_cruise)
 
 
 if __name__ == "__main__":
