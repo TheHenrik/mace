@@ -97,9 +97,9 @@ class AVL:
 
         # ---Run AVL---
         cmd = str(self.avl_path) + " <" + str(self.input_file_name)  # external command to run
-        runsub.run_subprocess(cmd, timeout=15)
-        list_of_process_ids = runsub.find_process_id_by_name("avl")
-        runsub.kill_subprocesses(list_of_process_ids)
+        runsub._run_subprocess(cmd, timeout=15)
+        # list_of_process_ids = runsub.find_process_id_by_name("avl")
+        # runsub.kill_subprocesses(list_of_process_ids)
 
     def read_total_forces_avl_file(self, lines):
 
@@ -302,9 +302,9 @@ class AVL:
         cmd = (
             str(self.avl_path) + " <" + str(self.stability_input_file_name)
         )  # external command to run
-        runsub.run_subprocess(cmd, timeout=15)
-        list_of_process_ids = runsub.find_process_id_by_name("avl")
-        runsub.kill_subprocesses(list_of_process_ids)
+        runsub._run_subprocess(cmd, timeout=15)
+        # list_of_process_ids = runsub.find_process_id_by_name("avl")
+        # runsub.kill_subprocesses(list_of_process_ids)
 
         with open(self.stability_file_name) as file:
             lines = file.readlines()
