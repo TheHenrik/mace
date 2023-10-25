@@ -7,7 +7,7 @@ from mace.domain.wing import Wing, WingBinder, WingSegment
 
 def main():
     wing = Wing()
-
+    logging.info("Start")
     ws = WingSegment()
 
     ws.inner_airfoil = "ag19"
@@ -18,4 +18,5 @@ def main():
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
     main()

@@ -419,7 +419,6 @@ class Vehicle:
                 f"{Colour.RED}{self.mass*1000:.0f}{Colour.END}",
             ]
         )
-        logging.debug()
         logging.debug(tabulate(data, header, fmt))
 
 

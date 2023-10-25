@@ -250,7 +250,6 @@ class Wing:
             logging.debug(f"    Inner Twist: {segment.inner_twist}")
             logging.debug(f"    Outer Twist: {segment.outer_twist}")
             logging.debug(f"    Dihedral: {segment.dihedral}")
-            logging.debug()
 
     def get_area(self) -> float:
         """

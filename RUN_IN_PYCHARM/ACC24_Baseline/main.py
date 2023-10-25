@@ -13,19 +13,24 @@ from mace.aero.flightconditions.takeoff_jf import TakeOff
 from mace.aero.implementations.avl import (
     geometry_and_mass_files_v2 as geometry_and_mass_files,
 )
+from mace.utils.mp import get_pid
+from time import perf_counter
 
 
 def main():
     payload = np.linspace(2.0, 3.0, num=2)
-    span = (3.0, 2.9)
+    span = (3.0,)
     aspect_ratio = (13.0,)
-    airfoil = ["ag45c", "ag19"]
-
-    with Pool(3) as p:
+    airfoil = ["acc22", "ag19"]
+    start = perf_counter()
+    logging.info("Started programm")
+    with Pool(8) as p:
         a = p.map(analysis, product(payload, span, aspect_ratio, airfoil))
-
+    end = perf_counter()
+    logging.info(f"Finished in: {end-start}")
 
 def analysis(args):
+    logging.info(f"Start Task {get_pid()}")
     payload, span, aspect_ratio, airfoil = args
     # Define Analysis
     climb_time = 30.0
@@ -82,7 +87,13 @@ def analysis(args):
     V_max = cruise_analysis.get_maximum_velocity_scipy()
     s_cruise = V_max * cruise_time
     logging.debug("S Cruise: %.1f m" % s_cruise)
-
+    logging.info(f"Task finished {get_pid()}")
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
     main()
+
+    # start = perf_counter()
+    # analysis((3.0,3.0,13.0,"ag19"))
+    # end = perf_counter()
+    # logging.info(f"Took {end-start}s")
