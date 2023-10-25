@@ -33,8 +33,8 @@ class WingBinder:
     def get_mass(
         self,
     ):
-        CONST = 35 / 1_000 * 0.2
-        self.mass = self.roving_count * self.height * CONST
+        CONST = 375 / 1_000 * 6
+        self.mass = self.roving_count * self.height**2 * CONST
 
     def get_rovings(self, moment_at_position):
         # TODO Test me pls
@@ -148,7 +148,7 @@ class WingSegment:
 
         if not self.roving_count is None:
             self.mass_breakdown["Holm"] = self.span * (
-                self.roving_count * 0.008 + 0.015
+                self.roving_count * 0.009 + 0.03
             )
             self.cog_breakdown["Holm"] = (
                 self.nose_inner
