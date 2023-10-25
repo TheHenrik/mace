@@ -147,7 +147,7 @@ class Vehicle:
                         ]
                     )
 
-        fig = plt.figure(dpi=400)
+        fig = plt.figure(dpi=20)
         ax = fig.add_subplot(111, projection="3d")
 
         if show_points:
@@ -254,6 +254,8 @@ class Vehicle:
         else:
             ax.set_zticks([])
 
+        ax.grid(False)
+        plt.axis('off')
         ax.view_init(elev=elev, azim=azim)
 
         plt.tick_params(which="major", labelsize=6)
@@ -261,6 +263,8 @@ class Vehicle:
         # Titel hinzufügen
         plt.title(self.tag, fontsize=10)
 
+        #plt.ion()
+        
         # Anzeigen des Plots
         plt.show()
 

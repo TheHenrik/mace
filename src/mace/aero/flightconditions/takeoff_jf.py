@@ -53,7 +53,6 @@ class TakeOff:
         CL_MAX = 0.0
         REQ_CL = 1.0
         while CL_MAX < self.cl_safety_factor * REQ_CL and T < 20:
-
             self.aero.evaluate(CL=None, V=V, FLAP=self.flap_angle, ALPHA=0.0)
             CL = self.plane.aero_coeffs.lift_coeff.cl_tot
             CD = self.plane.aero_coeffs.drag_coeff.cd_tot

@@ -1,4 +1,3 @@
-import logging
 import os
 from pathlib import Path
 
@@ -6,26 +5,22 @@ import numpy as np
 
 from mace.aero.implementations.avl.athenavortexlattice import AVL
 from mace.domain.fuselage import Fuselage, FuselageSegment
-from mace.domain.landing_gear import LandingGear, Strut, Wheel
+from mace.domain.landing_gear import LandingGear, Wheel, Strut
 from mace.domain.vehicle import Vehicle
 from mace.domain.wing import Wing, WingSegment, WingSegmentBuild
 
 
-def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag19") -> Vehicle:
+def vehicle_setup(payload=3.0, span=3., aspect_ratio=15.0, airfoil="ag45c") -> Vehicle:
     vehicle = Vehicle()
     vehicle.payload = payload
     vehicle.mass = 2.0 * (span / 3.0) ** 2
-    logging.debug("M Empty: %.2f kg" % vehicle.mass)
+    print("M Empty: %.2f kg" % vehicle.mass)
     vehicle.mass += vehicle.payload
 
     vehicle.center_of_gravity = [0.112, 0.0, 0.0]
 
-    main_wing_construction = WingSegmentBuild(
-        build_type="Negativ", surface_weight=0.400
-    )
-    empennage_construction = WingSegmentBuild(
-        build_type="Positiv", surface_weight=0.150, core_material_density=37.0
-    )
+    main_wing_construction = WingSegmentBuild(build_type="Negativ", surface_weight=0.400)
+    empennage_construction = WingSegmentBuild(build_type="Positiv", surface_weight=0.150, core_material_density=37.)
 
     ####################################################################################################################
     # MAIN WING
@@ -122,15 +117,14 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag19") -> V
     v_ht = 0.75  # 0.583*2 * 1.414
     horizontal_stabilizer.aspect_ratio = 7.0
     horizontal_stabilizer.get_stabilizer_area_from_volume_coefficient(
-        v_ht, l_ht, S_ref, MAC
-    )
+        v_ht, l_ht, S_ref, MAC)
 
     horizontal_stabilizer.build(resize_x_offset_from_hinge_angle=True)
 
     vehicle.add_wing("horizontal_stabilizer", horizontal_stabilizer)
     ####################################################################################################################
     # PROPULSION
-    tool_path = Path(__file__).resolve().parents[2]
+    tool_path = Path(__file__).resolve().parents[3]
     prop_surrogate_path = os.path.join(
         tool_path, "data", "prop_surrogates", "aeronaut14x8.csv"
     )
@@ -139,91 +133,60 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag19") -> V
     # FUSELAGE
     fuselage = Fuselage()
 
-    fuselage.add_segment(
-        origin=[-b_ref * 0.1, 0, 0.0], shape="rectangular", width=0.04, height=0.04
-    )
-    fuselage.add_segment(
-        origin=[b_ref * 0.35, 0, 0.0], shape="rectangular", width=0.04, height=0.04
-    )
+    fuselage.add_segment(origin=[-b_ref * 0.1, 0, 0.0], shape='rectangular', width=0.04, height=0.04)
+    fuselage.add_segment(origin=[b_ref * 0.35, 0, 0.0], shape='rectangular', width=0.04, height=0.04)
 
     fuselage.build()
-    logging.debug("f_length: %.3f m" % fuselage.length)
+    print("f_length: %.3f m" % fuselage.length)
     vehicle.add_fuselage("fuselage", fuselage)
     ####################################################################################################################
     # CARGO BAY
     cargo_bay = Fuselage()
     Height = 0.25
     cargo_bay_length = np.ceil(vehicle.payload / 0.17 / 3) * 0.06
-    logging.debug("cargo_bay_length: %.3f m" % cargo_bay_length)
+    print("cargo_bay_length: %.3f m" % cargo_bay_length)
     cargo_bay_height = 0.06
     cargo_bay_width = 0.2
     x_minus_offset = vehicle.center_of_gravity[0] - cargo_bay_length / 2
     x_plus_offset = vehicle.center_of_gravity[0] + cargo_bay_length / 2
-
+    
     # Cargo bay fist segment
     x = x_minus_offset - 0.05
     y = 0
     z = -Height + cargo_bay_height / 2 + 0.05
     width = cargo_bay_width * 0.5
     height = cargo_bay_height * 0.5
-    cargo_bay.add_segment(
-        origin=[x, y, z], shape="rectangular", width=width, height=height
-    )
+    cargo_bay.add_segment(origin=[x, y, z], shape='rectangular', width=width, height=height)
 
     # Cargo bay second segment
     x = x_minus_offset
     z = -Height + cargo_bay_height / 2 + 0.05
     width = cargo_bay_width
     height = cargo_bay_height
-    cargo_bay.add_segment(
-        origin=[x, y, z], shape="rectangular", width=width, height=height
-    )
-
+    cargo_bay.add_segment(origin=[x, y, z], shape='rectangular', width=width, height=height)
+    
     # Cargo bay third segment
     x = x_plus_offset
     z = -Height + cargo_bay_height / 2 + 0.05
     width = cargo_bay_width
     height = cargo_bay_height
-    cargo_bay.add_segment(
-        origin=[x, y, z], shape="rectangular", width=width, height=height
-    )
+    cargo_bay.add_segment(origin=[x, y, z], shape='rectangular', width=width, height=height)
 
     # Cargo bay fourth segment
     x = x_plus_offset + 0.1
     z = -Height + cargo_bay_height / 2 + 0.05
     width = cargo_bay_width * 0.2
     height = cargo_bay_height * 0.2
-    cargo_bay.add_segment(
-        origin=[x, y, z], shape="rectangular", width=width, height=height
-    )
+    cargo_bay.add_segment(origin=[x, y, z], shape='rectangular', width=width, height=height)
 
     cargo_bay.build()
-    logging.debug("f_length: %.3f m" % cargo_bay.length)
+    print("f_length: %.3f m" % cargo_bay.length)
     vehicle.add_fuselage("cargo_bay", cargo_bay)
-    ####################################################################################################################
-    # PYLON
-    pylon = Wing()
-    pylon.tag = "pylon"
-    pylon.origin = [0.03, 0., -0.02]
-    pylon.airfoil = "ht14"
-
-    # Segment
-    segment = WingSegment()
-    segment.inner_chord = 0.15
-    segment.outer_chord = 0.15
-    segment.span = - (-Height + cargo_bay_height / 2 + 0.05) - 0.02 - cargo_bay_height/2
-    segment.dihedral = -90.
-    segment.wsb = empennage_construction
-    pylon.add_segment(segment)
-
-    pylon.build(resize_x_offset_from_hinge_angle=False)
-
-    vehicle.add_wing("pylon", pylon)
     ####################################################################################################################
     # LANDING GEAR
     landing_gear = LandingGear()
     landing_gear.height = Height
-
+    
     # Nose wheel
     wheel1 = Wheel()
     wheel1.diameter = 0.1
@@ -232,7 +195,7 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag19") -> V
         [x_minus_offset - 0.1, 0.0, -(Height - wheel1.diameter / 2.0)]
     )
     landing_gear.add_wheel(wheel1)
-
+    
     # Main wheels
     wheel2 = Wheel()
     wheel2.diameter = 0.16
@@ -255,7 +218,7 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag19") -> V
     )
     wheel3.origin[1] = -wheel2.origin[1]
     landing_gear.add_wheel(wheel3)
-
+    
     # Landing gear strut
     strut = Strut()
     strut.mass = 0.08
@@ -267,36 +230,26 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag19") -> V
     vehicle.landing_gear = landing_gear
 
     ####################################################################################################################
-
-    vehicle.add_misc(
-        "Battery", 0.201, np.array([0, 0, 0])
-    )  # SLS Quantum 2200mAh 3S 60C : 201gr inkl. Kabel
+    
+    vehicle.add_misc("Battery", 0.201, np.array([0, 0, 0]))  # SLS Quantum 2200mAh 3S 60C : 201gr inkl. Kabel
     vehicle.add_misc("ESC", 0.093, np.array([0, 0, 0]))  # YGE 95A : 93gr inkl. Kabel
-    vehicle.add_misc(
-        "Servo", 0.092, np.array([0, 0, 0])
-    )  # 6 Servos a 12gr + 20gr Kabel
-    vehicle.add_misc(
-        "Receiver", 0.010, np.array([0, 0, 0])
-    )  # bel. Hersteller circa 10gr
-    vehicle.add_misc(
-        "Motor", 0.175, np.array([0, 0, 0])
-    )  # T-Motor AT2826 900KV : 175gr inkl. Kabel
-
+    vehicle.add_misc("Servo", 0.092, np.array([0, 0, 0]))  # 6 Servos a 12gr + 20gr Kabel
+    vehicle.add_misc("Receiver", 0.010, np.array([0, 0, 0]))  # bel. Hersteller circa 10gr
+    vehicle.add_misc("Motor", 0.175, np.array([0, 0, 0]))  # T-Motor AT2826 900KV : 175gr inkl. Kabel
+    
     ####################################################################################################################
-
+    
     vehicle.build()
-    vehicle.print_mass_table()
     vehicle.get_reference_values()
     vehicle.get_stability_derivatives()
     vehicle.transport_box_dimensions()
 
-    logging.debug("Vehicle Mass", round(vehicle.mass, 3))
+    print('Vehicle Mass', round(vehicle.mass,3))
     # PLOT
     if __name__ == "__main__":
         vehicle.plot_vehicle(azim=230, elev=30)
 
     return vehicle
-
 
 if __name__ == "__main__":
     vehicle_setup()

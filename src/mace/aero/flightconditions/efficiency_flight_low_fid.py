@@ -39,6 +39,7 @@ class EfficiencyFlight:
         self.is_drag_surrogate_build = False
         self.drag_surrogate: np.ndarray = None
 
+        self.plot_surface = False
     def T(self, V, I):
         thrust_array = self.plane.propulsion.thrust
         thrust_force = I / 30 * np.interp(V, thrust_array[:, 0], thrust_array[:, 1])
@@ -98,7 +99,7 @@ class EfficiencyFlight:
             )
             return [eq1, eq2]
 
-        root = fsolve(func, [60, 13], xtol=1e-4)
+        root = fsolve(func, [60, 13], xtol=1e-4, maxfev = 1000)
         if np.all(np.isclose(func(root), [0.0, 0.0], atol=1e-1)):
             if print_results:
                 logging.debug(
@@ -126,7 +127,7 @@ class EfficiencyFlight:
 
             tmin = self.get_t1_min(v1, v0, I, h0)
             if tmin < 0:
-                return 1
+                return 0
             tmax = self.t_ges
             t1 = tmin + t_scale * (tmax - tmin)
 
@@ -148,20 +149,38 @@ class EfficiencyFlight:
 
             return -points
 
-        param_space = [(0.0, 1.0), (0.0, 1.0)]
-        time0 = time.time()
-        result = gp_minimize(
-            func=objective_function,
-            dimensions=param_space,
-            n_calls=100,
-            n_initial_points=25,
-            initial_point_generator="hammersly",
-            acq_optimizer="lbfgs",
-            n_jobs=-1,
-            x0=[0.5, 0.5],
-        )
+        if self.plot_surface == False:
+            param_space = [(0.0, 1.0), (0.0, 1.0)]
+            time0 = time.time()
+            result = gp_minimize(
+                func=objective_function,
+                dimensions=param_space,
+                n_calls=100,
+                n_initial_points=25,
+                initial_point_generator="hammersly",
+                acq_optimizer="lbfgs",
+                n_jobs=-1,
+                x0=[0.5, 0.5],
+            )
+            return -objective_function(result.x, print_results=True)
+        else:
+            import matplotlib.pyplot as plt
+            v1_vec = np.linspace(0, 1, 100)
+            t1_vec = np.linspace(0, 1, 100)
+            points = np.zeros((len(v1_vec), len(t1_vec)))
+            for i, v1 in enumerate(v1_vec):
+                for j, t1 in enumerate(t1_vec):
+                    points[i, j] = -1. * objective_function([v1, t1], print_results=True)
+            x, y = np.meshgrid(v1_vec, t1_vec)
+            fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+            ax.plot_surface(x, y, points)
+            ax.set_proj_type('ortho')
+            ax.set_xlabel("t1")
+            ax.set_ylabel("v1")
+            ax.set_zlabel("points")
+            plt.show()
+            np.save("points_+1600.npy", points)
 
-        return -objective_function(result.x, print_results=True)
 
     def get_v_max(self, I, v0=15.0):
         def func(v):
@@ -175,7 +194,7 @@ class EfficiencyFlight:
         airfoil = Airfoil(self.plane.wings["main_wing"].airfoil)
         v_min = v0 - 1
         v = v0
-        while abs(v - v_min) > 0.1:
+        while abs(v - v_min) > 0.01:
             re = functions.get_reynolds_number(v, c_length)
             v = v_min
             cl_max = airfoil.get_cl_max(re)
@@ -198,10 +217,10 @@ if __name__ == "__main__":
     from mace.aero.implementations.avl import (
         geometry_and_mass_files_v2 as geometry_and_mass_files,
     )
-    from mace.test.vehicle_setup import vehicle_setup
+    from mace.test.vehicle_setup_acc import vehicle_setup
 
     Aircraft = vehicle_setup()
-
+    Aircraft.mass -= 0.
     mass_file = geometry_and_mass_files.MassFile(Aircraft)
     mass_file.build_mass_file()
     geometry_file = geometry_and_mass_files.GeometryFile(Aircraft)
@@ -209,7 +228,8 @@ if __name__ == "__main__":
     geometry_file.build_geometry_file()
 
     efficiency_flight = EfficiencyFlight(Aircraft)
-
-    v0 = 13.0
-    h0 = 50.0
+    efficiency_flight.plot_surface = True
+    v0 = 17.1
+    h0 = 72
     efficiency_flight.optimizer(v0, h0)
+    #print(result)
