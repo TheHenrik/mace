@@ -333,7 +333,7 @@ class Vehicle:
         main_wing: Wing = self.wings[wing]
         half_wing_span = main_wing.segments[-1].nose_outer[1]
         for segment in main_wing.segments:
-            segment.get_rovings(self.mass + self.payload, half_wing_span)
+            segment.get_rovings(self.mass, half_wing_span)
 
     def transport_box_dimensions(self):
         """
