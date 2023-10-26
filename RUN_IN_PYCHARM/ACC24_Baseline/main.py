@@ -19,17 +19,18 @@ from time import perf_counter
 
 def main():
     payload = np.linspace(2.0, 3.0, num=2)
-    span = (3.0,)
+    span = (3.0, 3.0)
     aspect_ratio = (13.0,)
-    airfoil = ["acc22", "ag19"]
+    airfoil = ["acc22", "acc22"]
     start = perf_counter()
     logging.info("Started programm")
-    with Pool(8) as p:
+    with Pool() as p:
         a = p.map(analysis, product(payload, span, aspect_ratio, airfoil))
     end = perf_counter()
     logging.info(f"Finished in: {end-start}")
 
 def analysis(args):
+    logging.basicConfig(level=logging.INFO)
     logging.info(f"Start Task {get_pid()}")
     payload, span, aspect_ratio, airfoil = args
     # Define Analysis
