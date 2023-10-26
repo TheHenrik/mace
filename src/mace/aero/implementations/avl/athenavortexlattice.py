@@ -1,7 +1,7 @@
 import logging
 import os  # operation system
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import numpy as np
 
