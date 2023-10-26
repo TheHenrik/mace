@@ -94,6 +94,6 @@ if __name__ == "__main__":
     # main()
 
     start = perf_counter()
-    analysis((3.0,3.0,13.0,"ag19"))
+    analysis((3.0,3.0,12.0,"ag19"))
     end = perf_counter()
     logging.info(f"Took {end-start}s")

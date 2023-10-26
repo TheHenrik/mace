@@ -154,7 +154,7 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag19") -> V
     cargo_bay = Fuselage()
     Height = 0.25
     cargo_bay_length = np.ceil(vehicle.payload / 0.17 / 3) * 0.06
-    logging.debug("cargo_bay_length: %.3f m" % cargo_bay_length)
+    logging.debug(f"cargo_bay_length: {cargo_bay_length:.3f} m")
     cargo_bay_height = 0.06
     cargo_bay_width = 0.2
     x_minus_offset = vehicle.center_of_gravity[0] - cargo_bay_length / 2
