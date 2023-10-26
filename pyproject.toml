@@ -14,7 +14,12 @@ license = {file = "LICENSE.txt"}
 requires-python = ">=3.11"
 dependencies=[
     'numpy',
-    'PySimpleGUI'
+    'PySimpleGUI',
+    'scipy',
+    'scikit-optimize',
+    'tabulate', 
+    'matplotlib', 
+    'psutil'
 ]
 
 classifiers = [
