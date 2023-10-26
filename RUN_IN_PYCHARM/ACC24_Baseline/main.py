@@ -99,26 +99,21 @@ def analysis(args):
 
     reference_max_payload = 5.
     score_payload = payload / reference_max_payload * 1000.
-    print('score_payload', score_payload)
 
     reference_max_s_distance = 3000.
     score_distance = 1000. * s_distance / reference_max_s_distance
-    print('score_distance', score_distance)
 
     reference_max_e_efficiency = 0.75
     score_efficiency = 1000. * e_efficiency / reference_max_e_efficiency
-    print('score_efficiency', score_efficiency)
 
     t_loading = 8.
     t_unloading = 8.
     b_loading = 60 * (1 - (t_loading + t_unloading) / 180)
-    print('b_loading', b_loading)
 
     penalty_current = 0.
     penalty_round = 0.
 
     score_round = ( (score_payload + score_efficiency + score_distance) / 3. + b_loading - penalty_current) * take_off_factor - penalty_round
-    print('score_round', score_round)
 
     logging.debug("S Cruise: %.1f m" % s_distance)
     logging.info(f"Task finished {get_pid()}")
