@@ -254,3 +254,4 @@ fabric.properties
 *.mass
 avl.*
 xfoil.*
+!bin/*
