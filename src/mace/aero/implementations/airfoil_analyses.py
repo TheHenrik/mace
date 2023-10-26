@@ -19,6 +19,7 @@ class Airfoil:
         use_opt_flap_setting: bool = False,
         x_hinge: float = 0.75,
         z_hinge: float = 0.0,
+        drag_correction_factor: float = 1.09,
     ):
         """
          Initialize the airfoil
@@ -71,7 +72,7 @@ class Airfoil:
         self.alpha_step = 0.1
 
         self.mach = 0
-        self.n_crit = 9
+        self.n_crit = 11
         self.n_iter = 150
         self.xtr_top = 100
         self.xtr_bot = 100
@@ -84,6 +85,8 @@ class Airfoil:
         self.must_rebuild_surrogate = False
         self.use_opt_flap_setting = use_opt_flap_setting
         self.flap_angle_list = np.arange(-4, 12, 2)
+        
+        self.drag_correction_factor = drag_correction_factor
 
     def build_single_flap_surrogate(self):
         """
@@ -163,7 +166,8 @@ class Airfoil:
                 polar_data = actual_re_polar_data
             else:
                 polar_data = np.concatenate((polar_data, actual_re_polar_data), axis=0)
-
+        
+        polar_data[:, 3] = polar_data[:, 3] * self.drag_correction_factor
         np.savetxt(
             self.surrogate_path,
             polar_data,

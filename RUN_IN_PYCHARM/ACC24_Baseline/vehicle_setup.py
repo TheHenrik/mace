@@ -204,7 +204,7 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag19") -> V
     # PYLON
     pylon = Wing()
     pylon.tag = "pylon"
-    pylon.origin = [0.03, 0., -0.02 + (-Height + cargo_bay_height / 2 + 0.05) + 0.02 + cargo_bay_height / 2]
+    pylon.origin = [0.03, 0., -0.02 + (-Height + cargo_bay_height / 2 + 0.05) + 0.02 + cargo_bay_height/2]
     pylon.airfoil = "NACA0014"
     pylon.vertical = True
     pylon.symmetric = False
@@ -213,7 +213,7 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag19") -> V
     segment = WingSegment()
     segment.inner_chord = 0.15
     segment.outer_chord = 0.15
-    segment.span = - (-Height + cargo_bay_height / 2 + 0.05) - 0.02 - cargo_bay_height / 2
+    segment.span = - (-Height + cargo_bay_height / 2 + 0.05) - 0.02 - cargo_bay_height/2
     # segment.dihedral = -90.
     segment.wsb = empennage_construction
     segment.control = False
