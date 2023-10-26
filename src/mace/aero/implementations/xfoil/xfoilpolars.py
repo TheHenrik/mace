@@ -98,7 +98,7 @@ def get_xfoil_polar(
                 )
             input_file.write(f"\n")
         input_file.write(f"PACC\n")
-        input_file.write(polar_file_path + "\n\n")
+        input_file.write(str(polar_file_path) + "\n\n")
         # input_file.write(f'polar_file.txt\n\n')
         input_file.write(f"ITER {n_iter}\n")
         if alfa is not None:
@@ -116,7 +116,7 @@ def get_xfoil_polar(
         input_file.write(f"quit \n")
 
     # ---Run XFOIL---
-    cmd = xfoil_path + " <" + input_file_path  # external command to run
+    cmd = str(xfoil_path) + " <" + str(input_file_path)  # external command to run
     runsub.run_subprocess(cmd)
 
     polar_data = np.loadtxt(polar_file_path, skiprows=12)
