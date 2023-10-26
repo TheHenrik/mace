@@ -254,3 +254,4 @@ fabric.properties
 *.mass
 temporary/
 avl.*
+xfoil.*

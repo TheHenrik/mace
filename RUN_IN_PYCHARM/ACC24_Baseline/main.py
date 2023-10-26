@@ -90,10 +90,10 @@ def analysis(args):
     logging.info(f"Task finished {get_pid()}")
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    main()
+    logging.basicConfig(level=logging.DEBUG)
+    # main()
 
-    # start = perf_counter()
-    # analysis((3.0,3.0,13.0,"ag19"))
-    # end = perf_counter()
-    # logging.info(f"Took {end-start}s")
+    start = perf_counter()
+    analysis((3.0,3.0,13.0,"ag19"))
+    end = perf_counter()
+    logging.info(f"Took {end-start}s")

@@ -290,7 +290,7 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag19") -> V
     vehicle.get_stability_derivatives()
     vehicle.transport_box_dimensions()
 
-    logging.debug("Vehicle Mass", round(vehicle.mass, 3))
+    logging.debug(f"Vehicle Mass: {vehicle.mass:.3f}")
     # PLOT
     if __name__ == "__main__":
         vehicle.plot_vehicle(azim=230, elev=30)
