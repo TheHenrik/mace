@@ -27,39 +27,41 @@ if __name__ == "__main__":
 
     # Run Take-Off Analysis
     takeoff_analysis = TakeOff(Aircraft)
-    takeoff_analysis.mu = 0.07
-    takeoff_analysis.flap_angle = 10.0
+    takeoff_analysis.mu = 0.125
+    takeoff_analysis.flap_angle = 0.0
     takeoff_analysis.cl_safety_factor = 1.3
-    takeoff_analysis.v_wind = 5.0
+    takeoff_analysis.v_wind = 3.
     takeoff_analysis.v_start_counter = 1.3
+    takeoff_analysis.t_step = 0.5
 
     take_off_length, take_off_time = takeoff_analysis.evaluate()
 
-    # Geometry File with zsym = 0
-    geometry_file.z_sym = 0
-    geometry_file.build_geometry_file()
-
-    # Run Climb Analysis
-    climb_analysis = Climb(Aircraft)
-    climb_analysis.flap_angle = 4.0  # 0 for acc22, 4 for ag19
-    climb_analysis.cl_start = 0.3
-    climb_analysis.cl_step = 0.1
-    climb_analysis.cl_end = 1.5
-
-    H = climb_analysis.get_h_max(delta_t=climb_time - take_off_time - transition_time)
-    v_s = H / (climb_time - take_off_time - transition_time)
-    print("V_s: %.3f m/s" % v_s)
-    print("H Climb: %.1f m" % H)
-
-    # Run Cruise Analysis
-    cruise_analysis = HorizontalFlight(Aircraft)
-    cruise_analysis.flap_angle = 0.0
-    cruise_analysis.cl_start = 0.1
-    cruise_analysis.cl_step = 0.05
-    cruise_analysis.cl_end = 0.7
-
-    V_max = cruise_analysis.get_maximum_velocity()
-    print("V_max: %.1f m/s" % V_max)
-    s_cruise = V_max * cruise_time
-    print("S Cruise: %.1f m" % s_cruise)
-    cruise_analysis.plot_fv_diagramm()
+    print('Take-Off Length: %.1f m' % take_off_length)
+    # # Geometry File with zsym = 0
+    # geometry_file.z_sym = 0
+    # geometry_file.build_geometry_file()
+    #
+    # # Run Climb Analysis
+    # climb_analysis = Climb(Aircraft)
+    # climb_analysis.flap_angle = 4.0  # 0 for acc22, 4 for ag19
+    # climb_analysis.cl_start = 0.3
+    # climb_analysis.cl_step = 0.1
+    # climb_analysis.cl_end = 1.5
+    #
+    # H = climb_analysis.get_h_max(delta_t=climb_time - take_off_time - transition_time)
+    # v_s = H / (climb_time - take_off_time - transition_time)
+    # print("V_s: %.3f m/s" % v_s)
+    # print("H Climb: %.1f m" % H)
+    #
+    # # Run Cruise Analysis
+    # cruise_analysis = HorizontalFlight(Aircraft)
+    # cruise_analysis.flap_angle = 0.0
+    # cruise_analysis.cl_start = 0.1
+    # cruise_analysis.cl_step = 0.05
+    # cruise_analysis.cl_end = 0.7
+    #
+    # V_max = cruise_analysis.get_maximum_velocity()
+    # print("V_max: %.1f m/s" % V_max)
+    # s_cruise = V_max * cruise_time
+    # print("S Cruise: %.1f m" % s_cruise)
+    # cruise_analysis.plot_fv_diagramm()

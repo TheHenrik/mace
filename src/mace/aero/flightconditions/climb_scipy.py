@@ -64,7 +64,7 @@ class Climb:
             self.evaluate,
             bounds=(self.cl_start, self.cl_end),
             method="bounded",
-            options={"xatol": 0.01},
+            options={"xatol": 0.1},
         )
         v = self.evaluate(res.x, return_v=True)
         return -res.fun, v

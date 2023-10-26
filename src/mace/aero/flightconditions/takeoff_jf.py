@@ -26,6 +26,7 @@ class TakeOff:
         self.v_wind = 0.0
         self.v_start_counter = 0.0
         self.manual_cl_max = 0
+        self.show_plot = False
 
     def get_friction(self, lift):
         return (self.plane.mass * params.Constants.g - lift) * self.mu
@@ -51,6 +52,9 @@ class TakeOff:
         V = 0.0
         CL_MAX = 0.0
         REQ_CL = 1.0
+
+        S_vec = []
+        V_vec = []
         while CL_MAX < self.cl_safety_factor * REQ_CL and T < 20:
             self.aero.evaluate(CL=None, V=V, FLAP=self.flap_angle, ALPHA=0.0)
             CL = self.plane.aero_coeffs.lift_coeff.cl_tot
@@ -58,7 +62,7 @@ class TakeOff:
 
             LIFT = self.get_force(V + V_wind, CL)
             DRAG = self.get_force(V + V_wind, CD)
-            FRICTION = self.get_friction(LIFT)
+            FRICTION = self.get_friction(0)
             THRUST = self.get_thrust(V + V_wind)
 
             ACCELL = (THRUST - DRAG - FRICTION) / MASS
@@ -69,6 +73,10 @@ class TakeOff:
             V_exakt = ACCELL * T
             S_exakt = 1 / 2 * ACCELL * T**2
 
+            if self.show_plot:
+                S_vec.append(S)
+                V_vec.append(V)
+
             REQ_CL = (MASS * G) / (1 / 2 * RHO * (V + V_wind) ** 2 * S_REF)
             if self.manual_cl_max == 0:
                 RE_AT_MAC = get_reynolds_number((V + V_wind), MAC)
@@ -78,5 +86,11 @@ class TakeOff:
 
         if T >= 20:
             print("Takeoff failed")
+
+        if self.show_plot:
+            import matplotlib.pyplot as plt
+            plt.plot(S_vec, V_vec)
+            plt.grid('on')
+            plt.show()
 
         return S, T

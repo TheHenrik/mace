@@ -1,6 +1,9 @@
-LOAD /Users/jannik/Documents/GitHub/mace/data/airfoils/jx-gp-055.dat
+LOAD /Users/jannik/Documents/GitHub/mace/data/airfoils/ag45c.dat
 OPER
 Visc 970000.0
+VPAR
+N 11
+
 PACC
 /Users/jannik/Documents/GitHub/mace/temporary/polar_file.txt
 

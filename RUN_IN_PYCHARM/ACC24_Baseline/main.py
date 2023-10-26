@@ -40,11 +40,13 @@ if __name__ == "__main__":
 
     # Run Take-Off Analysis
     takeoff_analysis = TakeOff(Aircraft)
-    takeoff_analysis.mu = 0.08
+    takeoff_analysis.mu = 0.125
     takeoff_analysis.flap_angle = 12.0
+    takeoff_analysis.t_step = 0.4
     takeoff_analysis.cl_safety_factor = 1.3
-    takeoff_analysis.v_wind = 1.0
+    takeoff_analysis.v_wind = 3.08
     takeoff_analysis.v_start_counter = 1.333
+    takeoff_analysis.show_plot = False
     take_off_length, take_off_time = takeoff_analysis.evaluate()
     print("S TakeOff: %.1f m" % take_off_length)
 
