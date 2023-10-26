@@ -49,7 +49,6 @@ def gen_profile(
     return profil_innen, profil_außen
 
 
-@cache
 def get_profil(airfoil: str) -> np.ndarray:
     file_location = Path(f"{Path(__file__).parents[3]}/data/airfoils/{airfoil}.dat")
     with open(file_location, "rt") as f:
@@ -60,12 +59,8 @@ def get_profil(airfoil: str) -> np.ndarray:
 
 @cache
 def get_profil_thickness(airfoil: str) -> float:
-    file_location = Path(f"{Path(__file__).parents[3]}/data/airfoils/{airfoil}.dat")
-    with open(file_location, "rt") as f:
-        data = re.findall(r"([01]\.\d+) +([0\-]{1,2}\.\d+)", f.read())
-    profil = [list(map(float, point)) for point in data]
-    th = [profil[i][1] - profil[-i][1] for i in range(len(profil) // 2)]
-    return max(th)
+    profil = get_profil(airfoil)
+    return max(profil[i][1] - profil[-i][1] for i in range(len(profil) // 2))
 
 
 def mesh(profil_innen, profil_außen):
@@ -103,4 +98,4 @@ def mesh(profil_innen, profil_außen):
 
 
 if __name__ == "__main__":
-    logging.debug(get_profil_thickness("acc22"))
+    print(get_profil_thickness("ag19"))
