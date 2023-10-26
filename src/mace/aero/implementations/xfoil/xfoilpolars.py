@@ -64,7 +64,7 @@ def get_xfoil_polar(
     tool_path = Path(__file__).resolve().parents[5]
     polar_file_path = Path(tool_path, "temporary", "polar_file.txt")
     input_file_path = Path(tool_path, "temporary", f"input_file_xfoil{get_pid()}.in")
-    xfoil_path = Path(tool_path, "Xfoil", "bin", "xfoil")
+    xfoil_path = Path(tool_path, "bin", "xfoil")
 
     if os.path.exists(polar_file_path):
         os.remove(polar_file_path)

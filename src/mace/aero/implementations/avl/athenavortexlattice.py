@@ -17,7 +17,7 @@ class AVL:
         pid = get_pid()
         self.plane = plane
         tool_path = Path(__file__).resolve().parents[5]
-        self.avl_path = Path(tool_path, "avl")
+        self.avl_path = Path(tool_path, "bin", "avl")
         self.total_forces_file_name = Path(
             tool_path, "temporary", f"total_forces{pid}.avl"
         )
