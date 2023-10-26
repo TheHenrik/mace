@@ -26,6 +26,9 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag19") -> V
     empennage_construction = WingSegmentBuild(
         build_type="Positiv", surface_weight=0.150, core_material_density=37.0
     )
+    pylon_construction = WingSegmentBuild(
+        build_type="Negativ", surface_weight=0.500
+    )
 
     ####################################################################################################################
     # MAIN WING
@@ -196,7 +199,8 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag19") -> V
     cargo_bay.add_segment(
         origin=[x, y, z], shape="rectangular", width=width, height=height
     )
-
+    
+    cargo_bay.area_specific_mass = 0.4
     cargo_bay.build()
     logging.debug("f_length: %.3f m" % cargo_bay.length)
     vehicle.add_fuselage("cargo_bay", cargo_bay)

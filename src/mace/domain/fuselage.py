@@ -52,6 +52,8 @@ class Fuselage:
         self.diameter: float = 0.0
         self.segments = []
         self.drag_correction: float = 2.6
+        self.area_specific_mass: float = 320 * 2.2 / 1000
+        self.volume_specific_mass: float = 0.
 
     def add_segment(self, origin, shape, width, height) -> None:
         self.segments.append(FuselageSegment(origin, shape, width, height))
@@ -113,8 +115,8 @@ class Fuselage:
             cog += c * area
             area += a
             volume += b
-        self.mass = area * 320 * 2.2 / 1000
-        self.volume = volume
+        self.mass = area * self.area_specific_mass
+        self.volume = volume * self.volume_specific_mass
         self.area = area
         self.cog = cog * area
 
