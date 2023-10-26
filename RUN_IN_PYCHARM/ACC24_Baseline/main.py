@@ -62,7 +62,7 @@ def analysis(args):
     takeoff_analysis.flap_angle = 12.0
     takeoff_analysis.t_step = 0.4
     takeoff_analysis.cl_safety_factor = 1.3
-    takeoff_analysis.v_wind = 3.08
+    takeoff_analysis.v_wind = 2.2 # 3.08 average in Aachen
     takeoff_analysis.v_start_counter = 1.333
     takeoff_analysis.show_plot = False
     take_off_length, take_off_time = takeoff_analysis.evaluate()
