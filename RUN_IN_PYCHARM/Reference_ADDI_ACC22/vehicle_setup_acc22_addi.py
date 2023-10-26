@@ -145,49 +145,63 @@ def vehicle_setup() -> Vehicle:
     z = 0
     width = 0.05
     height = 0.05
-    fuselage.add_segment(origin=[x, y, z], shape='rectangular', width=width, height=height)
+    fuselage.add_segment(
+        origin=[x, y, z], shape="rectangular", width=width, height=height
+    )
 
     x = -0.33
     y = 0
     z = 0
     width = 0.09
     height = 0.09
-    fuselage.add_segment(origin=[x, y, z], shape='rectangular', width=width, height=height)
+    fuselage.add_segment(
+        origin=[x, y, z], shape="rectangular", width=width, height=height
+    )
 
     x = -0.2
     y = 0
     z = 0
     width = 0.115
     height = 0.115
-    fuselage.add_segment(origin=[x, y, z], shape='rectangular', width=width, height=height)
+    fuselage.add_segment(
+        origin=[x, y, z], shape="rectangular", width=width, height=height
+    )
 
     x = 0.4
     y = 0
     z = 0
     width = 0.115
     height = 0.115
-    fuselage.add_segment(origin=[x, y, z], shape='rectangular', width=width, height=height)
+    fuselage.add_segment(
+        origin=[x, y, z], shape="rectangular", width=width, height=height
+    )
 
     x = 0.55
     y = 0
     z = 0
     width = 0.09
     height = 0.09
-    fuselage.add_segment(origin=[x, y, z], shape='rectangular', width=width, height=height)
+    fuselage.add_segment(
+        origin=[x, y, z], shape="rectangular", width=width, height=height
+    )
 
     x = 0.63
     y = 0
     z = 0
     width = 0.03
     height = 0.03
-    fuselage.add_segment(origin=[x, y, z], shape='rectangular', width=width, height=height)
+    fuselage.add_segment(
+        origin=[x, y, z], shape="rectangular", width=width, height=height
+    )
 
     x = 1.2
     y = 0
     z = 0
     width = 0.03
     height = 0.03
-    fuselage.add_segment(origin=[x, y, z], shape='rectangular', width=width, height=height)
+    fuselage.add_segment(
+        origin=[x, y, z], shape="rectangular", width=width, height=height
+    )
 
     fuselage.build()
     vehicle.add_fuselage("fuselage", fuselage)
@@ -234,7 +248,7 @@ def vehicle_setup() -> Vehicle:
     ####################################################################################################################
     # PLOT
 
-    if __name__ == '__main__':
+    if __name__ == "__main__":
         vehicle.plot_vehicle(azim=0, elev=90)
 
     vehicle.get_stability_derivatives()

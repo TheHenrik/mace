@@ -85,7 +85,7 @@ class Airfoil:
         self.must_rebuild_surrogate = False
         self.use_opt_flap_setting = use_opt_flap_setting
         self.flap_angle_list = np.arange(-4, 12, 2)
-        
+
         self.drag_correction_factor = drag_correction_factor
 
     def build_single_flap_surrogate(self):
@@ -166,7 +166,7 @@ class Airfoil:
                 polar_data = actual_re_polar_data
             else:
                 polar_data = np.concatenate((polar_data, actual_re_polar_data), axis=0)
-        
+
         polar_data[:, 3] = polar_data[:, 3] * self.drag_correction_factor
         np.savetxt(
             self.surrogate_path,

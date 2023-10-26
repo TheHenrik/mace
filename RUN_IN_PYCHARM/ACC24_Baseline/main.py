@@ -1,6 +1,7 @@
 import logging
 from itertools import product
 from multiprocessing import Pool
+from time import perf_counter
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -14,7 +15,6 @@ from mace.aero.implementations.avl import (
     geometry_and_mass_files_v2 as geometry_and_mass_files,
 )
 from mace.utils.mp import get_pid
-from time import perf_counter
 
 
 def main():
@@ -28,6 +28,7 @@ def main():
         a = p.map(analysis, product(payload, span, aspect_ratio, airfoil))
     end = perf_counter()
     logging.info(f"Finished in: {end-start}")
+
 
 def analysis(args):
     logging.basicConfig(level=logging.INFO)
@@ -92,11 +93,12 @@ def analysis(args):
     logging.debug("S Cruise: %.1f m" % s_cruise)
     logging.info(f"Task finished {get_pid()}")
 
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     # main()
 
     start = perf_counter()
-    analysis((3.0,3.0,12.0,"ag19"))
+    analysis((3.0, 3.0, 12.0, "ag19"))
     end = perf_counter()
     logging.info(f"Took {end-start}s")

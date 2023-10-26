@@ -199,9 +199,10 @@ def vehicle_setup() -> Vehicle:
     segment.wsb = empennage_construction
     horizontal_stabilizer.add_segment(segment)
 
-
-    #horizontal_stabilizer.reference_area = 0.08
-    horizontal_stabilizer.build(resize_areas=False, resize_x_offset_from_hinge_angle=False)
+    # horizontal_stabilizer.reference_area = 0.08
+    horizontal_stabilizer.build(
+        resize_areas=False, resize_x_offset_from_hinge_angle=False
+    )
 
     vehicle.add_wing("horizontal_stabilizer", horizontal_stabilizer)
 

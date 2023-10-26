@@ -1,4 +1,6 @@
 import numpy as np
+
+
 class Propulsor:
     def __init__(self):
         self.thrust_array: np.ndarray = None
@@ -18,24 +20,23 @@ class Propulsor:
 
         return battery_voltage
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     prop = Propulsor()
     prop.battery_capacity = 2.5
 
-    from pathlib import Path
     import os
+    from pathlib import Path
 
     tool_path = Path(__file__).resolve().parents[3]
     prop_surrogate_path = os.path.join(
-        tool_path, "data", "prop_surrogates", "aeronaut14x8.csv")
+        tool_path, "data", "prop_surrogates", "aeronaut14x8.csv"
+    )
     prop.thrust_array = np.loadtxt(prop_surrogate_path, skiprows=1)
 
     import matplotlib.pyplot as plt
 
-    x = np.linspace(2.5, 15*2.5, 100)
+    x = np.linspace(2.5, 15 * 2.5, 100)
     y = prop.get_battery_voltage(x, 0)
     plt.plot(x, y)
     plt.show()
-
-
-

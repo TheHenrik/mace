@@ -32,13 +32,13 @@ if __name__ == "__main__":
     takeoff_analysis.mu = 0.125
     takeoff_analysis.flap_angle = 0.0
     takeoff_analysis.cl_safety_factor = 1.3
-    takeoff_analysis.v_wind = 3.
+    takeoff_analysis.v_wind = 3.0
     takeoff_analysis.v_start_counter = 1.3
     takeoff_analysis.t_step = 0.5
 
     take_off_length, take_off_time = takeoff_analysis.evaluate()
 
-    print('Take-Off Length: %.1f m' % take_off_length)
+    print("Take-Off Length: %.1f m" % take_off_length)
     # # Geometry File with zsym = 0
     # geometry_file.z_sym = 0
     # geometry_file.build_geometry_file()

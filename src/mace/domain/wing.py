@@ -147,9 +147,7 @@ class WingSegment:
         self.cog_breakdown["Kern"] *= self.mass_breakdown["Kern"]
 
         if not self.roving_count is None:
-            self.mass_breakdown["Holm"] = self.span * (
-                self.roving_count * 0.009 + 0.03
-            )
+            self.mass_breakdown["Holm"] = self.span * (self.roving_count * 0.009 + 0.03)
             self.cog_breakdown["Holm"] = (
                 self.nose_inner
                 + (self.nose_outer - self.nose_inner) * 0.5

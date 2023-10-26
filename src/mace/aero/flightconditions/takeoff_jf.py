@@ -90,8 +90,9 @@ class TakeOff:
 
         if self.show_plot:
             import matplotlib.pyplot as plt
+
             plt.plot(S_vec, V_vec)
-            plt.grid('on')
+            plt.grid("on")
             plt.show()
 
         return S, T
