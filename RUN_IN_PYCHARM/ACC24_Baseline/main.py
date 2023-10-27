@@ -22,7 +22,6 @@ from mace.test.perftest import performance_report
 
 # TODO logging config
 # TODO Test on different os
-# TODO Airfoils not in gitignore
 def main():
     logging.basicConfig(level=logging.INFO)
     logging.info("Started programm")
