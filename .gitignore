@@ -163,8 +163,7 @@ cython_debug/
 .vscode/
 
 #Airfoils
-data/Airfoils/*.dat
-!data/Airfoils/n0012.dat
+
 
 #Profiling files 
 *.prof
