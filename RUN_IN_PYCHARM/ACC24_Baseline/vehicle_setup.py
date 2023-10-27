@@ -313,8 +313,8 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag19") -> V
 
     logging.debug(f"Vehicle Mass: {vehicle.mass:.3f}")
     # PLOT
-    #if __name__ == "__main__":
-        #vehicle.plot_vehicle(azim=230, elev=30)
+    if __name__ == "__main__":
+        vehicle.plot_vehicle(azim=230, elev=30)
 
     return vehicle
 

@@ -3,7 +3,7 @@ import time
 import warnings
 
 import numpy as np
-from scipy.optimize import fsolve, root_scalar
+from scipy.optimize import fsolve, root_scalar, minimize, differential_evolution
 from skopt import BayesSearchCV, gp_minimize
 
 import mace.aero.generalfunctions as functions
@@ -153,15 +153,22 @@ class EfficiencyFlight:
         if self.plot_surface == False:
             param_space = [(0.0, 1.0), (0.0, 1.0)]
             time0 = time.time()
-            result = gp_minimize(
+            # result = gp_minimize(
+            #     func=objective_function,
+            #     dimensions=param_space,
+            #     n_calls=100,
+            #     n_initial_points=25,
+            #     initial_point_generator="hammersly",
+            #     acq_optimizer="sampling",
+            #     n_jobs=1,
+            #     x0=[0.5, 0.5],
+            # )
+            result = differential_evolution(
                 func=objective_function,
-                dimensions=param_space,
-                n_calls=100,
-                n_initial_points=25,
-                initial_point_generator="hammersly",
-                acq_optimizer="lbfgs",
-                n_jobs=-1,
-                x0=[0.5, 0.5],
+                bounds=[(0, 1), (0, 1)],
+                strategy="best1bin",
+                tol=0.1,
+                workers=1,
             )
             return -objective_function(result.x, print_results=True)
         else:
