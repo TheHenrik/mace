@@ -68,7 +68,7 @@ class EfficiencyFlight:
     def D(self, V):
         vmin = self.v_min
         vmax = self.v_max
-        v_vec = np.linspace(vmin, vmax, 10)
+        v_vec = np.linspace(vmin, vmax, 20)
         if self.is_drag_surrogate_build == False:
             self.drag_surrogate = np.array([self.get_drag_force(v) for v in v_vec])
             self.is_drag_surrogate_build = True

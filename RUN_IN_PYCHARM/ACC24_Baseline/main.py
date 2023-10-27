@@ -26,7 +26,7 @@ from mace.test.perftest import performance_report
 def main():
     logging.basicConfig(level=logging.INFO)
     logging.info("Started programm")
-    payload = np.arange(0.34, 5., 0.51)
+    payload = np.arange(1.02, 6., 0.51)
     span = (3.0,)
     aspect_ratio = (13.0,)
     match sys.argv:
@@ -143,7 +143,7 @@ def analysis(payload, span, aspect_ratio, airfoil):
     else:
         take_off_factor = 1.0
 
-    reference_max_payload = 5.0
+    reference_max_payload = 6.
     score_payload = payload / reference_max_payload * 1000.0
 
     reference_max_s_distance = 3200.0

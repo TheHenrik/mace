@@ -52,7 +52,7 @@ class Climb:
             eq2 = np.cos(alpha) * m * g - q * CL * s
             return [eq1, eq2]
 
-        v, alpha = fsolve(func, [V0, 0], xtol=9e-2, factor=10)
+        v, alpha = fsolve(func, [V0, 0], xtol=12e-2, factor=10)
         V_vertical = v * np.sin(alpha)
         if return_v:
             return v
@@ -63,9 +63,8 @@ class Climb:
         res = minimize_scalar(
             self.evaluate,
             bounds=(self.cl_start, self.cl_end),
-            #bracket=(self.cl_start, 0.5*(self.cl_start+self.cl_end), self.cl_end),
             method="bounded",
-            options={"xatol": 0.18},
+            tol=0.1,
         )
         v = self.evaluate(res.x, return_v=True)
         return -res.fun, v
