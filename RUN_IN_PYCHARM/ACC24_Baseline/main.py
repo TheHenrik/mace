@@ -27,23 +27,23 @@ def main():
     logging.basicConfig(level=logging.INFO)
     logging.info("Started programm")
     payload = np.arange(1.02, 6., 0.51)
-    span = (3.0,)
-    aspect_ratio = (13.0,)
+    span = (1.5, 2., 2.5, 3., 3.5)
+    aspect_ratio = (8., 10., 12., 14., 16.)
     match sys.argv:
         case _, "dimi", "0":
-            airfoil = ["acc22"]
+            airfoil = ["ag19"]
         case _, "dimi", "1":
-            airfoil = ["acc22"]
+            airfoil = ["ag45c"]
         case _, "jannik", "0":
-            airfoil = ["acc22"]
+            airfoil = ["ag40"]
         case _, "jannik", "1":
             airfoil = ["acc22"]
         case _, "tjalf", "0":
-            airfoil = ["acc22"]
+            airfoil = ["jf-a2"]
         case _, "tjalf", "1":
-            airfoil = ["acc22"]
+            airfoil = ["jx-gp-055"]
         case _:
-            airfoil = ["acc22"]
+            airfoil = ["ag19"]
 
     start = perf_counter()
     path = Path(Path(__file__).parent, "results.csv")
