@@ -70,7 +70,7 @@ def worker(args):
 def clean_temporary(path: Path):
     pid = get_pid()
     for file in path.glob("*"):
-        if re.fullmatch(rf"^[a-z_]+{pid}\.[ailmnsv]+$", file.name):
+        if re.fullmatch(rf"^[a-z_]+{pid}\.(?:avl|in|mass)$", file.name):
             file.unlink()
 
 
