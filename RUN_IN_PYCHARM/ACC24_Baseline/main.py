@@ -16,7 +16,11 @@ from mace.aero.implementations.avl import (
 )
 from mace.utils.mp import get_pid
 
-
+# TODO logging config
+# TODO calc result to file
+# TODO Test on different os
+# TODO mass validation
+# TODO Batch generation
 def main():
     payload = np.linspace(2.0, 3.0, num=2)
     span = (3.0, 3.0)
