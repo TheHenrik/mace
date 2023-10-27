@@ -3,6 +3,7 @@ from itertools import product
 from multiprocessing import Pool
 from time import perf_counter
 import sys
+import re
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -61,8 +62,16 @@ def worker(args):
     logging.basicConfig(level=logging.INFO)
     logging.info(f"Started Task{get_pid()}")
     values = analysis(*args)
+    clean_temporary(Path("temporary"))
     logging.info(f"Finished Task{get_pid()}")
     return values
+
+
+def clean_temporary(path: Path):
+    pid = get_pid()
+    for file in path.glob("*"):
+        if re.fullmatch(rf"^[a-z_]+{pid}\.[ailmnsv]+$", file.name):
+            file.unlink()
 
 
 def analysis(payload, span, aspect_ratio, airfoil):
