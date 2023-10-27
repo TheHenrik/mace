@@ -133,10 +133,10 @@ def analysis(payload, span, aspect_ratio, airfoil):
     reference_max_payload = 5.0
     score_payload = payload / reference_max_payload * 1000.0
 
-    reference_max_s_distance = 3000.0
+    reference_max_s_distance = 3200.0
     score_distance = 1000.0 * s_distance / reference_max_s_distance
 
-    reference_max_e_efficiency = 0.75
+    reference_max_e_efficiency = 0.74
     score_efficiency = 1000.0 * e_efficiency / reference_max_e_efficiency
 
     t_loading = 8.0
