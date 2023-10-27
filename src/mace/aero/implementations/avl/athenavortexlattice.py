@@ -105,7 +105,7 @@ class AVL:
 
         # ---Run AVL---
         cmd = (
-            str(self.avl_path) + " <" + str(self.input_file_name)
+            str(self.avl_path) + " < " + str(self.input_file_name)
         )  # external command to run
         runsub._run_subprocess(cmd, timeout=15)
         # list_of_process_ids = runsub.find_process_id_by_name("avl")
@@ -310,7 +310,7 @@ class AVL:
 
         # ---Run AVL---
         cmd = (
-            str(self.avl_path) + " <" + str(self.stability_input_file_name)
+            str(self.avl_path) + " < " + str(self.stability_input_file_name)
         )  # external command to run
         runsub._run_subprocess(cmd, timeout=15)
         # list_of_process_ids = runsub.find_process_id_by_name("avl")
