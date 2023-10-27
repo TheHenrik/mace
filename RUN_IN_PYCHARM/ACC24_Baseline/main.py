@@ -46,7 +46,7 @@ def main():
             airfoil = ["ag19"]
 
     start = perf_counter()
-    path = Path(Path(__file__).parent, "results.csv")
+    path = Path(Path(__file__).parent, f"results_{airfoil}.csv")
     handler(path, payload, span, aspect_ratio, airfoil)
     end = perf_counter()
     logging.info(f"Finished in: {end-start}")
