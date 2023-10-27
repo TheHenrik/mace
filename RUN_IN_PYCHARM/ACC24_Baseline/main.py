@@ -26,7 +26,7 @@ from mace.test.perftest import performance_report
 def main():
     logging.basicConfig(level=logging.INFO)
     logging.info("Started programm")
-    payload = np.linspace(2.0, 3.0, num=2)
+    payload = np.arange(1.02, 6., 0.51)
     span = (3.0,)
     aspect_ratio = (13.0,)
     match sys.argv:
@@ -108,6 +108,7 @@ def analysis(payload, span, aspect_ratio, airfoil):
     takeoff_analysis.show_plot = False
     take_off_length, take_off_time = takeoff_analysis.evaluate()
     logging.debug("S TakeOff: %.1f m" % take_off_length)
+    logging.info(f"Finished Task TakeOff")
 
     # Geometry File with zsym = 0
     geometry_file.z_sym = 0
@@ -122,15 +123,19 @@ def analysis(payload, span, aspect_ratio, airfoil):
     climb_height = min(climb_height, 100.0)
     logging.debug("H Climb: %.1f m, V IAS %.1f m/s" % (climb_height, climb_ias))
 
+    logging.info(f"Finished Task Climb")
+
     # Run Efficiency Analysis
     efficiency_flight = EfficiencyFlight(Aircraft)
     e_efficiency = efficiency_flight.optimizer(climb_ias, climb_height, I=30.0)
+    logging.info(f"Finished Task Efficiency")
 
     # Run Cruise Analysis
     cruise_analysis = HorizontalFlight(Aircraft)
     cruise_analysis.optimize_flap_angle = True
     V_max = cruise_analysis.get_maximum_velocity_scipy()
     s_distance = V_max * cruise_time
+    logging.info(f"Finished Task Cruise")
 
     # Calculate Score
     if take_off_length <= 40.0:
@@ -138,7 +143,7 @@ def analysis(payload, span, aspect_ratio, airfoil):
     else:
         take_off_factor = 1.0
 
-    reference_max_payload = 5.0
+    reference_max_payload = 6.
     score_payload = payload / reference_max_payload * 1000.0
 
     reference_max_s_distance = 3200.0
