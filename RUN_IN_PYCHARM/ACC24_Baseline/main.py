@@ -21,10 +21,7 @@ from mace.test.perftest import performance_report
 
 
 # TODO logging config
-# TODO calc result to file
 # TODO Test on different os
-# TODO mass validation
-# TODO Remove psg
 # TODO Airfoils not in gitignore
 def main():
     logging.basicConfig(level=logging.INFO)
@@ -56,10 +53,9 @@ def main():
 
 
 def handler(file: Path, *args):
-    with open(file, "w") as f, Pool(2) as p:
+    with open(file, "w") as f, Pool() as p:
         for r in p.imap_unordered(worker, product(*args)):
-            f.write(", ".join(r))
-            f.write("\n")
+            f.write(", ".join(map(str, r)) + "\n")
 
 
 def worker(args):
@@ -158,7 +154,7 @@ def analysis(payload, span, aspect_ratio, airfoil):
 
     logging.debug("S Cruise: %.1f m" % s_distance)
 
-    return list(map(str, (
+    return (
         payload,
         span,
         aspect_ratio,
@@ -175,7 +171,8 @@ def analysis(payload, span, aspect_ratio, airfoil):
         penalty_current,
         take_off_factor,
         penalty_round,
-    )))
+        score_round
+    )
 
 
 if __name__ == "__main__":
