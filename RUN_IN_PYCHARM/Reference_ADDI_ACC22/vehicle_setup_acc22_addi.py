@@ -1,3 +1,5 @@
+import logging
+
 import numpy as np
 
 from mace.domain.fuselage import Fuselage, FuselageSegment
@@ -115,7 +117,7 @@ def vehicle_setup() -> Vehicle:
 
     for wing in vehicle.wings.values():
         S = wing.reference_area
-        print("%s %.1f sqdm" % (wing.tag, S * 100))
+        logging.debug("%s %.1f sqdm" % (wing.tag, S * 100))
 
     ####################################################################################################################
     # PROPULSION
@@ -138,47 +140,68 @@ def vehicle_setup() -> Vehicle:
     # FUSELAGE
     fuselage = Fuselage()
 
-    segment = FuselageSegment()
-    segment.origin[0] = -0.4
-    segment.width = 0.05
-    segment.height = 0.05
-    fuselage.add_segment(segment)
+    x = -0.4
+    y = 0
+    z = 0
+    width = 0.05
+    height = 0.05
+    fuselage.add_segment(
+        origin=[x, y, z], shape="rectangular", width=width, height=height
+    )
 
-    segment = FuselageSegment()
-    segment.origin[0] = -0.33
-    segment.width = 0.09
-    segment.height = 0.09
-    fuselage.add_segment(segment)
+    x = -0.33
+    y = 0
+    z = 0
+    width = 0.09
+    height = 0.09
+    fuselage.add_segment(
+        origin=[x, y, z], shape="rectangular", width=width, height=height
+    )
 
-    segment = FuselageSegment()
-    segment.origin[0] = -0.2
-    segment.width = 0.115
-    segment.height = 0.115
-    fuselage.add_segment(segment)
+    x = -0.2
+    y = 0
+    z = 0
+    width = 0.115
+    height = 0.115
+    fuselage.add_segment(
+        origin=[x, y, z], shape="rectangular", width=width, height=height
+    )
 
-    segment = FuselageSegment()
-    segment.origin[0] = 0.4
-    segment.width = 0.115
-    segment.height = 0.115
-    fuselage.add_segment(segment)
+    x = 0.4
+    y = 0
+    z = 0
+    width = 0.115
+    height = 0.115
+    fuselage.add_segment(
+        origin=[x, y, z], shape="rectangular", width=width, height=height
+    )
 
-    segment = FuselageSegment()
-    segment.origin[0] = 0.55
-    segment.width = 0.09
-    segment.height = 0.09
-    fuselage.add_segment(segment)
+    x = 0.55
+    y = 0
+    z = 0
+    width = 0.09
+    height = 0.09
+    fuselage.add_segment(
+        origin=[x, y, z], shape="rectangular", width=width, height=height
+    )
 
-    segment = FuselageSegment()
-    segment.origin[0] = 0.63
-    segment.width = 0.03
-    segment.height = 0.03
-    fuselage.add_segment(segment)
+    x = 0.63
+    y = 0
+    z = 0
+    width = 0.03
+    height = 0.03
+    fuselage.add_segment(
+        origin=[x, y, z], shape="rectangular", width=width, height=height
+    )
 
-    segment = FuselageSegment()
-    segment.origin[0] = 1.2
-    segment.width = 0.03
-    segment.height = 0.03
-    fuselage.add_segment(segment)
+    x = 1.2
+    y = 0
+    z = 0
+    width = 0.03
+    height = 0.03
+    fuselage.add_segment(
+        origin=[x, y, z], shape="rectangular", width=width, height=height
+    )
 
     fuselage.build()
     vehicle.add_fuselage("fuselage", fuselage)
@@ -217,7 +240,7 @@ def vehicle_setup() -> Vehicle:
     # l_calc = 0.
     # for wheel in landing_gear.wheels:
     #     l_calc += (wheel.origin[1] ** 2 + wheel.origin[2] ** 2) ** 0.5 - vehicle.fuselages['fuselage'].diameter
-    # print("L_calc %.4f m" % l_calc)
+    # logging.debug("L_calc %.4f m" % l_calc)
     landing_gear.effective_drag_length = 0.3
     landing_gear.length_specific_cd = 0.0033
 
@@ -225,10 +248,8 @@ def vehicle_setup() -> Vehicle:
     ####################################################################################################################
     # PLOT
 
-    # vehicle.plot_vehicle(azim=180, elev=0)
-    vehicle.plot_vehicle(azim=230, elev=30)
-    vehicle.plot_vehicle(azim=0, elev=90)
-    # vehicle.plot_vehicle(azim=90, elev=0)
+    if __name__ == "__main__":
+        vehicle.plot_vehicle(azim=0, elev=90)
 
     vehicle.get_stability_derivatives()
 

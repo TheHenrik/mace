@@ -1,18 +1,54 @@
+import logging
 import math
+from collections import defaultdict
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 from mace.domain.general_functions import rotate_vector
-from mace.utils.mesh import gen_profile, get_profil, mesh, get_profil_thickness
+from mace.utils.mesh import gen_profile, get_profil, get_profil_thickness, mesh
 from mace.utils.weight import moment_at_position
 
 rad = np.pi / 180
+
 
 class Spar:
     lenght: int = None
     height: int = None
     rovings: int = None
+
+
+class WingBinder:
+    position: float
+    height: float
+    mass: float
+    roving_count: float
+
+    def __init__(self, position, height, moment_at_position) -> None:
+        self.position = position
+        self.height = height
+        self.get_rovings(moment_at_position)
+        self.get_mass()
+
+    def get_mass(
+        self,
+    ):
+        CONST = 375 / 1_000 * 6
+        self.mass = self.roving_count * self.height**2 * CONST
+
+    def get_rovings(self, moment_at_position):
+        # TODO Test me pls
+        max_height = self.height
+        D100 = moment_at_position
+        sigma = 700 * (10**6)
+        H100 = D100 / sigma
+        C100 = 10 / 1_000
+        G100 = max_height - 0.4 / 1_000
+        J100 = np.cbrt(((C100 * (G100**3)) - (6 * G100 * H100)) / C100)
+        K100 = (G100 - J100) / 2
+        m = K100 * C100 * 10**6
+        n = np.ceil(m)
+        self.roving_count = n
 
 
 class WingSegmentBuild:
@@ -22,7 +58,9 @@ class WingSegmentBuild:
     density: str = None
     spar: Spar = None
 
-    def __init__(self, build_type, surface_weight, *args, core_material_density=0) -> None:
+    def __init__(
+        self, build_type, surface_weight, *args, core_material_density=0
+    ) -> None:
         self.build_type = build_type
         self.surface_weight = surface_weight
         self.materials = np.array(args) / 1_000 * 2.2
@@ -33,8 +71,11 @@ class WingSegment:
     """
     Wing Segment Class
     """
+
     mass: float = None
     roving_count: int = None
+    mass_breakdown: defaultdict[str, float] = None
+    cog_breakdown: defaultdict[str, np.ndarray] = None
 
     def __init__(self) -> None:
         """
@@ -80,8 +121,8 @@ class WingSegment:
         return self.area
 
     def get_mass(self):
-        # TODO Find COG
-        mass = 0   
+        self.mass_breakdown = {}
+        self.cog_breakdown = {}
         profil_innen, profil_außen = gen_profile(
             get_profil(self.inner_airfoil),
             get_profil(self.outer_airfoil),
@@ -90,37 +131,51 @@ class WingSegment:
             self.nose_outer,
             self.back_outer,
         )
-        area, volume = mesh(profil_innen, profil_außen)
-        if self.wsb.build_type == "Positiv":
-            mass += volume * self.wsb.density
-        elif self.wsb.build_type == "Balsa":
-            mass += volume * self.wsb.density * 0.5
-        elif self.wsb.build_type == "Negativ":
-            mass += 0
-        if not self.roving_count is None:
-            mass += self.span * self.roving_count * 0.02
+        area, volume, cog = mesh(profil_innen, profil_außen)
 
-        mass += area * self.wsb.surface_weight
+        if self.wsb.build_type == "Positiv":
+            self.mass_breakdown["Kern"] = volume * self.wsb.density
+        elif self.wsb.build_type == "Balsa":
+            self.mass_breakdown["Kern"] = volume * self.wsb.density * 0.1
+        elif self.wsb.build_type == "Negativ":
+            self.mass_breakdown["Kern"] = 0
+        self.cog_breakdown["Kern"] = (
+            self.nose_inner
+            + (self.nose_outer - self.nose_inner) * 0.5
+            + (self.back_inner - self.nose_inner) * 0.33
+        )
+        self.cog_breakdown["Kern"] *= self.mass_breakdown["Kern"]
+
+        if not self.roving_count is None:
+            self.mass_breakdown["Holm"] = self.span * (self.roving_count * 0.009 + 0.03)
+            self.cog_breakdown["Holm"] = (
+                self.nose_inner
+                + (self.nose_outer - self.nose_inner) * 0.5
+                + (self.back_inner - self.nose_inner) * 0.25
+            )
+            self.cog_breakdown["Holm"] *= self.mass_breakdown["Holm"]
+
+        self.mass_breakdown["Schale"] = area * self.wsb.surface_weight
         for material in self.wsb.materials:
-            mass += material * area
-        cog = np.array([0, 0, 0]) * mass
-        self.mass = mass
-        self.cog = cog
-        return mass, cog
-    
-    def get_rovings(self, total_mass: float, plane_half_wing_span):
+            self.mass_breakdown["Schale"] += material * area
+        self.cog_breakdown["Schale"] = cog * self.mass_breakdown["Schale"]
+
+        self.mass = sum(self.mass_breakdown.values())
+        self.cog = sum(self.cog_breakdown.values()) / self.mass
+        return self.mass, self.cog * self.mass
+
+    def get_rovings(self, total_mass: float, plane_half_wing_span: float):
         # TODO Change var names
-        airfoil_thickness_to_chord = get_profil_thickness(self.inner_airfoil)
-        max_height = self.inner_chord * airfoil_thickness_to_chord
+        max_height = self.inner_chord * get_profil_thickness(self.inner_airfoil)
         D100 = moment_at_position(total_mass, self.nose_inner[1], plane_half_wing_span)
-        sigma = 700 / (1_000**2)
+        sigma = 700 * (10**6)
         H100 = D100 / sigma
         C100 = 10 / 1_000
         G100 = max_height - 0.4 / 1_000
         J100 = np.cbrt(((C100 * (G100**3)) - (6 * G100 * H100)) / C100)
         K100 = (G100 - J100) / 2
-        m = K100 * C100 * 10
-        n = np.ceil(m)
+        m = K100 * C100 * 10**6
+        n = int(np.ceil(m))
         self.roving_count = n
         return n
 
@@ -129,6 +184,9 @@ class Wing:
     """
     Wing Class
     """
+
+    wing_binder: list[WingBinder] = None
+    segments: list[WingSegment] = None
 
     def __init__(self) -> None:
         """
@@ -161,11 +219,13 @@ class Wing:
         self.n_chordwise: int = 10
         self.c_space: int = 1  # = cos
         self.n_spanwise: int = 20
-        self.s_space: int = -2  # = -sin, good for straight, elliptical or slightly tapered wings, in other cases cos (1)
-        
+        self.s_space: int = (
+            -2
+        )  # = -sin, good for straight, elliptical or slightly tapered wings, in other cases cos (1)
+
         # Mass estimation
         self.number_of_parts = 1
-        
+
     def add_segment(self, segment: WingSegment) -> None:
         """
         Add a segment to the wing
@@ -177,18 +237,17 @@ class Wing:
         """
         Print the wing information
         """
-        print(f"Wing Name: {self.name}")
-        print("Segment Information:")
+        logging.debug(f"Wing Name: {self.name}")
+        logging.debug("Segment Information:")
         for i, segment in enumerate(self.segments):
-            print(f"Segment {i + 1}:")
-            print(f"    Inner Chord: {segment.inner_chord}")
-            print(f"    Outer Chord: {segment.outer_chord}")
-            print(f"    Inner Sweep: {segment.inner_x_offset}")
-            print(f"    Outer Sweep: {segment.outer_x_offset}")
-            print(f"    Inner Twist: {segment.inner_twist}")
-            print(f"    Outer Twist: {segment.outer_twist}")
-            print(f"    Dihedral: {segment.dihedral}")
-            print()
+            logging.debug(f"Segment {i + 1}:")
+            logging.debug(f"    Inner Chord: {segment.inner_chord}")
+            logging.debug(f"    Outer Chord: {segment.outer_chord}")
+            logging.debug(f"    Inner Sweep: {segment.inner_x_offset}")
+            logging.debug(f"    Outer Sweep: {segment.outer_x_offset}")
+            logging.debug(f"    Inner Twist: {segment.inner_twist}")
+            logging.debug(f"    Outer Twist: {segment.outer_twist}")
+            logging.debug(f"    Dihedral: {segment.dihedral}")
 
     def get_area(self) -> float:
         """
@@ -344,7 +403,7 @@ class Wing:
         :param new_area: The new area of the wing.
         """
         if new_span is None and new_aspect_ratio is None and new_area is None:
-            print("No parameters specified. Wing will stay in original shape.")
+            logging.debug("No parameters specified. Wing will stay in original shape.")
         elif new_span is None and new_aspect_ratio is None:
             self.resize_to_given_area(new_area)
         elif new_span is None and new_area is None:
@@ -540,9 +599,49 @@ class Wing:
             tmp_mass, tmp_cogs = segment.get_mass()
             masses.append(tmp_mass)
             cogs.append(tmp_cogs)
-        self.mass = sum(masses)
-        cog = sum(cogs) / self.mass
-        return 2*self.mass, 2*cog
+        if not self.wing_binder is None:
+            for wb in self.wing_binder:
+                masses.append(wb.mass)
+                cogs.append(np.array(0, wb.position, 0))
+
+        faktor = 2 if self.symmetric else 1
+        self.mass = faktor * sum(masses)
+        self.cog = sum(cogs) / self.mass
+        return self.mass, self.cog * self.mass * np.array([2, 0, 2])
+
+    def get_height_position(self, position: float) -> float:
+        for segment in self.segments:
+            if segment.nose_outer[1] < position and segment.nose_inner[1] > position:
+                continue
+            l = (
+                np.sqrt(np.sum(segment.nose_inner - segment.back_inner))
+                * (segment.nose_inner[1] - position)
+                + np.sqrt(np.sum(segment.nose_outer - segment.back_outer))
+                * (segment.nose_inner[1] - position)
+            ) / 2
+            th = get_profil_thickness(segment.inner_airfoil)
+            return l * th
+        return 0
+
+    def part_wing_into(self, into_parts: int, total_mass, override=False):
+        wing_span = self.segments[-1].nose_outer[1]
+        part_len = 2 * wing_span / into_parts
+        pos = [-wing_span + (i + 1) * part_len for i in range(into_parts - 1)]
+        self.part_wing(pos, total_mass, mirror=False, override=override)
+
+    def part_wing(
+        self, positions: list[float], total_mass, mirror=True, override=False
+    ):
+        if self.wing_binder is None or override:
+            self.wing_binder = []
+        if mirror:
+            rev = [-pos for pos in positions if not pos == 0]
+            positions.extend(rev)
+        for position in positions:
+            height = self.get_height_position(position)
+            wing_span = self.segments[-1].nose_outer[1] / 2
+            moment = moment_at_position(total_mass, position, wing_span)
+            self.wing_binder.append(WingBinder(position, height, moment))
 
 
 # Example usage:
@@ -594,9 +693,9 @@ if __name__ == "__main__":
     AR = main_wing.aspect_ratio
 
     # Print wing properties
-    print(f"Area: {round(S, 4)}")
-    print(f"Span: {round(b, 3)}")
-    print(f"Aspect Ratio: {round(AR, 3)}")
+    logging.debug(f"Area: {round(S, 4)}")
+    logging.debug(f"Span: {round(b, 3)}")
+    logging.debug(f"Aspect Ratio: {round(AR, 3)}")
 
     # Plot wing geometry
     main_wing.plot_wing_geometry()

@@ -1,3 +1,5 @@
+import logging
+
 from mace.domain.parser import TOMLParser
 from mace.domain.plane import Plane
 from mace.setup.airfoils import populate_airfoils
@@ -24,8 +26,6 @@ class Project:
         pass
 
     def benchmark(self):
-        print(f"Size on Disk of Plane: {getsize(self)}")
+        logging.debug(f"Size on Disk of Plane: {getsize(self)}")
         performance_time(10_000, print, self.planes[0])
-        performance_report(
-            performance_time, 1_000, print, self.planes[0], output=None
-        )
+        performance_report(performance_time, 1_000, print, self.planes[0], output=None)

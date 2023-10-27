@@ -1,3 +1,5 @@
+import logging
+
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.optimize import fsolve, minimize, minimize_scalar, root_scalar
@@ -182,12 +184,12 @@ class EfficiencyFlight:
             V_motor_on = x[0]
             I = x[1]
             t_motor_on = x[2]
-            print(
+            logging.debug(
                 "V_motor_on: %.3f, I: %.3f, t_motor_on: %.3f"
                 % (V_motor_on, I, t_motor_on)
             )
             points = self.evaluate(V_motor_on, I, t_motor_on, h0, v0)
-            print("points: %.3f" % points)
+            logging.debug("points: %.3f" % points)
             return -points
 
         param_space = [(10.0, 25.0), (5.0, 40.0), (1.0, 80.0)]
@@ -208,7 +210,7 @@ class EfficiencyFlight:
             acq_optimizer="auto",
             x0=[20.0, 30.0, 40.0],
         )
-        print(result)
+        logging.debug(result)
 
 
 if __name__ == "__main__":
@@ -229,6 +231,6 @@ if __name__ == "__main__":
     points = efficiency_flight.evaluate(
         V_motor_on=18.0, I=30, t_motor_on=34, h0=50, v0=13.0
     )
-    print(points)
+    logging.debug(points)
 
     # efficiency_flight.optimize_for_competition_points(h0=50, v0=13.)

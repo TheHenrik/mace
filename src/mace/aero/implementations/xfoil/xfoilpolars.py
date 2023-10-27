@@ -1,9 +1,12 @@
+import logging
 import os  # operation system
+import sys
 from pathlib import Path
 
 import numpy as np
 
 from mace.aero.implementations import runsubprocess as runsub
+from mace.utils.mp import get_pid
 
 # ---Inputs---
 
@@ -22,7 +25,7 @@ def get_xfoil_polar(
     cl_step: float = 0.05,
     n_iter=100,
     mach: float = 0,
-    n_crit: float = 9,
+    n_crit: float = 11,
     x_transition_top=100,
     x_transition_bottom=100,
     flap_angle: float = 0,
@@ -60,9 +63,9 @@ def get_xfoil_polar(
     # ---Inputfile writer---
 
     tool_path = Path(__file__).resolve().parents[5]
-    polar_file_path = os.path.join(tool_path, "temporary/polar_file.txt")
-    input_file_path = os.path.join(tool_path, "temporary/input_file_xfoil.in")
-    xfoil_path = os.path.join(tool_path, "Xfoil/bin/xfoil")
+    polar_file_path = Path(tool_path, "temporary", "polar_file.txt")
+    input_file_path = Path(tool_path, "temporary", f"input_file_xfoil{get_pid()}.in")
+    xfoil_path = Path(tool_path, "bin", sys.platform, "xfoil")
 
     if os.path.exists(polar_file_path):
         os.remove(polar_file_path)
@@ -96,7 +99,7 @@ def get_xfoil_polar(
                 )
             input_file.write(f"\n")
         input_file.write(f"PACC\n")
-        input_file.write(polar_file_path + "\n\n")
+        input_file.write(str(polar_file_path) + "\n\n")
         # input_file.write(f'polar_file.txt\n\n')
         input_file.write(f"ITER {n_iter}\n")
         if alfa is not None:
@@ -108,13 +111,13 @@ def get_xfoil_polar(
         elif cl_start is not None and cl_end is not None:
             input_file.write(f"CSeq {cl_start} {cl_end} {cl_step}\n")
         else:
-            print(f"wrong XFOIL inputs")  # Error
+            logging.error(f"wrong XFOIL inputs")  # Error
 
         input_file.write(f"\n\n")
         input_file.write(f"quit \n")
 
     # ---Run XFOIL---
-    cmd = xfoil_path + " <" + input_file_path  # external command to run
+    cmd = str(xfoil_path) + " <" + str(input_file_path)  # external command to run
     runsub.run_subprocess(cmd)
 
     polar_data = np.loadtxt(polar_file_path, skiprows=12)
@@ -137,4 +140,4 @@ if __name__ == "__main__":
     n_iter = 80  # wenn keine Konvergenz reduzieren, Ergebnisse scheinen annähernd gleich zu bleiben
 
     polar_daten = get_xfoil_polar(airfoil_name, reynolds, cl=0.5)
-    print(polar_daten)
+    logging.debug(polar_daten)

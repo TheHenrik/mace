@@ -1,3 +1,4 @@
+import logging
 import math
 import time
 
@@ -184,5 +185,5 @@ class Climb:
             v_vertical_max = self.get_v_v_max()
 
         height = h0 + v_vertical_max * delta_t
-        print("Time needed for calculation: ", time.time() - time0)
+        logging.info("Time needed for calculation: ", time.time() - time0)
         return height

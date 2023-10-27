@@ -1,9 +1,9 @@
+import logging
 import math
 import os
 from pathlib import Path
 
 import numpy as np
-import numpy.ma
 
 from mace.aero import generalfunctions
 from mace.aero.implementations.avl import athenavortexlattice
@@ -536,9 +536,9 @@ if __name__ == "__main__":
     athenavortexlattice.AVL(plane).read_avl_output()
     # print(plane.avl.outputs.surface_dictionary)
     result = ViscousDrag(plane).create_avl_viscous_drag_from_xfoil()
-    print(f"overall_viscous_drag = {result[0]}, viscous_drag = {result[1]}")
-    print(f"induced_drag = {plane.aero_coeffs.drag_coeff.cd_ind}")
-    print(
+    logging.debug(f"overall_viscous_drag = {result[0]}, viscous_drag = {result[1]}")
+    logging.debug(f"induced_drag = {plane.aero_coeffs.drag_coeff.cd_ind}")
+    logging.debug(
         f"cd_overall = {plane.aero_coeffs.drag_coeff.cd_viscous + plane.aero_coeffs.drag_coeff.cd_ind}"
     )
-    print(f"cl_tot = {plane.aero_coeffs.lift_coeff.cl_tot}")
+    logging.debug(f"cl_tot = {plane.aero_coeffs.lift_coeff.cl_tot}")

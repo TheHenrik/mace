@@ -1,4 +1,6 @@
+import logging
 import os  # operation system
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -8,27 +10,29 @@ from mace.aero.implementations.avl.geometry_and_mass_files import GeometryFile, 
 
 # from mace.domain.vehicle import Vehicle
 from mace.domain.parser import PlaneParser
+from mace.utils.mp import get_pid
 
 
 class AVL:
     def __init__(self, plane):
+        pid = get_pid()
         self.plane = plane
         tool_path = Path(__file__).resolve().parents[5]
-        self.avl_path = os.path.join(tool_path, "avl")
-        self.total_forces_file_name = os.path.join(
-            tool_path, "temporary/total_forces.avl"
+        self.avl_path = Path(tool_path, "bin", sys.platform, "avl")
+        self.total_forces_file_name = Path(
+            tool_path, "temporary", f"total_forces{pid}.avl"
         )
-        self.strip_forces_file_name = os.path.join(
-            tool_path, "temporary/strip_forces.avl"
+        self.strip_forces_file_name = Path(
+            tool_path, "temporary", f"strip_forces{pid}.avl"
         )
-        self.input_file_name = os.path.join(tool_path, "temporary/input_file_avl.in")
-        self.geometry_file = os.path.join(tool_path, "temporary/geometry_file.avl")
-        self.stability_file_name = os.path.join(
-            tool_path, "temporary/stability_file.avl"
+        self.input_file_name = Path(tool_path, "temporary", f"input_file_avl{pid}.in")
+        self.geometry_file = Path(tool_path, "temporary", f"geometry_file{pid}.avl")
+        self.stability_file_name = Path(
+            tool_path, "temporary", f"stability_file{pid}.avl"
         )
-        self.mass_file = os.path.join(tool_path, "temporary/mass_file.mass")
-        self.stability_input_file_name = os.path.join(
-            tool_path, "temporary/stability_input_file_avl.in"
+        self.mass_file = Path(tool_path, "temporary", f"mass_file{pid}.mass")
+        self.stability_input_file_name = Path(
+            tool_path, "temporary", f"stability_input_file_avl{pid}.in"
         )
 
     def run_avl(
@@ -100,10 +104,12 @@ class AVL:
             input_file.write("QUIT\n")
 
         # ---Run AVL---
-        cmd = self.avl_path + " <" + self.input_file_name  # external command to run
-        runsub.run_subprocess(cmd, timeout=15)
-        list_of_process_ids = runsub.find_process_id_by_name("avl")
-        runsub.kill_subprocesses(list_of_process_ids)
+        cmd = (
+            str(self.avl_path) + " < " + str(self.input_file_name)
+        )  # external command to run
+        runsub._run_subprocess(cmd, timeout=15)
+        # list_of_process_ids = runsub.find_process_id_by_name("avl")
+        # runsub.kill_subprocesses(list_of_process_ids)
 
     def read_total_forces_avl_file(self, lines):
 
@@ -229,7 +235,7 @@ class AVL:
                     ):
                         values = np.fromstring(line, sep=" ")  # np.loadtxt(line)
                 else:
-                    print("No valid data format")
+                    logging.error("No valid data format")
             if strip_number == 0:
                 strip_forces = values
             else:
@@ -304,11 +310,11 @@ class AVL:
 
         # ---Run AVL---
         cmd = (
-            self.avl_path + " <" + self.stability_input_file_name
+            str(self.avl_path) + " < " + str(self.stability_input_file_name)
         )  # external command to run
-        runsub.run_subprocess(cmd, timeout=15)
-        list_of_process_ids = runsub.find_process_id_by_name("avl")
-        runsub.kill_subprocesses(list_of_process_ids)
+        runsub._run_subprocess(cmd, timeout=15)
+        # list_of_process_ids = runsub.find_process_id_by_name("avl")
+        # runsub.kill_subprocesses(list_of_process_ids)
 
         with open(self.stability_file_name) as file:
             lines = file.readlines()
@@ -346,16 +352,16 @@ class AVL:
             XCG = XNP - SM * self.plane.wings["main_wing"].mean_aerodynamic_chord
             percentMAC = (XCG - (ac - 0.25 * l_mu)) / l_mu
 
-            print("\n")
-            print("CLa: %.3f" % CLa)
-            print("Cma: %.3f" % Cma)
-            print("Cnb: %.3f" % Cnb)
-            print("XNP: %.3f m" % XNP)
-            print("SM: %.1f %%" % (100 * SM))
-            print("l_mu: %.3f m" % l_mu)
-            print("XCG: %.3f m" % XCG)
-            print("percentMAC: %.1f %%" % (100 * percentMAC))
-            print("\n")
+            logging.debug("\n")
+            logging.debug("CLa: %.3f" % CLa)
+            logging.debug("Cma: %.3f" % Cma)
+            logging.debug("Cnb: %.3f" % Cnb)
+            logging.debug("XNP: %.3f m" % XNP)
+            logging.debug("SM: %.1f %%" % (100 * SM))
+            logging.debug("l_mu: %.3f m" % l_mu)
+            logging.debug("XCG: %.3f m" % XCG)
+            logging.debug("percentMAC: %.1f %%" % (100 * percentMAC))
+            logging.debug("\n")
 
             return CLa, Cma, Cnb, XNP, SM
 
@@ -488,7 +494,7 @@ def read_avl_output():
                 if line.startswith("{0}".format(strip_number + 1)) and "|" not in line:
                     values = line.split()
             else:
-                print("No valid data format")
+                logging.error("No valid data format")
         if strip_number == 0:
             strip_forces = np.array(values)
         else:
@@ -526,4 +532,4 @@ if __name__ == "__main__":
     AVL(plane).run_avl()
 
     AVL(plane).read_avl_output()
-    print(plane.avl.outputs.surface_dictionary)
+    logging.debug(plane.avl.outputs.surface_dictionary)

@@ -1,3 +1,5 @@
+import logging
+
 import numpy as np
 from scipy.interpolate import interp1d
 
@@ -64,7 +66,7 @@ class GeneralFunctions:
         return thrust
 
     def excess_power(self, cd, cl, thrust):
-        print(f"thrust_supply = {self.thrust_supply(cd, cl)}")
+        logging.debug(f"thrust_supply = {self.thrust_supply(cd, cl)}")
         excess_power = thrust - self.thrust_supply(cd, cl)
         return excess_power
 

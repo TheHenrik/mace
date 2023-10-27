@@ -1,3 +1,5 @@
+import logging
+
 import numpy as np
 
 from mace.domain.fuselage import Fuselage, FuselageSegment
@@ -121,7 +123,7 @@ def vehicle_setup() -> Vehicle:
 
     for wing in vehicle.wings.values():
         S = wing.reference_area
-        print("%s %.1f sqdm" % (wing.tag, S * 100))
+        logging.debug("%s %.1f sqdm" % (wing.tag, S * 100))
 
     ####################################################################################################################
     # PROPULSION

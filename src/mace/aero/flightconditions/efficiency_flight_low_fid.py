@@ -1,8 +1,9 @@
+import logging
 import time
 import warnings
 
 import numpy as np
-from scipy.optimize import fsolve, root_scalar
+from scipy.optimize import fsolve, root_scalar, minimize, differential_evolution
 from skopt import BayesSearchCV, gp_minimize
 
 import mace.aero.generalfunctions as functions
@@ -39,6 +40,7 @@ class EfficiencyFlight:
         self.drag_surrogate: np.ndarray = None
 
         self.plot_surface = False
+
     def T(self, V, I):
         thrust_array = self.plane.propulsion.thrust
         thrust_force = I / 30 * np.interp(V, thrust_array[:, 0], thrust_array[:, 1])
@@ -66,7 +68,7 @@ class EfficiencyFlight:
     def D(self, V):
         vmin = self.v_min
         vmax = self.v_max
-        v_vec = np.linspace(vmin, vmax, 10)
+        v_vec = np.linspace(vmin, vmax, 20)
         if self.is_drag_surrogate_build == False:
             self.drag_surrogate = np.array([self.get_drag_force(v) for v in v_vec])
             self.is_drag_surrogate_build = True
@@ -98,14 +100,16 @@ class EfficiencyFlight:
             )
             return [eq1, eq2]
 
-        root = fsolve(func, [60, 13], xtol=1e-4, maxfev = 1000)
+        root = fsolve(func, [60, 13], xtol=1e-4, maxfev=1000)
         if np.all(np.isclose(func(root), [0.0, 0.0], atol=1e-1)):
             if print_results:
-                print("->   h1:", round(min(root[0], 100), 1), "v2:", round(root[1], 1))
+                logging.debug(
+                    "->   h1:", round(min(root[0], 100), 1), "v2:", round(root[1], 1)
+                )
             return root
         else:
             if print_results:
-                print("-> No solution found")
+                logging.info("-> No solution found")
             return [0, 0]
 
     def optimizer(self, v0, h0, I=30):
@@ -138,46 +142,55 @@ class EfficiencyFlight:
             # print('points: ', round(points,5))
 
             if print_results:
-                print("\n")
-                print("v1: ", round(v1, 2), "t1: ", round(t1, 2), "I: ", I)
+                logging.debug("\n")
+                logging.debug("v1: ", round(v1, 2), "t1: ", round(t1, 2), "I: ", I)
                 self.equation_system(E0, v1, t1, I, print_results=True)
-                print("points: ", round(points, 5))
-                print("\n")
+                logging.debug("points: ", round(points, 5))
+                logging.debug("\n")
 
             return -points
 
         if self.plot_surface == False:
             param_space = [(0.0, 1.0), (0.0, 1.0)]
             time0 = time.time()
-            result = gp_minimize(
+            # result = gp_minimize(
+            #     func=objective_function,
+            #     dimensions=param_space,
+            #     n_calls=100,
+            #     n_initial_points=25,
+            #     initial_point_generator="hammersly",
+            #     acq_optimizer="sampling",
+            #     n_jobs=1,
+            #     x0=[0.5, 0.5],
+            # )
+            result = differential_evolution(
                 func=objective_function,
-                dimensions=param_space,
-                n_calls=100,
-                n_initial_points=25,
-                initial_point_generator="hammersly",
-                acq_optimizer="lbfgs",
-                n_jobs=-1,
-                x0=[0.5, 0.5],
+                bounds=[(0, 1), (0, 1)],
+                strategy="best1bin",
+                tol=0.1,
+                workers=1,
             )
             return -objective_function(result.x, print_results=True)
         else:
             import matplotlib.pyplot as plt
+
             v1_vec = np.linspace(0, 1, 100)
             t1_vec = np.linspace(0, 1, 100)
             points = np.zeros((len(v1_vec), len(t1_vec)))
             for i, v1 in enumerate(v1_vec):
                 for j, t1 in enumerate(t1_vec):
-                    points[i, j] = -1. * objective_function([v1, t1], print_results=True)
+                    points[i, j] = -1.0 * objective_function(
+                        [v1, t1], print_results=True
+                    )
             x, y = np.meshgrid(v1_vec, t1_vec)
             fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
             ax.plot_surface(x, y, points)
-            ax.set_proj_type('ortho')
+            ax.set_proj_type("ortho")
             ax.set_xlabel("t1")
             ax.set_ylabel("v1")
             ax.set_zlabel("points")
             plt.show()
             np.save("points_+1600.npy", points)
-
 
     def get_v_max(self, I, v0=15.0):
         def func(v):
@@ -217,7 +230,7 @@ if __name__ == "__main__":
     from mace.test.vehicle_setup_acc import vehicle_setup
 
     Aircraft = vehicle_setup()
-    Aircraft.mass -= 0.
+    Aircraft.mass -= 0.0
     mass_file = geometry_and_mass_files.MassFile(Aircraft)
     mass_file.build_mass_file()
     geometry_file = geometry_and_mass_files.GeometryFile(Aircraft)
@@ -229,4 +242,4 @@ if __name__ == "__main__":
     v0 = 17.1
     h0 = 72
     efficiency_flight.optimizer(v0, h0)
-    #print(result)
+    # print(result)

@@ -1,9 +1,21 @@
+import logging
 import os
 import signal
 import subprocess
 import time
 
 import psutil
+
+
+def _run_subprocess(cmd, timeout=10):
+    try:
+        subprocess.run(
+            cmd, capture_output=True, timeout=timeout, shell=True, check=True
+        )
+    except subprocess.TimeoutExpired as err:
+        logging.critical(f"Process timed out: {err}")
+    except subprocess.CalledProcessError as err:
+        logging.error(f"Process returned: {err}")
 
 
 def run_subprocess(cmd, timeout=5):
@@ -74,3 +86,9 @@ def kill_subprocesses(list_of_process_ids):
     else:
         pass
         # print("No running process found with given text")
+
+
+if __name__ == "__main__":
+    _run_subprocess(["echo", "Hello"])
+    _run_subprocess(["sleep", "6"])
+    _run_subprocess(["ech", "Hello"])

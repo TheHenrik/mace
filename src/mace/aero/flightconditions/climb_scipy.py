@@ -20,8 +20,8 @@ class Climb:
         self.g = params.Constants.g
         self.rho = params.Constants.rho
 
-        self.cl_start = 0.01
-        self.cl_end = 0.5
+        self.cl_start = 0.1
+        self.cl_end = 1.
 
         self.flap_angle = 0.0
         self.optimize_flap_angle = True
@@ -52,7 +52,7 @@ class Climb:
             eq2 = np.cos(alpha) * m * g - q * CL * s
             return [eq1, eq2]
 
-        v, alpha = fsolve(func, [V0, 0], xtol=1e-3, factor=10)
+        v, alpha = fsolve(func, [V0, 0], xtol=12e-2, factor=10)
         V_vertical = v * np.sin(alpha)
         if return_v:
             return v
@@ -64,7 +64,7 @@ class Climb:
             self.evaluate,
             bounds=(self.cl_start, self.cl_end),
             method="bounded",
-            options={"xatol": 0.01},
+            tol=0.1,
         )
         v = self.evaluate(res.x, return_v=True)
         return -res.fun, v

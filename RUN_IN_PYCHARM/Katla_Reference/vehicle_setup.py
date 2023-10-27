@@ -1,3 +1,4 @@
+import logging
 import os
 from pathlib import Path
 
@@ -5,7 +6,7 @@ import numpy as np
 
 from mace.aero.implementations.avl.athenavortexlattice import AVL
 from mace.domain.fuselage import Fuselage, FuselageSegment
-from mace.domain.landing_gear import LandingGear, Wheel, Strut
+from mace.domain.landing_gear import LandingGear, Strut, Wheel
 from mace.domain.vehicle import Vehicle
 from mace.domain.wing import Wing, WingSegment, WingSegmentBuild
 
@@ -17,8 +18,12 @@ def vehicle_setup() -> Vehicle:
 
     vehicle.center_of_gravity = [0.088, 0.0, 0.0]
 
-    main_wing_construction = WingSegmentBuild(build_type="Negativ", surface_weight=0.400)
-    empennage_construction = WingSegmentBuild(build_type="Positiv", surface_weight=0.150, core_material_density=37.)
+    main_wing_construction = WingSegmentBuild(
+        build_type="Negativ", surface_weight=0.400
+    )
+    empennage_construction = WingSegmentBuild(
+        build_type="Positiv", surface_weight=0.150, core_material_density=37.0
+    )
 
     ####################################################################################################################
     # MAIN WING
@@ -29,13 +34,12 @@ def vehicle_setup() -> Vehicle:
     main_wing.angle = 2.0
     main_wing.symmetric = True
 
-
     segment = WingSegment()
     segment.span = 0.5
     segment.inner_chord = 0.235
     segment.outer_chord = 0.222
     segment.dihedral = 3
-    segment.inner_x_offset = 0.
+    segment.inner_x_offset = 0.0
     segment.outer_x_offset = -0.002
     segment.control = True
     segment.wsb = main_wing_construction
@@ -140,7 +144,7 @@ def vehicle_setup() -> Vehicle:
     segment.inner_chord = 0.123
     segment.outer_chord = 0.12
     segment.dihedral = 40.0
-    segment.inner_x_offset = 0.
+    segment.inner_x_offset = 0.0
     segment.outer_x_offset = 0.001
     segment.wsb = empennage_construction
     horizontal_stabilizer.add_segment(segment)
@@ -195,9 +199,10 @@ def vehicle_setup() -> Vehicle:
     segment.wsb = empennage_construction
     horizontal_stabilizer.add_segment(segment)
 
-
-    #horizontal_stabilizer.reference_area = 0.08
-    horizontal_stabilizer.build(resize_areas=False, resize_x_offset_from_hinge_angle=False)
+    # horizontal_stabilizer.reference_area = 0.08
+    horizontal_stabilizer.build(
+        resize_areas=False, resize_x_offset_from_hinge_angle=False
+    )
 
     vehicle.add_wing("horizontal_stabilizer", horizontal_stabilizer)
 
@@ -205,17 +210,21 @@ def vehicle_setup() -> Vehicle:
     # FUSELAGE
     fuselage = Fuselage()
 
-    fuselage.add_segment(origin=[-0.35, 0, 0.0], shape='rectangular', width=0.03, height=0.04)
-    fuselage.add_segment(origin=[1.01, 0, 0.0], shape='rectangular', width=0.02, height=0.02)
+    fuselage.add_segment(
+        origin=[-0.35, 0, 0.0], shape="rectangular", width=0.03, height=0.04
+    )
+    fuselage.add_segment(
+        origin=[1.01, 0, 0.0], shape="rectangular", width=0.02, height=0.02
+    )
 
     fuselage.build()
-    print("f_length: %.3f m" % fuselage.length)
+    logging.debug("f_length: %.3f m" % fuselage.length)
     vehicle.add_fuselage("fuselage", fuselage)
     ####################################################################################################################
 
     ####################################################################################################################
-    
-    #vehicle.build()
+
+    # vehicle.build()
     vehicle.get_reference_values()
     vehicle.get_stability_derivatives()
     vehicle.transport_box_dimensions()
@@ -223,10 +232,10 @@ def vehicle_setup() -> Vehicle:
     for wing in vehicle.wings.values():
         S = wing.reference_area
         ac = wing.neutral_point
-        print("%s %.1f sqdm" % (wing.tag, S * 100))
-        print(ac)
+        logging.debug("%s %.1f sqdm" % (wing.tag, S * 100))
+        logging.debug(ac)
 
-    print('Vehicle Mass', round(vehicle.mass,3))
+    logging.debug("Vehicle Mass", round(vehicle.mass, 3))
     # PLOT
     if __name__ == "__main__":
         vehicle.plot_vehicle(azim=180, elev=0)
@@ -235,6 +244,7 @@ def vehicle_setup() -> Vehicle:
     vehicle.plot_vehicle(azim=230, elev=30)
 
     return vehicle
+
 
 if __name__ == "__main__":
     vehicle_setup()

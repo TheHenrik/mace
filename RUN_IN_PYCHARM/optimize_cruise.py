@@ -1,3 +1,5 @@
+import logging
+
 import matplotlib.pyplot as plt
 import numpy as np
 from vehicle_setup import vehicle_setup
@@ -29,7 +31,7 @@ if __name__ == "__main__":
 
     for i, flap_angle in enumerate(flap_angles):
 
-        print("Analysis %s of %s" % (i + 1, len(flap_angles)))
+        logging.debug("Analysis %s of %s" % (i + 1, len(flap_angles)))
 
         cruise_analysis.flap_angle = flap_angle
         cruise_analysis.cl_start = 0.05

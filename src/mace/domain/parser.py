@@ -1,3 +1,4 @@
+import logging
 import xml.etree.ElementTree as ET
 
 import numpy as np
@@ -50,4 +51,4 @@ class PlaneParser:
 
 if __name__ == "__main__":
     plane = PlaneParser("testplane.toml").get("Plane")
-    print(plane)
+    logging.debug(plane)

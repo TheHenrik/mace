@@ -1,9 +1,11 @@
+import logging
 import os
 from pathlib import Path
 
 from mace.domain import Plane
 from mace.domain import plane as pl
 from mace.domain.parser import PlaneParser
+from mace.utils.mp import get_pid
 
 # ========== Geometry File ==========
 
@@ -907,7 +909,7 @@ class GeometryFile:
         Coordinate system: X downstream, Y out the right wing, Z up
         """
         tool_path = Path(__file__).resolve().parents[5]
-        file_path = os.path.join(tool_path, "temporary/geometry_file.avl")
+        file_path = Path(tool_path, "temporary", f"geometry_file{get_pid()}.avl")
         if os.path.exists(file_path):
             os.remove(file_path)
 
@@ -918,7 +920,7 @@ class GeometryFile:
                 GeometryFile.build_geo_surface(self, geometry_file)
 
         self.plane.avl.inputs.avl_file = file_path
-        print("AVL Geometry File built successfully")
+        logging.debug("AVL Geometry File built successfully")
 
 
 # ========== Mass File ==========
@@ -1230,7 +1232,7 @@ class MassFile:
         # print(self.plane.__dict__.items())
         else:  # noch nicht verwendbar
             for component in self.plane.__dict__.items():
-                print(hasattr(component, "mass"))
+                logging.debug(hasattr(component, "mass"))
                 if hasattr(component, "mass"):
                     MassFile.build_mass_of_components(self, mass_file, component)
 
@@ -1297,7 +1299,7 @@ class MassFile:
         these constants default to 1.0, and will need to be changed manually at runtime.
         """
         tool_path = Path(__file__).resolve().parents[5]
-        file_path = os.path.join(tool_path, "temporary/mass_file.mass")
+        file_path = Path(tool_path, "temporary", f"mass_file{get_pid()}.mass")
         if os.path.exists(file_path):
             os.remove(file_path)
 
@@ -1311,7 +1313,7 @@ class MassFile:
             MassFile.build_mass_table(self, mass_file)
 
         self.plane.avl.inputs.mass_file = file_path
-        print("AVL Mass File built successfully")
+        logging.debug("AVL Mass File built successfully")
 
 
 # ========== Test ===========

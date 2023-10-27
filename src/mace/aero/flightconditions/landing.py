@@ -1,4 +1,6 @@
 # import takeoff as to
+import logging
+
 import numpy as np
 
 from mace.aero.flightconditions.takeoff import Takeoff
