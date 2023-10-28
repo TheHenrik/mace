@@ -46,7 +46,6 @@ def main():
         case _:
             num_fowler_segments = [0]
 
-    print(num_fowler_segments)
     start = perf_counter()
     path = Path(Path(__file__).parent, f"results_fowlersegments_{num_fowler_segments}.csv")
     handler(path, payload, span, aspect_ratio, airfoil, num_fowler_segments)
