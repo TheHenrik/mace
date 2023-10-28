@@ -1,3 +1,4 @@
+import logging
 import os
 from pathlib import Path
 
@@ -10,21 +11,22 @@ from mace.domain.vehicle import Vehicle
 from mace.domain.wing import Wing, WingSegment, WingSegmentBuild
 
 
-def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag45c") -> Vehicle:
+def vehicle_setup(payload=4.59, span=2.6, aspect_ratio=10.0, airfoil="ag45c", num_fowler_segments=1) -> Vehicle:
     vehicle = Vehicle()
     vehicle.payload = payload
     vehicle.mass = 2.0 * (span / 3.0) ** 2
-    print("M Empty: %.2f kg" % vehicle.mass)
+    logging.debug("M Empty: %.2f kg" % vehicle.mass)
     vehicle.mass += vehicle.payload
 
     vehicle.center_of_gravity = [0.112, 0.0, 0.0]
 
     main_wing_construction = WingSegmentBuild(
-        build_type="Negativ", surface_weight=0.400
+        build_type="Negativ", surface_weight=0.380
     )
     empennage_construction = WingSegmentBuild(
-        build_type="Positiv", surface_weight=0.150, core_material_density=37.0
+        build_type="Positiv", surface_weight=0.08, core_material_density=37.0
     )
+    pylon_construction = WingSegmentBuild(build_type="Negativ", surface_weight=0.500)
 
     ####################################################################################################################
     # MAIN WING
@@ -42,6 +44,8 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag45c") -> 
     segment.outer_chord = 0.9
     segment.dihedral = 1
     segment.control = True
+    if num_fowler_segments >= 1:
+        segment.control_name = "fowler"
     segment.wsb = main_wing_construction
     main_wing.add_segment(segment)
 
@@ -52,6 +56,8 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag45c") -> 
     segment.outer_chord = 0.7
     segment.dihedral = 5
     segment.control = True
+    if num_fowler_segments >= 2:
+        segment.control_name = "fowler"
     segment.wsb = main_wing_construction
     main_wing.add_segment(segment)
 
@@ -63,6 +69,8 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag45c") -> 
     segment.dihedral = 5
     segment.outer_twist = 0
     segment.control = True
+    if num_fowler_segments >= 3:
+        segment.control_name = "fowler"
     segment.wsb = main_wing_construction
     main_wing.add_segment(segment)
 
@@ -74,6 +82,8 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag45c") -> 
     segment.dihedral = 5
     segment.outer_twist = 0
     segment.control = True
+    if num_fowler_segments >= 4:
+        segment.control_name = "fowler"
     segment.wsb = main_wing_construction
     main_wing.add_segment(segment)
 
@@ -145,15 +155,16 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag45c") -> 
         origin=[b_ref * 0.35, 0, 0.0], shape="rectangular", width=0.04, height=0.04
     )
 
+    fuselage.area_specific_mass = 0.616
     fuselage.build()
-    print("f_length: %.3f m" % fuselage.length)
+    logging.debug("f_length: %.3f m" % fuselage.length)
     vehicle.add_fuselage("fuselage", fuselage)
     ####################################################################################################################
     # CARGO BAY
     cargo_bay = Fuselage()
     Height = 0.25
     cargo_bay_length = np.ceil(vehicle.payload / 0.17 / 3) * 0.06
-    print("cargo_bay_length: %.3f m" % cargo_bay_length)
+    logging.debug(f"cargo_bay_length: {cargo_bay_length:.3f} m")
     cargo_bay_height = 0.06
     cargo_bay_width = 0.2
     x_minus_offset = vehicle.center_of_gravity[0] - cargo_bay_length / 2
@@ -196,9 +207,38 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag45c") -> 
         origin=[x, y, z], shape="rectangular", width=width, height=height
     )
 
+    cargo_bay.area_specific_mass = 0.6
     cargo_bay.build()
-    print("f_length: %.3f m" % cargo_bay.length)
+    logging.debug("f_length: %.3f m" % cargo_bay.length)
     vehicle.add_fuselage("cargo_bay", cargo_bay)
+    ####################################################################################################################
+    # PYLON
+    pylon = Wing()
+    pylon.tag = "pylon"
+    pylon.origin = [
+        0.03,
+        0.0,
+        -0.02 + (-Height + cargo_bay_height / 2 + 0.05) + 0.02 + cargo_bay_height / 2,
+    ]
+    pylon.airfoil = "NACA0014"
+    pylon.vertical = True
+    pylon.symmetric = False
+
+    # Segment
+    segment = WingSegment()
+    segment.inner_chord = 0.15
+    segment.outer_chord = 0.15
+    segment.span = (
+        -(-Height + cargo_bay_height / 2 + 0.05) - 0.02 - cargo_bay_height / 2
+    )
+    # segment.dihedral = -90.
+    segment.wsb = empennage_construction
+    segment.control = False
+    pylon.add_segment(segment)
+
+    pylon.build(resize_x_offset_from_hinge_angle=False, resize_areas=False)
+
+    vehicle.add_wing("pylon", pylon)
     ####################################################################################################################
     # LANDING GEAR
     landing_gear = LandingGear()
@@ -261,15 +301,25 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag45c") -> 
     vehicle.add_misc(
         "Motor", 0.175, np.array([0, 0, 0])
     )  # T-Motor AT2826 900KV : 175gr inkl. Kabel
+    vehicle.add_misc(
+        "Prop+Spinner", 0.025, np.array([0, 0, 0])
+    )  # Assumption
+    vehicle.add_misc(
+        "Prop+Spinner", 0.025, np.array([0, 0, 0])
+    )  # Assumption
+    vehicle.add_misc(
+        "Screws+Cables+Accessories", 0.060, np.array([0, 0, 0])
+    )  # Assumption
 
     ####################################################################################################################
 
     vehicle.build()
+    vehicle.print_mass_table()
     vehicle.get_reference_values()
     vehicle.get_stability_derivatives()
     vehicle.transport_box_dimensions()
 
-    print("Vehicle Mass", round(vehicle.mass, 3))
+    logging.debug(f"Vehicle Mass: {vehicle.mass:.3f}")
     # PLOT
     if __name__ == "__main__":
         vehicle.plot_vehicle(azim=230, elev=30)

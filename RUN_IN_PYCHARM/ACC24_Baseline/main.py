@@ -26,10 +26,10 @@ from mace.test.perftest import performance_report
 def main():
     logging.basicConfig(level=logging.INFO)
     logging.info("Started programm")
-    payload = np.arange(3.57, 3.57+4*0.51, 0.51)
-    span = (1.8, 2., 2.2, 2.4, 2.6)
-    aspect_ratio = (8., 9., 10., 11.)
-    airfoil = ["ag45c"]
+    payload = np.arange(3.57-0.51*3, 3.57+0.51*3, 0.17)
+    span = [2., 2.1, 2.2, 2.3, 2.4, 2.5, 2.6]
+    aspect_ratio = [10., 10.5, 11., 11.5, 12., 12.5, 13, 13.5, 14.]
+    airfoil = ["ag19"]
     match sys.argv:
         case _, "0":
             num_fowler_segments = []
@@ -44,10 +44,10 @@ def main():
         case _, "5":
             num_fowler_segments = [3]
         case _:
-            num_fowler_segments = [0]
+            num_fowler_segments = [1]
 
     start = perf_counter()
-    path = Path(Path(__file__).parent, f"results_fowlersegments_{num_fowler_segments}.csv")
+    path = Path(Path(__file__).parent, f"results_sweep_3.csv")
     handler(path, payload, span, aspect_ratio, airfoil, num_fowler_segments)
     end = perf_counter()
     logging.info(f"Finished in: {end-start}")
@@ -184,6 +184,9 @@ def analysis(payload, span, aspect_ratio, airfoil, num_fowler_segments):
         take_off_length,
         climb_height,
         e_efficiency,
+        eff_v1,
+        eff_t1,
+        eff_v2,
         s_distance,
         score_payload,
         score_efficiency,

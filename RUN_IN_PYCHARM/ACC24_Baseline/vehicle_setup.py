@@ -11,7 +11,7 @@ from mace.domain.vehicle import Vehicle
 from mace.domain.wing import Wing, WingSegment, WingSegmentBuild
 
 
-def vehicle_setup(payload=3.57, span=2.15, aspect_ratio=9.0, airfoil="ag45c", num_fowler_segments=0) -> Vehicle:
+def vehicle_setup(payload=4.59, span=2.5, aspect_ratio=10.0, airfoil="ag45c", num_fowler_segments=0) -> Vehicle:
     vehicle = Vehicle()
     vehicle.payload = payload
     vehicle.mass = 2.0 * (span / 3.0) ** 2

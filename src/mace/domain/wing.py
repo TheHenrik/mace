@@ -175,7 +175,7 @@ class WingSegment:
         sigma = 700 * (10**6)
         H100 = D100 / sigma
         C100 = 10 / 1_000
-        G100 = max_height - 0.4 / 1_000
+        G100 = max_height# - 0.4 / 1_000
         J100 = np.cbrt(((C100 * (G100**3)) - (6 * G100 * H100)) / C100)
         K100 = (G100 - J100) / 2
         m = K100 * C100 * 10**6

@@ -170,7 +170,23 @@ class EfficiencyFlight:
                 tol=0.1,
                 workers=1,
             )
-            return -objective_function(result.x, print_results=True)
+            v1_scale = result.x[0]
+            t_scale = result.x[1]
+
+            vmin = self.v_min
+            vmax = self.v_max
+            v1 = vmin + v1_scale * (vmax - vmin)
+
+            tmin = self.get_t1_min(v1, v0, I, h0)
+            if tmin < 0:
+                return 0
+            tmax = self.t_ges
+            t1 = tmin + t_scale * (tmax - tmin)
+
+            root = self.equation_system(E0, v1, t1, I)
+            v2 = root[1]
+            
+            return -objective_function(result.x, print_results=True), v1, t1, v2
         else:
             import matplotlib.pyplot as plt
 
@@ -240,6 +256,6 @@ if __name__ == "__main__":
     efficiency_flight = EfficiencyFlight(Aircraft)
     efficiency_flight.plot_surface = True
     v0 = 17.1
-    h0 = 72
+    h0 = 40.28
     efficiency_flight.optimizer(v0, h0)
     # print(result)

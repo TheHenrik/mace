@@ -4,26 +4,21 @@ import matplotlib.pyplot as plt
 import os
 from pathlib import Path
 
-# # setup
-# dir_path     = '_results/_data_extracted_20221014_100141_150.csv'
-# plot_type    = '2d'   # options: 2d, meshgrid, trisurf
-# x_name       = 'hybridization_power'
-# y_name       = 'EMS'  # in 2d this is separate lines
-# z_name       = 'all'  # in 2d this is y-axis
-# cmap         = 'viridis_r'
-# show_plots   = False
-
 
 # setup
 dir_path     = 'sweep_0_total.csv'
 plot_type    = 'trisurf'   # options: 2d, meshgrid, trisurf
 x_name       = 'span'
 y_name       = 'aspect_ratio'  # in 2d this is separate lines
-z_name       = 'take_off_length'  # in 2d this is y-axis
+z_name       = 'total mass'  # in 2d this is y-axis
 cmap         = 'viridis_r'
+sep          = ';'
 show_plots   = True
-constant_parameters = {'payload': 3.57,
-                       'airfoil': 'ag45c'
+constant_parameters = {#"num_fowler_segments": 1,
+                        "payload": 3.57-2*0.51,
+                        #"span": 2.6,
+                        #"aspect_ratio": 10.,
+                        "airfoil": "ag19",
                        }
 
 def plot_function(df, x_name, y_name, z_name, plot_type, cmap, dir_path, file_name, show=False):
@@ -91,7 +86,7 @@ def plot_function(df, x_name, y_name, z_name, plot_type, cmap, dir_path, file_na
 
 
 dir_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), dir_path)
-df = pd.read_csv(dir_path, sep=';')
+df = pd.read_csv(dir_path, sep=sep)
 file_name = dir_path.rsplit('/', 1)[-1].split('.')[0]
 
 dir_path = os.path.join(dir_path.rsplit('/', 1)[0], 'plots')
@@ -103,7 +98,7 @@ for key, value in constant_parameters.items():
     else:
         df = df[np.isclose(df[key], value, rtol=1e-03)]
 
-df = df[df['score_round_corrected'] > 0.]
+df = df[df['score_round'] > 0.]
 if z_name == 'all':
     cols = list(df.columns)
     cols = cols[2:]
