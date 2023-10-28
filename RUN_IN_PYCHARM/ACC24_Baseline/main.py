@@ -29,7 +29,7 @@ def main():
     payload = np.arange(3.57-0.51*3, 3.57+0.51*3, 0.17)
     span = [2., 2.1, 2.2, 2.3, 2.4, 2.5, 2.6]
     aspect_ratio = [10., 10.5, 11., 11.5, 12., 12.5, 13, 13.5, 14.]
-    airfoil = ["ag19"]
+    airfoil = ["ag45c"]
     match sys.argv:
         case _, "0":
             num_fowler_segments = []
@@ -54,6 +54,7 @@ def main():
 
 
 def handler(file: Path, *args):
+    with open(file, "w") as f, Pool() as p:
         for r in p.imap_unordered(worker, product(*args)):
             f.write(", ".join(map(str, r)) + "\n")
 
