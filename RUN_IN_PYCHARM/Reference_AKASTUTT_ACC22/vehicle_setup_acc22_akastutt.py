@@ -10,15 +10,22 @@ from mace.domain.wing import Wing, WingSegment, WingSegmentBuild
 
 def vehicle_setup() -> Vehicle:
     vehicle = Vehicle()
-    vehicle.mass = 2.7 + 2.3
+    vehicle.mass = 0.
+    vehicle.payload = 2.3
     vehicle.center_of_gravity = [0.130, 0.0, 0.0]
 
+    main_wing_construction = WingSegmentBuild(
+        build_type="Negativ", surface_weight=0.380
+    )
+    empennage_construction = WingSegmentBuild(
+        build_type="Positiv", surface_weight=0.4, core_material_density=50.0
+    )
     ####################################################################################################################
     # MAIN WING
     main_wing = Wing()
     main_wing.tag = "main_wing"
     main_wing.origin = [0, 0, 0]
-    main_wing.airfoil = "jx-gp-055"
+    main_wing.airfoil = "acc22"
     main_wing.angle = 2.0
     main_wing.symmetric = True
 
@@ -31,7 +38,8 @@ def vehicle_setup() -> Vehicle:
     segment.outer_x_offset = 0.015
     segment.dihedral = 1
     segment.control = True
-    segment.wsb = WingSegmentBuild("Negativ", 0.2, 40, 30)
+    segment.control_name = 'fowler'
+    segment.wsb = main_wing_construction
     main_wing.add_segment(segment)
 
     # Mid segment
@@ -43,7 +51,8 @@ def vehicle_setup() -> Vehicle:
     segment.outer_x_offset = 0.08
     segment.dihedral = 5
     segment.control = True
-    segment.wsb = WingSegmentBuild("Negativ", 0.2, 40, 30)
+    segment.control_name = 'fowler'
+    segment.wsb = main_wing_construction
     main_wing.add_segment(segment)
 
     # Outer segment
@@ -56,7 +65,8 @@ def vehicle_setup() -> Vehicle:
     segment.dihedral = 5
     segment.outer_twist = 0
     segment.control = True
-    segment.wsb = WingSegmentBuild("Negativ", 0.2, 40, 30)
+    segment.control_name = 'fowler'
+    segment.wsb = main_wing_construction
     main_wing.add_segment(segment)
 
     # Resize Wing
@@ -83,7 +93,7 @@ def vehicle_setup() -> Vehicle:
     segment.inner_chord = 0.25
     segment.outer_chord = 0.228
     segment.flap_chord_ratio = 0.4
-    segment.wsb = WingSegmentBuild("Positiv", 0.2, 30, core_material_density=35)
+    segment.wsb = empennage_construction
     horizontal_stabilizer.add_segment(segment)
 
     # Segment
@@ -91,7 +101,7 @@ def vehicle_setup() -> Vehicle:
     segment.inner_chord = 0.228
     segment.outer_chord = 0.12
     segment.flap_chord_ratio = 0.4
-    segment.wsb = WingSegmentBuild("Positiv", 0.2, 30, core_material_density=35)
+    segment.wsb = empennage_construction
     horizontal_stabilizer.add_segment(segment)
 
     # Resize Wing
@@ -119,7 +129,7 @@ def vehicle_setup() -> Vehicle:
     segment.outer_chord = 0.23
     segment.outer_x_offset = 0.02
     segment.flap_chord_ratio = 0.4
-    segment.wsb = WingSegmentBuild("Positiv", 0.2, 30, core_material_density=35)
+    segment.wsb = empennage_construction
     vertical_stabilizer.add_segment(segment)
 
     # Resize Wing

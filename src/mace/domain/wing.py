@@ -160,6 +160,10 @@ class WingSegment:
             self.mass_breakdown["Schale"] += material * area
         self.cog_breakdown["Schale"] = cog * self.mass_breakdown["Schale"]
 
+        if self.control_name == 'fowler':
+            self.mass_breakdown["Flap"] = self.span * 0.25
+            self.cog_breakdown["Flap"] = cog * self.mass_breakdown["Flap"]
+
         self.mass = sum(self.mass_breakdown.values())
         self.cog = sum(self.cog_breakdown.values()) / self.mass
         return self.mass, self.cog * self.mass

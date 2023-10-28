@@ -11,7 +11,7 @@ from mace.domain.vehicle import Vehicle
 from mace.domain.wing import Wing, WingSegment, WingSegmentBuild
 
 
-def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag19") -> Vehicle:
+def vehicle_setup(payload=3.57, span=2.15, aspect_ratio=9.0, airfoil="ag45c", num_fowler_segments=0) -> Vehicle:
     vehicle = Vehicle()
     vehicle.payload = payload
     vehicle.mass = 2.0 * (span / 3.0) ** 2
@@ -44,6 +44,8 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag19") -> V
     segment.outer_chord = 0.9
     segment.dihedral = 1
     segment.control = True
+    if num_fowler_segments >= 1:
+        segment.control_name = "fowler"
     segment.wsb = main_wing_construction
     main_wing.add_segment(segment)
 
@@ -54,6 +56,8 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag19") -> V
     segment.outer_chord = 0.7
     segment.dihedral = 5
     segment.control = True
+    if num_fowler_segments >= 2:
+        segment.control_name = "fowler"
     segment.wsb = main_wing_construction
     main_wing.add_segment(segment)
 
@@ -65,6 +69,8 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag19") -> V
     segment.dihedral = 5
     segment.outer_twist = 0
     segment.control = True
+    if num_fowler_segments >= 3:
+        segment.control_name = "fowler"
     segment.wsb = main_wing_construction
     main_wing.add_segment(segment)
 
@@ -76,6 +82,8 @@ def vehicle_setup(payload=3.0, span=3.0, aspect_ratio=15.0, airfoil="ag19") -> V
     segment.dihedral = 5
     segment.outer_twist = 0
     segment.control = True
+    if num_fowler_segments >= 4:
+        segment.control_name = "fowler"
     segment.wsb = main_wing_construction
     main_wing.add_segment(segment)
 

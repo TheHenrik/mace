@@ -590,15 +590,16 @@ class Airfoil:
 
 if __name__ == "__main__":
 
-    ag19 = Airfoil("ag19", use_opt_flap_setting=True)
-    ag19.flap_angle_list = np.array([0, 6])
-    ag19.must_rebuild_surrogate = True
-    ag19.re_list = np.array([100000, 200000])
+    airf = Airfoil("acc22", flap_angle=12.)
+    #airf.flap_angle_list = np.array([0, 6])
+    #airf.must_rebuild_surrogate = True
+    #airf.re_list = np.array([100000, 200000])
 
-    CD = ag19.get_cd(136000, 1.0)
-    logging.debug("CD:     %.3e" % CD)
+    #CD = airf.get_cd(136000, 1.0)
+    #logging.debug("CD:     %.3e" % CD)
 
-    CL_max = ag19.get_cl_max(20000)
+    CL_max = airf.get_cl_max(150000)
+    print(CL_max)
 
-    logging.debug("CL_max: %.3e" % CL_max)
-    logging.debug("CD:     %.3e" % CD)
+    #logging.debug("CL_max: %.3e" % CL_max)
+    #logging.debug("CD:     %.3e" % CD)

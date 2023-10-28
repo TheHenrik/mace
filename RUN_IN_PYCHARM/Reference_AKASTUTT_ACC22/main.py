@@ -13,13 +13,14 @@ from mace.domain.parser import PlaneParser
 
 if __name__ == "__main__":
     # Define Analysis
+    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     climb_time = 60.0
     cruise_time = 120.0
     transition_time = 5.0
 
     # Define Aircraft Geometry
     Aircraft = vehicle_setup()
-    Aircraft.mass = 5.0
     logging.debug("vehicle.mass", Aircraft.mass)
     # Aircraft.mass += 3.
     mass_file = geometry_and_mass_files.MassFile(Aircraft)
@@ -31,12 +32,12 @@ if __name__ == "__main__":
 
     # Run Take-Off Analysis
     takeoff_analysis = TakeOff(Aircraft)
-    takeoff_analysis.mu = 0.08
-    takeoff_analysis.flap_angle = 10.0
+    takeoff_analysis.mu = 0.125
+    takeoff_analysis.flap_angle = 12.0
     takeoff_analysis.cl_safety_factor = 1.3
-    takeoff_analysis.v_wind = 1.0
+    takeoff_analysis.v_wind = 2.2
     takeoff_analysis.v_start_counter = 1.3
-    takeoff_analysis.manual_cl_max = 3.0
+    #takeoff_analysis.manual_cl_max = 3.0
 
     take_off_length, take_off_time = takeoff_analysis.evaluate()
     logging.debug("Take-Off Length: %.1f m" % take_off_length)

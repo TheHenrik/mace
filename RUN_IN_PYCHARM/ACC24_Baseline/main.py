@@ -26,28 +26,30 @@ from mace.test.perftest import performance_report
 def main():
     logging.basicConfig(level=logging.INFO)
     logging.info("Started programm")
-    payload = np.arange(1.02, 6., 0.51)
-    span = (1.5, 2., 2.5, 3., 3.5)
-    aspect_ratio = (8., 10., 12., 14., 16.)
+    payload = np.arange(3.57, 3.57+4*0.51, 0.51)
+    span = (1.8, 2., 2.2, 2.4, 2.6)
+    aspect_ratio = (8., 9., 10., 11.)
+    airfoil = ["ag45c"]
     match sys.argv:
         case _, "0":
-            airfoil = ["ag19"]
+            num_fowler_segments = []
         case _, "1":
-            airfoil = ["ag45c"]
+            num_fowler_segments = [4]
         case _, "2":
-            airfoil = ["ag40"]
+            num_fowler_segments = [0]
         case _, "3":
-            airfoil = ["acc22"]
+            num_fowler_segments = [1]
         case _, "4":
-            airfoil = ["jf-a2"]
+            num_fowler_segments = [2]
         case _, "5":
-            airfoil = ["jx-gp-055"]
+            num_fowler_segments = [3]
         case _:
-            airfoil = ["jx-gp-055"]
+            num_fowler_segments = [0]
 
+    print(num_fowler_segments)
     start = perf_counter()
-    path = Path(Path(__file__).parent, f"results_{airfoil[0]}.csv")
-    handler(path, payload, span, aspect_ratio, airfoil)
+    path = Path(Path(__file__).parent, f"results_fowlersegments_{num_fowler_segments}.csv")
+    handler(path, payload, span, aspect_ratio, airfoil, num_fowler_segments)
     end = perf_counter()
     logging.info(f"Finished in: {end-start}")
 
@@ -74,7 +76,7 @@ def clean_temporary(path: Path):
             file.unlink()
 
 
-def analysis(payload, span, aspect_ratio, airfoil):
+def analysis(payload, span, aspect_ratio, airfoil, num_fowler_segments):
     # Define Analysis
     climb_time = 30.0
     cruise_time = 90.0
@@ -83,7 +85,7 @@ def analysis(payload, span, aspect_ratio, airfoil):
 
     # Define Aircraft Geometry
     Aircraft = vehicle_setup(
-        payload=payload, span=span, aspect_ratio=aspect_ratio, airfoil=airfoil
+        payload=payload, span=span, aspect_ratio=aspect_ratio, airfoil=airfoil, num_fowler_segments=num_fowler_segments
     )
     logging.debug("\n")
     logging.debug("M Payload: %.2f kg" % Aircraft.payload)
@@ -169,12 +171,17 @@ def analysis(payload, span, aspect_ratio, airfoil):
 
     logging.debug("S Cruise: %.1f m" % s_distance)
 
+    wing_area = span**2 / aspect_ratio
+    wing_loading = Aircraft.mass / wing_area
     return (
         payload,
         span,
         aspect_ratio,
         airfoil,
+        num_fowler_segments,
         Aircraft.mass,
+        wing_area,
+        wing_loading,
         take_off_length,
         climb_height,
         e_efficiency,

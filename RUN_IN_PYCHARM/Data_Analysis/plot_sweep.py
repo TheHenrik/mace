@@ -19,11 +19,11 @@ dir_path     = 'sweep_0_total.csv'
 plot_type    = 'trisurf'   # options: 2d, meshgrid, trisurf
 x_name       = 'span'
 y_name       = 'aspect_ratio'  # in 2d this is separate lines
-z_name       = 'wing_loading'  # in 2d this is y-axis
+z_name       = 'take_off_length'  # in 2d this is y-axis
 cmap         = 'viridis_r'
 show_plots   = True
 constant_parameters = {'payload': 3.57,
-                       'airfoil': 'jf-a2'
+                       'airfoil': 'ag45c'
                        }
 
 def plot_function(df, x_name, y_name, z_name, plot_type, cmap, dir_path, file_name, show=False):
