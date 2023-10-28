@@ -43,7 +43,7 @@ def main():
         case _, "tjalf", "1":
             airfoil = ["jx-gp-055"]
         case _:
-            airfoil = ["ag19"]
+            airfoil = ["jx-gp-055"]
 
     start = perf_counter()
     path = Path(Path(__file__).parent, f"results_{airfoil}.csv")
@@ -101,7 +101,7 @@ def analysis(payload, span, aspect_ratio, airfoil):
     takeoff_analysis = TakeOff(Aircraft)
     takeoff_analysis.mu = 0.125
     takeoff_analysis.flap_angle = 12.0
-    takeoff_analysis.t_step = 0.4
+    takeoff_analysis.t_step = 0.2
     takeoff_analysis.cl_safety_factor = 1.3
     takeoff_analysis.v_wind = 2.2  # 3.08 average in Aachen
     takeoff_analysis.v_start_counter = 1.333
@@ -140,8 +140,10 @@ def analysis(payload, span, aspect_ratio, airfoil):
     # Calculate Score
     if take_off_length <= 40.0:
         take_off_factor = 1.05
-    else:
+    elif take_off_length <= 60.0:
         take_off_factor = 1.0
+    else:
+        take_off_factor = 0.
 
     reference_max_payload = 6.
     score_payload = payload / reference_max_payload * 1000.0

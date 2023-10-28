@@ -18,7 +18,7 @@ def vehicle_setup() -> Vehicle:
     main_wing = Wing()
     main_wing.tag = "main_wing"
     main_wing.origin = [0, 0, 0]
-    main_wing.airfoil = "acc22"
+    main_wing.airfoil = "jx-gp-055"
     main_wing.angle = 2.0
     main_wing.symmetric = True
 
