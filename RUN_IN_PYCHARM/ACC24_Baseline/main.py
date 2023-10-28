@@ -54,7 +54,6 @@ def main():
 
 
 def handler(file: Path, *args):
-    with open(file, "w") as f, Pool() as p:
         for r in p.imap_unordered(worker, product(*args)):
             f.write(", ".join(map(str, r)) + "\n")
 
@@ -128,7 +127,7 @@ def analysis(payload, span, aspect_ratio, airfoil, num_fowler_segments):
 
     # Run Efficiency Analysis
     efficiency_flight = EfficiencyFlight(Aircraft)
-    e_efficiency = efficiency_flight.optimizer(climb_ias, climb_height, I=30.0)
+    e_efficiency, eff_v1, eff_t1, eff_v2 = efficiency_flight.optimizer(climb_ias, climb_height, I=30.0)
     logging.info(f"Finished Task Efficiency")
 
     # Run Cruise Analysis
