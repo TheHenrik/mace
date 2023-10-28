@@ -30,23 +30,23 @@ def main():
     span = (1.5, 2., 2.5, 3., 3.5)
     aspect_ratio = (8., 10., 12., 14., 16.)
     match sys.argv:
-        case _, "dimi", "0":
+        case _, "0":
             airfoil = ["ag19"]
-        case _, "dimi", "1":
+        case _, "1":
             airfoil = ["ag45c"]
-        case _, "jannik", "0":
+        case _, "2":
             airfoil = ["ag40"]
-        case _, "jannik", "1":
+        case _, "3":
             airfoil = ["acc22"]
-        case _, "tjalf", "0":
+        case _, "4":
             airfoil = ["jf-a2"]
-        case _, "tjalf", "1":
+        case _, "5":
             airfoil = ["jx-gp-055"]
         case _:
             airfoil = ["jx-gp-055"]
 
     start = perf_counter()
-    path = Path(Path(__file__).parent, f"results_{airfoil}.csv")
+    path = Path(Path(__file__).parent, f"results_{airfoil[0]}.csv")
     handler(path, payload, span, aspect_ratio, airfoil)
     end = perf_counter()
     logging.info(f"Finished in: {end-start}")
