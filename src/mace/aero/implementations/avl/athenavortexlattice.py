@@ -104,9 +104,10 @@ class AVL:
             input_file.write("QUIT\n")
 
         # ---Run AVL---
-        cmd = (
-            str(self.avl_path) + " < " + str(self.input_file_name)
-        )  # external command to run
+        if sys.platform == "linux":
+            cmd = f"chmod +x {self.avl_path} < {self.stability_input_file_name}"
+        else:
+            cmd = f"{self.avl_path} < {self.stability_input_file_name}"
         runsub._run_subprocess(cmd, timeout=15)
         # list_of_process_ids = runsub.find_process_id_by_name("avl")
         # runsub.kill_subprocesses(list_of_process_ids)
@@ -309,9 +310,10 @@ class AVL:
             input_file.write("QUIT\n")
 
         # ---Run AVL---
-        cmd = (
-            str(self.avl_path) + " < " + str(self.stability_input_file_name)
-        )  # external command to run
+        if sys.platform == "linux":
+            cmd = f"chmod +x {self.avl_path} < {self.stability_input_file_name}"
+        else:
+            cmd = f"{self.avl_path} < {self.stability_input_file_name}"
         runsub._run_subprocess(cmd, timeout=15)
         # list_of_process_ids = runsub.find_process_id_by_name("avl")
         # runsub.kill_subprocesses(list_of_process_ids)
