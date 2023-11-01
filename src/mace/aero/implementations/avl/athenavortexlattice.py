@@ -11,6 +11,7 @@ from mace.aero.implementations.avl.geometry_and_mass_files import GeometryFile, 
 # from mace.domain.vehicle import Vehicle
 from mace.domain.parser import PlaneParser
 from mace.utils.mp import get_pid
+import stat
 
 
 class AVL:
@@ -34,6 +35,8 @@ class AVL:
         self.stability_input_file_name = Path(
             tool_path, "temporary", f"stability_input_file_avl{pid}.in"
         )
+        st = os.stat(self.avl_path)
+        os.chmod(self.avl_path, st.st_mode | 0o111)
 
     def run_avl(
         self,
@@ -104,10 +107,7 @@ class AVL:
             input_file.write("QUIT\n")
 
         # ---Run AVL---
-        if sys.platform == "linux":
-            cmd = f"chmod +x {self.avl_path} < {self.stability_input_file_name}"
-        else:
-            cmd = f"{self.avl_path} < {self.stability_input_file_name}"
+        cmd = f"{self.avl_path} < {self.input_file_name}"
         runsub._run_subprocess(cmd, timeout=15)
         # list_of_process_ids = runsub.find_process_id_by_name("avl")
         # runsub.kill_subprocesses(list_of_process_ids)
@@ -310,10 +310,7 @@ class AVL:
             input_file.write("QUIT\n")
 
         # ---Run AVL---
-        if sys.platform == "linux":
-            cmd = f"chmod +x {self.avl_path} < {self.stability_input_file_name}"
-        else:
-            cmd = f"{self.avl_path} < {self.stability_input_file_name}"
+        cmd = f"{self.avl_path} < {self.stability_input_file_name}"
         runsub._run_subprocess(cmd, timeout=15)
         # list_of_process_ids = runsub.find_process_id_by_name("avl")
         # runsub.kill_subprocesses(list_of_process_ids)
