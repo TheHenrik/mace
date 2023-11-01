@@ -6,7 +6,7 @@
 1. Download the .zip or clone the repository
 1. Extract and rename the folder to "mace"
 1. Move into the folder
-1. Press "Strg"+"L" and type "cmd" + Enter
+1. Press "Strg"+"L" and type "cmd" and hit Enter
 1. run one after the other:
 
     ```sh
@@ -63,6 +63,6 @@
 1. Upload the created .csv file in RUN_IN_PYCHARM/ACC24_Baseline/ to the Google Drive
 1. Repeat from step 7 until all numbers are taken.
 
-## Apple macOS
+## macOS
 
-Rethink your life choices and then talk to Jannik
+Rethink your life choices, then talk to Jannik and prey avl works on your machine
