@@ -27,8 +27,8 @@ from mace.test.perftest import performance_report
 # TODO Test on different os
 def main():
     payload = np.arange(3.57 - 0.51 * 3, 3.57 + 0.51 * 3, 0.17)
-    span = [2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6]
-    aspect_ratio = [10.0, 10.5, 11.0, 11.5, 12.0, 12.5, 13, 13.5, 14.0]
+    span = [2.0,]
+    aspect_ratio = [10.0, 10.5, ]
     airfoil = ["ag45c"]
     match sys.argv:
         case _, "0":
@@ -60,6 +60,7 @@ def handler(file: Path, *args, **kwargs):
 
 
 def worker(args, **kwargs):
+    logging.basicConfig(level=logging.INFO, filename="test.log")
     logging.info(f"Started Task{get_pid()}")
     values = analysis(*args, **kwargs)
     clean_temporary(Path("temporary"))
@@ -89,8 +90,8 @@ def analysis(payload, span, aspect_ratio, airfoil, num_fowler_segments):
         airfoil=airfoil,
         num_fowler_segments=num_fowler_segments,
     )
-    return (1, 2, 3, 4, 6)
-    logging.debug("\n")
+    logging.warning(str((payload, span)))
+    return(1,2,34,5)
     logging.debug("M Payload: %.2f kg" % Aircraft.payload)
 
     # Build AVL Mass File
