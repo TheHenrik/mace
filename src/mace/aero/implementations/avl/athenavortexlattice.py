@@ -35,8 +35,9 @@ class AVL:
         self.stability_input_file_name = Path(
             tool_path, "temporary", f"stability_input_file_avl{pid}.in"
         )
-        st = os.stat(self.avl_path)
-        os.chmod(self.avl_path, st.st_mode | 0o111)
+        if sys.platform == "linux":
+            st = os.stat(self.avl_path)
+            os.chmod(self.avl_path, st.st_mode | 0o111)
 
     def run_avl(
         self,
