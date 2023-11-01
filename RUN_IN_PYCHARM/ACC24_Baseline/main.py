@@ -4,7 +4,9 @@ from multiprocessing import Pool
 from time import perf_counter
 import sys
 import re
-
+from tqdm import tqdm
+from operator import mul
+from functools import reduce
 import matplotlib.pyplot as plt
 import numpy as np
 from vehicle_setup import vehicle_setup
@@ -24,8 +26,6 @@ from mace.test.perftest import performance_report
 # TODO logging config
 # TODO Test on different os
 def main():
-    logging.basicConfig(level=logging.INFO)
-    logging.info("Started programm")
     payload = np.arange(3.57-0.51*3, 3.57+0.51*3, 0.17)
     span = [2., 2.1, 2.2, 2.3, 2.4, 2.5, 2.6]
     aspect_ratio = [10., 10.5, 11., 11.5, 12., 12.5, 13, 13.5, 14.]
@@ -46,21 +46,18 @@ def main():
         case _:
             num_fowler_segments = [1]
 
-    start = perf_counter()
-    path = Path(Path(__file__).parent, f"results_sweep_3.csv")
+    path = Path(Path(__file__).parent, f"results_sweep.csv")
     handler(path, payload, span, aspect_ratio, airfoil, num_fowler_segments)
-    end = perf_counter()
-    logging.info(f"Finished in: {end-start}")
 
 
 def handler(file: Path, *args):
-    with open(file, "w") as f, Pool() as p:
-        for r in p.imap_unordered(worker, product(*args)):
+    with open(file, "w") as f, Pool(3) as p:
+        total = reduce(mul, map(len, args))
+        for r in tqdm(p.imap_unordered(worker, product(*args)), total=total):
             f.write(", ".join(map(str, r)) + "\n")
 
 
 def worker(args):
-    logging.basicConfig(level=logging.INFO)
     logging.info(f"Started Task{get_pid()}")
     values = analysis(*args)
     clean_temporary(Path("temporary"))
@@ -86,6 +83,7 @@ def analysis(payload, span, aspect_ratio, airfoil, num_fowler_segments):
     Aircraft = vehicle_setup(
         payload=payload, span=span, aspect_ratio=aspect_ratio, airfoil=airfoil, num_fowler_segments=num_fowler_segments
     )
+    return (1,2,3,4,6)
     logging.debug("\n")
     logging.debug("M Payload: %.2f kg" % Aircraft.payload)
 
@@ -200,5 +198,5 @@ def analysis(payload, span, aspect_ratio, airfoil, num_fowler_segments):
 
 
 if __name__ == "__main__":
-    #main()
-    worker((3.57, 2.0, 10.0, "ag45c", 0))
+    main()
+    # worker((3.57, 2.0, 10.0, "ag45c", 0))
