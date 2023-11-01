@@ -185,7 +185,7 @@ class EfficiencyFlight:
 
             root = self.equation_system(E0, v1, t1, I)
             v2 = root[1]
-            
+
             return -objective_function(result.x, print_results=True), v1, t1, v2
         else:
             import matplotlib.pyplot as plt

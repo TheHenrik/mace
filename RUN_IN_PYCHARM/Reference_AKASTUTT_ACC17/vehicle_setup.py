@@ -16,7 +16,7 @@ def vehicle_setup() -> Vehicle:
     payload = 10.5
     vehicle = Vehicle()
     vehicle.payload = payload
-    vehicle.mass = 0.
+    vehicle.mass = 0.0
     logging.debug("M Empty: %.2f kg" % vehicle.mass)
     vehicle.mass += vehicle.payload
 
@@ -45,7 +45,7 @@ def vehicle_setup() -> Vehicle:
     segment.outer_chord = 0.355
     segment.dihedral = 2
     segment.control = True
-    segment.inner_x_offset = 0.
+    segment.inner_x_offset = 0.0
     segment.outer_x_offset = 0.012
     segment.wsb = main_wing_construction
     main_wing.add_segment(segment)
@@ -98,14 +98,15 @@ def vehicle_setup() -> Vehicle:
     segment.inner_chord = 0.189
     segment.outer_chord = 0.1124
     segment.flap_chord_ratio = 0.4
-    segment.inner_x_offset = 0.
+    segment.inner_x_offset = 0.0
     segment.outer_x_offset = 0.049
-    segment.dihedral = 0.
+    segment.dihedral = 0.0
     segment.wsb = empennage_construction
     horizontal_stabilizer.add_segment(segment)
 
-
-    horizontal_stabilizer.build(resize_x_offset_from_hinge_angle=False, resize_areas=False)
+    horizontal_stabilizer.build(
+        resize_x_offset_from_hinge_angle=False, resize_areas=False
+    )
 
     vehicle.add_wing("horizontal_stabilizer", horizontal_stabilizer)
     ####################################################################################################################
@@ -129,7 +130,9 @@ def vehicle_setup() -> Vehicle:
     vertical_stabilizer.add_segment(segment)
 
     # Resize Wing
-    vertical_stabilizer.build(resize_x_offset_from_hinge_angle=False, resize_areas=False)
+    vertical_stabilizer.build(
+        resize_x_offset_from_hinge_angle=False, resize_areas=False
+    )
 
     vehicle.add_wing("vertical_stabilizer", vertical_stabilizer)
     ####################################################################################################################
@@ -159,7 +162,7 @@ def vehicle_setup() -> Vehicle:
     cargo_bay = Fuselage()
 
     # Cargo bay fist segment
-    x = 0.
+    x = 0.0
     y = 0
     z = -0.1
     width = 0.1
@@ -177,7 +180,6 @@ def vehicle_setup() -> Vehicle:
         origin=[x, y, z], shape="rectangular", width=width, height=height
     )
 
-    
     cargo_bay.area_specific_mass = 0.6
     cargo_bay.build()
     logging.debug("f_length: %.3f m" % cargo_bay.length)
@@ -191,9 +193,7 @@ def vehicle_setup() -> Vehicle:
     wheel1 = Wheel()
     wheel1.diameter = 0.1
     wheel1.drag_correction = 1.5
-    wheel1.origin = np.array(
-        [- 0.1, 0.0, -0.25]
-    )
+    wheel1.origin = np.array([-0.1, 0.0, -0.25])
     landing_gear.add_wheel(wheel1)
 
     # Main wheels
@@ -213,9 +213,7 @@ def vehicle_setup() -> Vehicle:
     wheel3 = Wheel()
     wheel3.diameter = wheel2.diameter
     wheel3.drag_correction = 1.5
-    wheel3.origin = np.array(
-        [0.25, -0.145, -0.24]
-    )
+    wheel3.origin = np.array([0.25, -0.145, -0.24])
     wheel3.origin[1] = -wheel2.origin[1]
     landing_gear.add_wheel(wheel3)
 

@@ -10,7 +10,7 @@ from mace.domain.wing import Wing, WingSegment, WingSegmentBuild
 
 def vehicle_setup() -> Vehicle:
     vehicle = Vehicle()
-    vehicle.mass = 0.
+    vehicle.mass = 0.0
     vehicle.payload = 2.3
     vehicle.center_of_gravity = [0.130, 0.0, 0.0]
 
@@ -38,7 +38,7 @@ def vehicle_setup() -> Vehicle:
     segment.outer_x_offset = 0.015
     segment.dihedral = 1
     segment.control = True
-    segment.control_name = 'fowler'
+    segment.control_name = "fowler"
     segment.wsb = main_wing_construction
     main_wing.add_segment(segment)
 
@@ -51,7 +51,7 @@ def vehicle_setup() -> Vehicle:
     segment.outer_x_offset = 0.08
     segment.dihedral = 5
     segment.control = True
-    segment.control_name = 'fowler'
+    segment.control_name = "fowler"
     segment.wsb = main_wing_construction
     main_wing.add_segment(segment)
 
@@ -65,7 +65,7 @@ def vehicle_setup() -> Vehicle:
     segment.dihedral = 5
     segment.outer_twist = 0
     segment.control = True
-    segment.control_name = 'fowler'
+    segment.control_name = "fowler"
     segment.wsb = main_wing_construction
     main_wing.add_segment(segment)
 

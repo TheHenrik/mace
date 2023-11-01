@@ -6,7 +6,7 @@ import sys
 import re
 from tqdm import tqdm
 from operator import mul
-from functools import reduce
+from functools import reduce, partial
 import matplotlib.pyplot as plt
 import numpy as np
 from vehicle_setup import vehicle_setup
@@ -26,9 +26,9 @@ from mace.test.perftest import performance_report
 # TODO logging config
 # TODO Test on different os
 def main():
-    payload = np.arange(3.57-0.51*3, 3.57+0.51*3, 0.17)
-    span = [2., 2.1, 2.2, 2.3, 2.4, 2.5, 2.6]
-    aspect_ratio = [10., 10.5, 11., 11.5, 12., 12.5, 13, 13.5, 14.]
+    payload = np.arange(3.57 - 0.51 * 3, 3.57 + 0.51 * 3, 0.17)
+    span = [2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6]
+    aspect_ratio = [10.0, 10.5, 11.0, 11.5, 12.0, 12.5, 13, 13.5, 14.0]
     airfoil = ["ag45c"]
     match sys.argv:
         case _, "0":
@@ -50,16 +50,18 @@ def main():
     handler(path, payload, span, aspect_ratio, airfoil, num_fowler_segments)
 
 
-def handler(file: Path, *args):
-    with open(file, "w") as f, Pool(3) as p:
-        total = reduce(mul, map(len, args))
-        for r in tqdm(p.imap_unordered(worker, product(*args)), total=total):
+def handler(file: Path, *args, **kwargs):
+    with open(file, "w") as f, Pool(2) as p:
+        for r in tqdm(
+            p.imap_unordered(partial(worker, **kwargs), product(*args)),
+            total=reduce(mul, map(len, args)),
+        ):
             f.write(", ".join(map(str, r)) + "\n")
 
 
-def worker(args):
+def worker(args, **kwargs):
     logging.info(f"Started Task{get_pid()}")
-    values = analysis(*args)
+    values = analysis(*args, **kwargs)
     clean_temporary(Path("temporary"))
     logging.info(f"Finished Task{get_pid()}")
     return values
@@ -81,9 +83,13 @@ def analysis(payload, span, aspect_ratio, airfoil, num_fowler_segments):
 
     # Define Aircraft Geometry
     Aircraft = vehicle_setup(
-        payload=payload, span=span, aspect_ratio=aspect_ratio, airfoil=airfoil, num_fowler_segments=num_fowler_segments
+        payload=payload,
+        span=span,
+        aspect_ratio=aspect_ratio,
+        airfoil=airfoil,
+        num_fowler_segments=num_fowler_segments,
     )
-    return (1,2,3,4,6)
+    return (1, 2, 3, 4, 6)
     logging.debug("\n")
     logging.debug("M Payload: %.2f kg" % Aircraft.payload)
 
@@ -126,7 +132,9 @@ def analysis(payload, span, aspect_ratio, airfoil, num_fowler_segments):
 
     # Run Efficiency Analysis
     efficiency_flight = EfficiencyFlight(Aircraft)
-    e_efficiency, eff_v1, eff_t1, eff_v2 = efficiency_flight.optimizer(climb_ias, climb_height, I=30.0)
+    e_efficiency, eff_v1, eff_t1, eff_v2 = efficiency_flight.optimizer(
+        climb_ias, climb_height, I=30.0
+    )
     logging.info(f"Finished Task Efficiency")
 
     # Run Cruise Analysis
@@ -142,9 +150,9 @@ def analysis(payload, span, aspect_ratio, airfoil, num_fowler_segments):
     elif take_off_length <= 60.0:
         take_off_factor = 1.0
     else:
-        take_off_factor = 0.
+        take_off_factor = 0.0
 
-    reference_max_payload = 6.
+    reference_max_payload = 6.0
     score_payload = payload / reference_max_payload * 1000.0
 
     reference_max_s_distance = 3200.0
@@ -193,7 +201,7 @@ def analysis(payload, span, aspect_ratio, airfoil, num_fowler_segments):
         penalty_current,
         take_off_factor,
         penalty_round,
-        score_round
+        score_round,
     )
 
 

@@ -11,7 +11,9 @@ from mace.domain.vehicle import Vehicle
 from mace.domain.wing import Wing, WingSegment, WingSegmentBuild
 
 
-def vehicle_setup(payload=4.59, span=2.5, aspect_ratio=10.0, airfoil="ag45c", num_fowler_segments=0) -> Vehicle:
+def vehicle_setup(
+    payload=4.59, span=2.5, aspect_ratio=10.0, airfoil="ag45c", num_fowler_segments=0
+) -> Vehicle:
     vehicle = Vehicle()
     vehicle.payload = payload
     vehicle.mass = 2.0 * (span / 3.0) ** 2
@@ -301,12 +303,8 @@ def vehicle_setup(payload=4.59, span=2.5, aspect_ratio=10.0, airfoil="ag45c", nu
     vehicle.add_misc(
         "Motor", 0.175, np.array([0, 0, 0])
     )  # T-Motor AT2826 900KV : 175gr inkl. Kabel
-    vehicle.add_misc(
-        "Prop+Spinner", 0.025, np.array([0, 0, 0])
-    )  # Assumption
-    vehicle.add_misc(
-        "Prop+Spinner", 0.025, np.array([0, 0, 0])
-    )  # Assumption
+    vehicle.add_misc("Prop+Spinner", 0.025, np.array([0, 0, 0]))  # Assumption
+    vehicle.add_misc("Prop+Spinner", 0.025, np.array([0, 0, 0]))  # Assumption
     vehicle.add_misc(
         "Screws+Cables+Accessories", 0.060, np.array([0, 0, 0])
     )  # Assumption

@@ -21,7 +21,7 @@ class Climb:
         self.rho = params.Constants.rho
 
         self.cl_start = 0.1
-        self.cl_end = 1.
+        self.cl_end = 1.0
 
         self.flap_angle = 0.0
         self.optimize_flap_angle = True

@@ -37,7 +37,7 @@ if __name__ == "__main__":
     takeoff_analysis.cl_safety_factor = 1.3
     takeoff_analysis.v_wind = 2.2
     takeoff_analysis.v_start_counter = 1.3
-    #takeoff_analysis.manual_cl_max = 3.0
+    # takeoff_analysis.manual_cl_max = 3.0
 
     take_off_length, take_off_time = takeoff_analysis.evaluate()
     logging.debug("Take-Off Length: %.1f m" % take_off_length)

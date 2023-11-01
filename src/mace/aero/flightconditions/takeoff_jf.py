@@ -83,9 +83,9 @@ class TakeOff:
             if self.manual_cl_max == 0:
                 RE_AT_MAC = get_reynolds_number((V + V_wind), MAC)
                 CL_MAX = WingAirfoil.get_cl_max(RE_AT_MAC)
-                S_FOWLER = 0.
+                S_FOWLER = 0.0
                 for segment in self.plane.wings["main_wing"].segments:
-                    if segment.control_name == 'fowler':
+                    if segment.control_name == "fowler":
                         S_FOWLER += 2 * segment.area
                 delta_CL_flap = self.delta_cl_fowler * S_FOWLER / S_REF
                 CL_MAX += delta_CL_flap
