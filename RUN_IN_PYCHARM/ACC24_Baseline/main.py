@@ -1,16 +1,15 @@
 import logging
 from itertools import product
 from multiprocessing import Pool
-from time import perf_counter
 import sys
 import re
 from tqdm import tqdm
 from operator import mul
 from functools import reduce, partial
-import matplotlib.pyplot as plt
 import numpy as np
 from vehicle_setup import vehicle_setup
 from pathlib import Path
+import os
 
 from mace.aero.flightconditions.climb_scipy import Climb
 from mace.aero.flightconditions.efficiency_flight_low_fid import EfficiencyFlight
@@ -20,11 +19,8 @@ from mace.aero.implementations.avl import (
     geometry_and_mass_files_v2 as geometry_and_mass_files,
 )
 from mace.utils.mp import get_pid
-from mace.test.perftest import performance_report
 
 
-# TODO logging config
-# TODO Test on different os
 def main():
     payload = np.arange(3.57 - 0.51 * 3, 3.57 + 0.51 * 3, 0.17)
     span = [2.0,]
@@ -57,10 +53,12 @@ def handler(file: Path, *args, **kwargs):
             total=reduce(mul, map(len, args)),
         ):
             f.write(", ".join(map(str, r)) + "\n")
+            f.flush()
+            os.fsync(f.fileno())
 
 
 def worker(args, **kwargs):
-    logging.basicConfig(level=logging.INFO, filename="test.log")
+    logging.basicConfig(filename="temporary/default.log", level=logging.INFO)
     logging.info(f"Started Task{get_pid()}")
     values = analysis(*args, **kwargs)
     clean_temporary(Path("temporary"))
@@ -90,9 +88,8 @@ def analysis(payload, span, aspect_ratio, airfoil, num_fowler_segments):
         airfoil=airfoil,
         num_fowler_segments=num_fowler_segments,
     )
-    logging.warning(str((payload, span)))
-    return(1,2,34,5)
     logging.debug("M Payload: %.2f kg" % Aircraft.payload)
+    return (payload, span, aspect_ratio, airfoil, num_fowler_segments)
 
     # Build AVL Mass File
     mass_file = geometry_and_mass_files.MassFile(Aircraft)
