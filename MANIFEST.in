@@ -1,0 +1,4 @@
+include data/Airfoils/*.dat
+include data/prop_surrogates/*.dat
+include data/reference_values/*.dat
+include data/surrogates/*.dat

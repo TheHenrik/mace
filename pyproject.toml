@@ -49,6 +49,10 @@ test = [
   'flake8'
 ]
 
+
+[tool.setuptools.packages.find]
+where = ["data"]
+
 [project.urls]
 "Repository" = "https://github.com/TheHenrik/mace"
 
