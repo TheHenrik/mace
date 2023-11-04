@@ -1315,10 +1315,3 @@ class MassFile:
         self.plane.avl.inputs.mass_file = file_path
         logging.debug("AVL Mass File built successfully")
 
-
-# ========== Test ===========
-
-if __name__ == "__main__":
-    plane = PlaneParser("testplane.toml").get("Plane")
-    GeometryFile(plane).build_geometry_file(1)
-    MassFile(plane).build_mass_file()
