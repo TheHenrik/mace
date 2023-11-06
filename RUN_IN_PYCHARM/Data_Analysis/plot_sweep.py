@@ -6,19 +6,19 @@ from pathlib import Path
 
 
 # setup
-dir_path     = 'sweep_0_total.csv'
+dir_path     = 'sweep_1_total.csv'
 plot_type    = 'trisurf'   # options: 2d, meshgrid, trisurf
 x_name       = 'span'
 y_name       = 'aspect_ratio'  # in 2d this is separate lines
-z_name       = 'total mass'  # in 2d this is y-axis
+z_name       = 'score_round'  # in 2d this is y-axis
 cmap         = 'viridis_r'
 sep          = ';'
 show_plots   = True
-constant_parameters = {#"num_fowler_segments": 1,
-                        "payload": 3.57-2*0.51,
+constant_parameters = {#"num_fowler_segments": 4,
+                        "payload": 3.23,
                         #"span": 2.6,
-                        #"aspect_ratio": 10.,
-                        "airfoil": "ag19",
+                        #"aspect_ratio": 8.,
+                        "airfoil": "acc22",
                        }
 
 def plot_function(df, x_name, y_name, z_name, plot_type, cmap, dir_path, file_name, show=False):
