@@ -22,9 +22,11 @@ from mace.utils.mp import get_pid
 
 
 def main():
-    payload = np.arange(3.57 - 0.51 * 3, 3.57 + 0.51 * 3, 0.17)
-    span = [2.0,]
-    aspect_ratio = [10.0, 10.5, ]
+    logging.basicConfig(level=logging.INFO)
+    logging.info("Started programm")
+    payload = np.arange(3.57-0.51*3)
+    span = [2.]
+    aspect_ratio = [10.]
     airfoil = ["ag45c"]
     match sys.argv:
         case _, "0":
