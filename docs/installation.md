@@ -1,9 +1,9 @@
-# Installation:
+# Installation
 
 ## WINDOWS
 
 1. Install Python 3.11.X 64bit
-1. Download the .zip or clone the repository
+1. Download the .zip or clone the repository (skip the next step)
 1. Extract and rename the folder to "mace"
 1. Move into the folder
 1. Press "Strg"+"L" and type "cmd" and hit Enter
@@ -33,10 +33,10 @@
 
 1. Scipy won't install:
 
-    Is it really 64bit Python? 
+    Is it really 64bit Python?
 
     Try installing a gcc compiler.
-    
+
 1. Try installing "wheel" using pip
 
 ## Linux
