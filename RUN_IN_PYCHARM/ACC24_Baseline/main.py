@@ -24,9 +24,10 @@ from mace.utils.mp import get_pid
 def main():
     logging.basicConfig(level=logging.INFO)
     logging.info("Started programm")
-    payload = np.arange(3.57-0.51*3)
-    span = [2.]
+    payload = np.arange(3.57-0.51*3, 3.57+0.51*3, 0.51)
+    #span = [2.]
     aspect_ratio = [10.]
+    wing_area = [0.6]
     airfoil = ["ag45c"]
     match sys.argv:
         case _, "0":
@@ -45,11 +46,11 @@ def main():
             num_fowler_segments = [1]
 
     path = Path(Path(__file__).parent, f"results_sweep.csv")
-    handler(path, payload, span, aspect_ratio, airfoil, num_fowler_segments)
+    handler(path, payload, wing_area, aspect_ratio, airfoil, num_fowler_segments)
 
 
 def handler(file: Path, *args, **kwargs):
-    with open(file, "w") as f, Pool(2) as p:
+    with open(file, "w") as f, Pool() as p:
         for r in tqdm(
             p.imap_unordered(partial(worker, **kwargs), product(*args)),
             total=reduce(mul, map(len, args)),
@@ -76,7 +77,7 @@ def clean_temporary(path: Path):
             file.unlink()
 
 
-def analysis(payload, span, aspect_ratio, airfoil, num_fowler_segments):
+def analysis(payload, wing_area, aspect_ratio, airfoil, num_fowler_segments):
     # Define Analysis
     climb_time = 30.0
     cruise_time = 90.0
@@ -86,7 +87,7 @@ def analysis(payload, span, aspect_ratio, airfoil, num_fowler_segments):
     # Define Aircraft Geometry
     Aircraft = vehicle_setup(
         payload=payload,
-        span=span,
+        wing_area=wing_area,
         aspect_ratio=aspect_ratio,
         airfoil=airfoil,
         num_fowler_segments=num_fowler_segments,
@@ -177,17 +178,18 @@ def analysis(payload, span, aspect_ratio, airfoil, num_fowler_segments):
 
     logging.debug("S Cruise: %.1f m" % s_distance)
 
-    wing_area = span**2 / aspect_ratio
+    #wing_area = span**2 / aspect_ratio
+    span = np.sqrt(wing_area * aspect_ratio)
     wing_loading = Aircraft.mass / wing_area
     return (
         payload,
         span,
         aspect_ratio,
-        airfoil,
-        num_fowler_segments,
-        Aircraft.mass,
         wing_area,
         wing_loading,
+        Aircraft.mass,
+        airfoil,
+        num_fowler_segments,
         take_off_length,
         climb_height,
         e_efficiency,
@@ -208,4 +210,4 @@ def analysis(payload, span, aspect_ratio, airfoil, num_fowler_segments):
 
 if __name__ == "__main__":
     main()
-    # worker((3.57, 2.0, 10.0, "ag45c", 0))
+    #worker((3.57, 2.0, 10.0, "ag45c", 0))
