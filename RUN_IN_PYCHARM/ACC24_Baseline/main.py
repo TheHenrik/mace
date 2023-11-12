@@ -18,6 +18,7 @@ from mace.aero.flightconditions.takeoff_jf import TakeOff
 from mace.aero.implementations.avl import (
     geometry_and_mass_files_v2 as geometry_and_mass_files,
 )
+from mace.domain.params import Constants
 from mace.utils.mp import get_pid
 
 
@@ -181,6 +182,17 @@ def analysis(payload, wing_area, aspect_ratio, airfoil, num_fowler_segments):
     #wing_area = span**2 / aspect_ratio
     span = np.sqrt(wing_area * aspect_ratio)
     wing_loading = Aircraft.mass / wing_area
+
+    v_climb = climb_ias
+    v_eff_climb = eff_v1
+    v_eff_glide = eff_v2
+    v_cruise = V_max
+
+    CL_climb = Aircraft.mass * 9.81 / (0.5 * Constants.rho * v_climb ** 2 * wing_area)
+    CL_eff_climb = Aircraft.mass * 9.81 / (0.5 * Constants.rho * v_eff_climb ** 2 * wing_area)
+    CL_eff_glide = Aircraft.mass * 9.81 / (0.5 * Constants.rho * v_eff_glide ** 2 * wing_area)
+    CL_cruise = Aircraft.mass * 9.81 / (0.5 * Constants.rho * v_cruise ** 2 * wing_area)
+
     return (
         payload,
         span,
@@ -193,10 +205,15 @@ def analysis(payload, wing_area, aspect_ratio, airfoil, num_fowler_segments):
         take_off_length,
         climb_height,
         e_efficiency,
-        eff_v1,
-        eff_t1,
-        eff_v2,
         s_distance,
+        v_climb,
+        v_eff_climb,
+        v_eff_glide,
+        v_cruise,
+        CL_climb,
+        CL_eff_climb,
+        CL_eff_glide,
+        CL_cruise,
         score_payload,
         score_efficiency,
         score_distance,
