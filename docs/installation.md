@@ -11,7 +11,7 @@
 1. run one after the other:
 
     ```sh
-    python3.11 -m venv .venv
+    python -m venv .venv
     .venv\Scripts\activate
     pip install -e .[dev]
     ```
