@@ -18,6 +18,7 @@ dependencies=[
     'scikit-optimize',
     'tabulate', 
     'matplotlib', 
+    'tqdm',
     'psutil'
 ]
 
@@ -33,7 +34,6 @@ keywords = ["modell aircraft",
 
 [project.optional-dependencies]
 dev = [
-  'tqdm',
   'bs4',
   'requests',
   'black',
