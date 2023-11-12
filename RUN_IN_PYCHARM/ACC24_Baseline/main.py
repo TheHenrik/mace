@@ -90,7 +90,7 @@ def analysis(payload, span, aspect_ratio, airfoil, num_fowler_segments):
         num_fowler_segments=num_fowler_segments,
     )
     logging.debug("M Payload: %.2f kg" % Aircraft.payload)
-    return (payload, span, aspect_ratio, airfoil, num_fowler_segments)
+    # return (payload, span, aspect_ratio, airfoil, num_fowler_segments)
 
     # Build AVL Mass File
     mass_file = geometry_and_mass_files.MassFile(Aircraft)
