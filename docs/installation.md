@@ -3,6 +3,7 @@
 ## WINDOWS
 
 1. Install Python 3.11.X 64bit
+1. During the installation process click the button "Add to path"
 1. Download the .zip or clone the repository (skip the next step)
 1. Extract and rename the folder to "mace"
 1. Move into the folder
@@ -27,7 +28,7 @@
 
 ### Troubleshooting
 
-1. Matlab won't install:
+1. Matplotlib won't install:
 
     Try: ```pip install -U matplotlib --prefer-binary```
 
