@@ -58,7 +58,8 @@ def handler(file: Path, *args, **kwargs):
 
 
 def worker(args, **kwargs):
-    logging.basicConfig(filename="temporary/default.log", level=logging.INFO)
+    log_path = Path(Path(__file__).parents[2], "temporary", "default.log")
+    logging.basicConfig(filename=log_path, level=logging.INFO)
     logging.info(f"Started Task{get_pid()}")
     values = analysis(*args, **kwargs)
     clean_temporary(Path("temporary"))
