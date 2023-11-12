@@ -300,9 +300,11 @@ class Vehicle:
             5. CG -> Landing gear position
             6. CG -> Cargo Bay position
         """
-        for i in range(3):
-            self.calc_load()
+        for _ in range(3):
             self.get_mass()
+            self.calc_load()
+            self.wings["main_wing"].part_wing_into(4, self.mass, override=True)
+            
 
     def get_mass(self):
         mass = defaultdict()
