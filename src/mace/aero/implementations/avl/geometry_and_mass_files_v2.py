@@ -63,7 +63,7 @@ class GeometryFile:
 
     def build_geo_surface_section(self, geometry_file, wing):
         tool_path = Path(__file__).resolve().parents[5]
-        airfoil_path = os.path.join(tool_path, "data/airfoils")
+        airfoil_path = os.path.join(tool_path, "data", "airfoils")
 
         chord_outer = 0
         for i, segment in enumerate(wing.segments):
@@ -82,8 +82,9 @@ class GeometryFile:
                 geometry_file.write(f"{  segment.s_space}")
             geometry_file.write(f"\n\n")
             geometry_file.write(f"AFIL  0.0  1.0\n")
+            segment_airfoil_path = os.path.join(airfoil_path, segment.inner_airfoil, ".dat")
             geometry_file.write(
-                f'{airfoil_path + "/" + segment.inner_airfoil + ".dat"}\n\n'
+                f'segment_airfoil_path\n\n'
             )
 
             if segment.control is not None:
