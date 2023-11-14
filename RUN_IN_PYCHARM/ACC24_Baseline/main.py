@@ -66,15 +66,21 @@ def worker(args, **kwargs):
     logging.basicConfig(filename=log_path, level=logging.INFO)
     logging.info(f"Started Task{get_pid()}")
     values = analysis(*args, **kwargs)
-    clean_temporary(Path("temporary"))
+    clean_temporary_pid(Path("temporary"))
     logging.info(f"Finished Task{get_pid()}")
     return values
 
 
-def clean_temporary(path: Path):
+def clean_temporary_pid(path: Path):
     pid = get_pid()
     for file in path.glob("*"):
         if re.fullmatch(rf"^[a-z_]+{pid}\.(?:avl|in|mass)$", file.name):
+            file.unlink()
+
+
+def clean_temporary(path: Path):
+    for file in path.glob("*"):
+        if re.fullmatch(rf"^[a-z_]+\d*\.(?:avl|in|mass)$", file.name):
             file.unlink()
 
 
@@ -226,5 +232,6 @@ def analysis(payload, wing_area, aspect_ratio, airfoil, num_fowler_segments):
 
 
 if __name__ == "__main__":
+    clean_temporary(Path("temporary"))
     main()
-    #worker((3.57, 2.0, 10.0, "ag45c", 0))
+    # worker((3.57, 2.0, 10.0, "ag45c", 0))
