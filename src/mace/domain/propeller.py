@@ -14,7 +14,7 @@ class Propeller:
 
     def evaluate_thrust(self, V):
         thrust_array = np.loadtxt(self.surrogate_path, skiprows=1, delimiter=self.surrogate_delimiter)
-        thrust_force = interp.interp1d(thrust_array[:, 0], thrust_array[:, 1],kind='linear')(V)
+        thrust_force = interp.interp1d(thrust_array[:, 0], thrust_array[:, 1],kind='quadratic',fill_value=0.,bounds_error=False)(V)
         return thrust_force
 
 if __name__ == '__main__':

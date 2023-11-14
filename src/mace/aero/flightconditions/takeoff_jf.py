@@ -66,7 +66,7 @@ class TakeOff:
             LIFT = self.get_force(V + V_wind, CL)
             DRAG = self.get_force(V + V_wind, CD)
             FRICTION = self.get_friction(0)
-            THRUST = self.get_thrust(V + V_wind)
+            THRUST = self.get_thrust(V + V_wind, T)
 
             ACCELL = (THRUST - DRAG - FRICTION) / MASS
             if V >= V_start_counter:

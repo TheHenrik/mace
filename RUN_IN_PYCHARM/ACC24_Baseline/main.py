@@ -25,11 +25,13 @@ from mace.utils.mp import get_pid
 def main():
     logging.basicConfig(level=logging.INFO)
     logging.info("Started programm")
-    payload = np.arange(3.57-0.51*3, 3.57-0.51*2, 0.51)
-    #span = [2.]
+    payload = [3.57]
     aspect_ratio = [10.]
     wing_area = [0.6]
     airfoil = ["ag45c"]
+    battery_capacity = [1.6, 2.0, 2.4, 2.8, 3.2]
+    propeller = ["aeronaut14x8"]
+    
     match sys.argv:
         case _, "0":
             num_fowler_segments = []
@@ -44,14 +46,14 @@ def main():
         case _, "5":
             num_fowler_segments = [3]
         case _:
-            num_fowler_segments = [1]
+            num_fowler_segments = [0]
 
     path = Path(Path(__file__).parent, f"results_sweep.csv")
-    handler(path, payload, wing_area, aspect_ratio, airfoil, num_fowler_segments)
+    handler(path, payload, wing_area, aspect_ratio, airfoil, num_fowler_segments, battery_capacity, propeller)
 
 
 def handler(file: Path, *args, **kwargs):
-    with open(file, "w") as f, Pool(1) as p:
+    with open(file, "w") as f, Pool() as p:
         for r in tqdm(
             p.imap_unordered(partial(worker, **kwargs), product(*args)),
             total=reduce(mul, map(len, args)),
@@ -84,7 +86,7 @@ def clean_temporary(path: Path):
             file.unlink()
 
 
-def analysis(payload, wing_area, aspect_ratio, airfoil, num_fowler_segments):
+def analysis(payload, wing_area, aspect_ratio, airfoil, num_fowler_segments, battery_capacity, propeller):
     # Define Analysis
     climb_time = 30.0
     cruise_time = 90.0
@@ -98,6 +100,8 @@ def analysis(payload, wing_area, aspect_ratio, airfoil, num_fowler_segments):
         aspect_ratio=aspect_ratio,
         airfoil=airfoil,
         num_fowler_segments=num_fowler_segments,
+        battery_capacity=battery_capacity,
+        propeller=propeller,
     )
     logging.debug("M Payload: %.2f kg" % Aircraft.payload)
     # return (payload, span, aspect_ratio, airfoil, num_fowler_segments)
@@ -131,6 +135,7 @@ def analysis(payload, wing_area, aspect_ratio, airfoil, num_fowler_segments):
     # Run Climb Analysis
     climb_analysis = Climb(Aircraft)
     climb_analysis.optimize_flap_angle = True
+    climb_analysis.mid_time = (climb_time- take_off_time - transition_time) / 2 + take_off_time + transition_time
     climb_height, climb_ias = climb_analysis.get_h_max(
         delta_t=climb_time - take_off_time - transition_time
     )
@@ -141,6 +146,7 @@ def analysis(payload, wing_area, aspect_ratio, airfoil, num_fowler_segments):
 
     # Run Efficiency Analysis
     efficiency_flight = EfficiencyFlight(Aircraft)
+    efficiency_flight.batt_time_at_start = climb_time
     e_efficiency, eff_v1, eff_t1, eff_v2 = efficiency_flight.optimizer(
         climb_ias, climb_height, I=30.0
     )
@@ -148,6 +154,7 @@ def analysis(payload, wing_area, aspect_ratio, airfoil, num_fowler_segments):
 
     # Run Cruise Analysis
     cruise_analysis = HorizontalFlight(Aircraft)
+    cruise_analysis.batt_time_at_start = efficiency_flight.batt_time_at_start + eff_t1
     cruise_analysis.optimize_flap_angle = True
     V_max = cruise_analysis.get_maximum_velocity_scipy()
     s_distance = V_max * cruise_time
@@ -207,7 +214,9 @@ def analysis(payload, wing_area, aspect_ratio, airfoil, num_fowler_segments):
         wing_loading,
         Aircraft.mass,
         airfoil,
+        propeller,
         num_fowler_segments,
+        battery_capacity,
         take_off_length,
         climb_height,
         e_efficiency,

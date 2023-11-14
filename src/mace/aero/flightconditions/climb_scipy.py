@@ -25,6 +25,8 @@ class Climb:
 
         self.flap_angle = 0.0
         self.optimize_flap_angle = True
+        
+        self.mid_time = 15.
 
     def evaluate(self, CL, return_v=False):
         Aero = Aerodynamics(self.plane)
@@ -35,6 +37,7 @@ class Climb:
         m = self.mass
         g = self.g
         V0 = ((2 * m * g) / (CL * self.rho * self.s_ref)) ** 0.5
+        t_avg = self.mid_time
 
         if self.optimize_flap_angle:
             c_length = self.plane.reference_values.c_ref
@@ -49,7 +52,7 @@ class Climb:
             Aero.evaluate(V=v, CL=CL, FLAP=self.flap_angle)
 
             CD = self.plane.aero_coeffs.drag_coeff.cd_tot
-            eq1 = q * CD * s + np.sin(alpha) * m * g - T(v)
+            eq1 = q * CD * s + np.sin(alpha) * m * g - T(v, t_avg)
             eq2 = np.cos(alpha) * m * g - q * CL * s
             return [eq1, eq2]
 

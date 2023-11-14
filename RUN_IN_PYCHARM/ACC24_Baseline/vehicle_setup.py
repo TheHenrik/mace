@@ -14,8 +14,15 @@ from mace.domain.propeller import Propeller
 
 
 def vehicle_setup(
-    payload=4.59, wing_area=0.6, aspect_ratio=10.0, airfoil="ag45c", num_fowler_segments=0
+    payload=4.59, 
+    wing_area=0.6, 
+    aspect_ratio=10.0, 
+    airfoil="ag45c", 
+    num_fowler_segments=0, 
+    battery_capacity=3.0, 
+    propeller="aeronaut14x8"
 ) -> Vehicle:
+    
     vehicle = Vehicle()
     vehicle.payload = payload
     vehicle.mass = 2.
@@ -144,11 +151,11 @@ def vehicle_setup(
     vehicle.add_wing("horizontal_stabilizer", horizontal_stabilizer)
     ####################################################################################################################
     # PROPULSION
-    prop = Propeller("aeronaut14x8")
+    prop = Propeller(propeller)
     vehicle.propeller = prop
 
     battery = Battery()
-    battery.capacity = 3.0
+    battery.capacity = battery_capacity
     vehicle.battery = battery
     ####################################################################################################################
     # FUSELAGE
@@ -294,9 +301,6 @@ def vehicle_setup(
 
     ####################################################################################################################
 
-    vehicle.add_misc(
-        "Battery", 0.201, np.array([0, 0, 0])
-    )  # SLS Quantum 2200mAh 3S 60C : 201gr inkl. Kabel
     vehicle.add_misc("ESC", 0.093, np.array([0, 0, 0]))  # YGE 95A : 93gr inkl. Kabel
     vehicle.add_misc(
         "Servo", 0.092, np.array([0, 0, 0])
@@ -307,7 +311,6 @@ def vehicle_setup(
     vehicle.add_misc(
         "Motor", 0.175, np.array([0, 0, 0])
     )  # T-Motor AT2826 900KV : 175gr inkl. Kabel
-    vehicle.add_misc("Prop+Spinner", 0.025, np.array([0, 0, 0]))  # Assumption
     vehicle.add_misc("Prop+Spinner", 0.025, np.array([0, 0, 0]))  # Assumption
     vehicle.add_misc(
         "Screws+Cables+Accessories", 0.060, np.array([0, 0, 0])

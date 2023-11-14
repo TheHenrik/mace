@@ -329,6 +329,8 @@ class Vehicle:
             weighted_cog[misc.name] = misc.position
 
         mass["payload"] = self.payload
+        
+        mass["battery"] = self.battery.get_mass()
 
         self.mass = sum(mass.values())
         self.center_of_gravity = sum(weighted_cog.values()) / self.mass
@@ -430,8 +432,8 @@ class Vehicle:
         )
         logging.debug(tabulate(data, header, fmt))
         
-    def evaluate_thrust(self, V, t=0, I=30.):
-        U = self.battery.get_voltage(I, t)
+    def evaluate_thrust(self, V, t, I=30.):
+        U, SOC = self.battery.get_voltage(I, t)
         T0 = self.propeller.evaluate_thrust(V)
         U_ref = self.propeller.reference_voltage
         I_ref = self.propeller.reference_current

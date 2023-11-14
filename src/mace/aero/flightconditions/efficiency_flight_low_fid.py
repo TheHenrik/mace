@@ -40,14 +40,16 @@ class EfficiencyFlight:
         self.drag_surrogate: np.ndarray = None
 
         self.plot_surface = False
+        
+        self.batt_time_at_start = 30.
 
     # def T(self, V, I):
     #     thrust_array = self.plane.propulsion.thrust
     #     thrust_force = I / 30 * np.interp(V, thrust_array[:, 0], thrust_array[:, 1])
     #     return thrust_force
     
-    def T(self, V, I):
-        return self.plane.evaluate_thrust(V, I=I)
+    def T(self, V, t_avg, I):
+        return self.plane.evaluate_thrust(V, t_avg, I=I)
 
     def get_drag_force(self, V):
         if V > self.v_min:
@@ -88,12 +90,14 @@ class EfficiencyFlight:
         m = self.mass
         h2 = self.h_end
         tges = self.t_ges
+        
+        t_avg = self.batt_time_at_start + t1 / 2
 
         def func(x):
             h1 = min(x[0], 100)
             v2 = max(x[1], 0)
 
-            eq1 = E0 + (T(v1, I) - D(v1)) * v1 * t1 - 1 / 2 * m * v1**2 - m * g * h1
+            eq1 = E0 + (T(v1, t_avg, I) - D(v1)) * v1 * t1 - 1 / 2 * m * v1**2 - m * g * h1
             eq2 = (
                 1 / 2 * m * v1**2
                 + m * g * h1
@@ -213,7 +217,7 @@ class EfficiencyFlight:
 
     def get_v_max(self, I, v0=15.0):
         def func(v):
-            return self.T(v, I) - self.get_drag_force(v)
+            return self.T(v, self.batt_time_at_start, I) - self.get_drag_force(v)
 
         v_max = root_scalar(func, method="brentq", bracket=[v0 + 1, 40], xtol=0.5).root
         return v_max
@@ -237,7 +241,7 @@ class EfficiencyFlight:
         hend = self.h_end
         tend = self.t_ges
         t1_min = (tend * v2 * D(v2) + m * g * (hend - h0)) / (
-            v1 * (T(v1, I) - D(v1) + v2 * D(v2))
+            v1 * (T(v1, self.batt_time_at_start, I) - D(v1) + v2 * D(v2))
         )
         return t1_min
 
