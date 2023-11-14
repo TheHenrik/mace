@@ -41,10 +41,13 @@ class EfficiencyFlight:
 
         self.plot_surface = False
 
+    # def T(self, V, I):
+    #     thrust_array = self.plane.propulsion.thrust
+    #     thrust_force = I / 30 * np.interp(V, thrust_array[:, 0], thrust_array[:, 1])
+    #     return thrust_force
+    
     def T(self, V, I):
-        thrust_array = self.plane.propulsion.thrust
-        thrust_force = I / 30 * np.interp(V, thrust_array[:, 0], thrust_array[:, 1])
-        return thrust_force
+        return self.plane.evaluate_thrust(V, I=I)
 
     def get_drag_force(self, V):
         if V > self.v_min:

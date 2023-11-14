@@ -9,6 +9,8 @@ from mace.domain.fuselage import Fuselage, FuselageSegment
 from mace.domain.landing_gear import LandingGear, Strut, Wheel
 from mace.domain.vehicle import Vehicle
 from mace.domain.wing import Wing, WingSegment, WingSegmentBuild
+from mace.domain.battery import Battery
+from mace.domain.propeller import Propeller
 
 
 def vehicle_setup(
@@ -142,11 +144,12 @@ def vehicle_setup(
     vehicle.add_wing("horizontal_stabilizer", horizontal_stabilizer)
     ####################################################################################################################
     # PROPULSION
-    tool_path = Path(__file__).resolve().parents[2]
-    prop_surrogate_path = os.path.join(
-        tool_path, "data", "prop_surrogates", "aeronaut14x8.csv"
-    )
-    vehicle.propulsion.thrust = np.loadtxt(prop_surrogate_path, skiprows=1)
+    prop = Propeller("aeronaut14x8")
+    vehicle.propeller = prop
+
+    battery = Battery()
+    battery.capacity = 3.0
+    vehicle.battery = battery
     ####################################################################################################################
     # FUSELAGE
     fuselage = Fuselage()

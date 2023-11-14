@@ -26,6 +26,8 @@ from mace.domain.results import (
     HorizontalFlightResults,
 )
 from mace.domain.wing import Wing, WingSegment
+from mace.domain.battery import Battery
+from mace.domain.propeller import Propeller
 
 
 class Vehicle:
@@ -57,6 +59,9 @@ class Vehicle:
         self.landing_gear = LandingGear()
 
         self.miscs = []
+        
+        self.battery: Battery() = None
+        self.propeller: Propeller() = None
 
     def add_wing(self, position: str, wing: Wing):
         self.wings[position] = wing
@@ -424,7 +429,14 @@ class Vehicle:
             ]
         )
         logging.debug(tabulate(data, header, fmt))
-
+        
+    def evaluate_thrust(self, V, t=0, I=30.):
+        U = self.battery.get_voltage(I, t)
+        T0 = self.propeller.evaluate_thrust(V)
+        U_ref = self.propeller.reference_voltage
+        I_ref = self.propeller.reference_current
+        T = T0 * U / U_ref * I / I_ref
+        return T
 
 class Colour:
     PURPLE = "\033[95m"

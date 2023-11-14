@@ -25,7 +25,7 @@ from mace.utils.mp import get_pid
 def main():
     logging.basicConfig(level=logging.INFO)
     logging.info("Started programm")
-    payload = np.arange(3.57-0.51*3, 3.57+0.51*3, 0.51)
+    payload = np.arange(3.57-0.51*3, 3.57-0.51*2, 0.51)
     #span = [2.]
     aspect_ratio = [10.]
     wing_area = [0.6]
@@ -51,7 +51,7 @@ def main():
 
 
 def handler(file: Path, *args, **kwargs):
-    with open(file, "w") as f, Pool() as p:
+    with open(file, "w") as f, Pool(1) as p:
         for r in tqdm(
             p.imap_unordered(partial(worker, **kwargs), product(*args)),
             total=reduce(mul, map(len, args)),

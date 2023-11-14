@@ -20,7 +20,8 @@ class TakeOff:
         self.aero = Aerodynamics(self.plane)
         self.aero.XFOIL.print_re_warnings = False
         self.get_force = GeneralFunctions(self.plane).coefficient_to_lift_or_drag
-        self.get_thrust = GeneralFunctions(self.plane).current_thrust
+        #self.get_thrust = GeneralFunctions(self.plane).current_thrust
+        self.get_thrust = plane.evaluate_thrust
         self.flap_angle = 0.0
         self.t_step = 0.4
         self.cl_safety_factor = 1.0

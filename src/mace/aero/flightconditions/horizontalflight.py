@@ -114,7 +114,8 @@ class HorizontalFlight:
                 self.flap_angle = airfoil.check_for_best_flap_setting(re, CL)
             self.Aero.evaluate(CL=CL, V=V, FLAP=self.flap_angle)
             D = self.get_drag_force(V)
-            T = GeneralFunctions(self.plane).current_thrust(V)
+            #T = GeneralFunctions(self.plane).current_thrust(V)
+            T = self.plane.evaluate_thrust(V)
             return D - T
 
         from scipy.optimize import root_scalar

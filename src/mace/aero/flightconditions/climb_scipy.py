@@ -28,7 +28,8 @@ class Climb:
 
     def evaluate(self, CL, return_v=False):
         Aero = Aerodynamics(self.plane)
-        T = GeneralFunctions(self.plane).current_thrust
+        # T = GeneralFunctions(self.plane).current_thrust
+        T = self.plane.evaluate_thrust
 
         s = self.s_ref
         m = self.mass
