@@ -177,8 +177,8 @@ def analysis(payload, wing_area, aspect_ratio, airfoil, num_fowler_segments, bat
     reference_max_e_efficiency = 0.74
     score_efficiency = 1000.0 * e_efficiency / reference_max_e_efficiency
 
-    t_loading = 8.0
-    t_unloading = 8.0
+    t_loading = 0.6 * payload / 0.170
+    t_unloading = 0.4 * payload / 0.170
     b_loading = 60 * (1 - (t_loading + t_unloading) / 180)
 
     penalty_current = 0.0
@@ -190,54 +190,22 @@ def analysis(payload, wing_area, aspect_ratio, airfoil, num_fowler_segments, bat
         - penalty_current
     ) * take_off_factor - penalty_round
 
-    logging.debug("S Cruise: %.1f m" % s_distance)
+    results = Aircraft.results
+    results.score_factor_take_off = take_off_factor
+    results.score_payload = score_payload
+    results.max_payload = reference_max_payload
+    results.score_efficiency = score_efficiency
+    results.max_efficiency = reference_max_e_efficiency
+    results.score_distance = score_distance
+    results.max_distance = reference_max_s_distance
+    results.t_loading = t_loading
+    results.t_unloading = t_unloading
+    results.b_loading = b_loading
+    results.penalty_current = penalty_current
+    results.penalty_round = penalty_round
+    results.score_round = score_round
 
-    #wing_area = span**2 / aspect_ratio
-    span = np.sqrt(wing_area * aspect_ratio)
-    wing_loading = Aircraft.mass / wing_area
-
-    v_climb = climb_ias
-    v_eff_climb = eff_v1
-    v_eff_glide = eff_v2
-    v_cruise = V_max
-
-    CL_climb = Aircraft.mass * 9.81 / (0.5 * Constants.rho * v_climb ** 2 * wing_area)
-    CL_eff_climb = Aircraft.mass * 9.81 / (0.5 * Constants.rho * v_eff_climb ** 2 * wing_area)
-    CL_eff_glide = Aircraft.mass * 9.81 / (0.5 * Constants.rho * v_eff_glide ** 2 * wing_area)
-    CL_cruise = Aircraft.mass * 9.81 / (0.5 * Constants.rho * v_cruise ** 2 * wing_area)
-
-    return (
-        payload,
-        span,
-        aspect_ratio,
-        wing_area,
-        wing_loading,
-        Aircraft.mass,
-        airfoil,
-        propeller,
-        num_fowler_segments,
-        battery_capacity,
-        take_off_length,
-        climb_height,
-        e_efficiency,
-        s_distance,
-        v_climb,
-        v_eff_climb,
-        v_eff_glide,
-        v_cruise,
-        CL_climb,
-        CL_eff_climb,
-        CL_eff_glide,
-        CL_cruise,
-        score_payload,
-        score_efficiency,
-        score_distance,
-        b_loading,
-        penalty_current,
-        take_off_factor,
-        penalty_round,
-        score_round,
-    )
+    return results
 
 
 if __name__ == "__main__":

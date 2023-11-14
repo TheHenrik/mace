@@ -24,6 +24,7 @@ from mace.domain.results import (
     FlightConditions,
     HorizontalFlight,
     HorizontalFlightResults,
+    Data
 )
 from mace.domain.wing import Wing, WingSegment
 from mace.domain.battery import Battery
@@ -62,6 +63,7 @@ class Vehicle:
         
         self.battery: Battery() = None
         self.propeller: Propeller() = None
+        self.results = Data()
 
     def add_wing(self, position: str, wing: Wing):
         self.wings[position] = wing
@@ -378,6 +380,8 @@ class Vehicle:
         logging.debug(f"Box width: %.2f m" % box_width)
         logging.debug(f"Box length: %.2f m" % box_length)
         logging.debug("\n")
+        
+        return box_height, box_width, box_length
 
     def print_mass_table(self, fmt="simple"):
         header = [

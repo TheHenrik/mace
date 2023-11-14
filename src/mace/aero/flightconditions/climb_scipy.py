@@ -28,7 +28,7 @@ class Climb:
         
         self.mid_time = 15.
 
-    def evaluate(self, CL, return_v=False):
+    def evaluate(self, CL, return_values=False):
         Aero = Aerodynamics(self.plane)
         # T = GeneralFunctions(self.plane).current_thrust
         T = self.plane.evaluate_thrust
@@ -58,7 +58,14 @@ class Climb:
 
         v, alpha = fsolve(func, [V0, 0], xtol=12e-2, factor=10)
         V_vertical = v * np.sin(alpha)
-        if return_v:
+        if return_values:
+            res = self.plane.results
+            res.climb_air_speed = v
+            res.climb_rate = V_vertical
+            res.climb_flap_angle = self.flap_angle
+            res.climb_cl = CL
+            res.climb_reynolds = functions.get_reynolds_number(v, self.plane.reference_values.c_ref)
+            res.climb_battery_voltage, res.climb_battery_soc = self.plane.battery.get_voltage(i=30., t=t_avg)
             return v
         return -V_vertical
 
@@ -70,7 +77,7 @@ class Climb:
             method="bounded",
             tol=0.1,
         )
-        v = self.evaluate(res.x, return_v=True)
+        v = self.evaluate(res.x, return_values=True)
         return -res.fun, v
 
     def get_h_max(self, delta_t, h0=0):

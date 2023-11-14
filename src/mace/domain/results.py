@@ -142,3 +142,16 @@ class FlightConditions:
     climb: Climb = None
     horizontalflight: HorizontalFlight = None
     glidingflight: GlidingFlight = None
+
+class Data:
+    def __init__(self):
+        self.__dict__ = {}
+
+
+if __name__ == '__main__':
+    results = Data()
+    results.cl = 0.5
+
+    for key in results.__dict__.keys():
+        print(key)
+        print(results.__dict__[key])
