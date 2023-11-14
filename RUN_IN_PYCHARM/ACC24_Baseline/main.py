@@ -20,6 +20,7 @@ from mace.aero.implementations.avl import (
 )
 from mace.domain.params import Constants
 from mace.utils.mp import get_pid
+from mace.utils.results import Results
 
 
 def main():
@@ -56,7 +57,7 @@ def handler(file: Path, *args, **kwargs):
             p.imap_unordered(partial(worker, **kwargs), product(*args)),
             total=reduce(mul, map(len, args)),
         ):
-            f.write(", ".join(map(str, r)) + "\n")
+            f.write(r)
             f.flush()
             os.fsync(f.fileno())
 
@@ -85,11 +86,16 @@ def clean_temporary(path: Path):
 
 
 def analysis(payload, wing_area, aspect_ratio, airfoil, num_fowler_segments):
+    results = Results()
     # Define Analysis
     climb_time = 30.0
     cruise_time = 90.0
     transition_time = 3.0
     minimum_height = 10.0
+    results.push(
+        ["payload", "wing_area", "aspect_ration", "airfoil", "num_fowler_segments"], 
+        [payload, wing_area, aspect_ratio, airfoil, num_fowler_segments]
+    )
 
     # Define Aircraft Geometry
     Aircraft = vehicle_setup(
@@ -99,6 +105,8 @@ def analysis(payload, wing_area, aspect_ratio, airfoil, num_fowler_segments):
         airfoil=airfoil,
         num_fowler_segments=num_fowler_segments,
     )
+
+    results.push(["mass"], [Aircraft.mass])
     logging.debug("M Payload: %.2f kg" % Aircraft.payload)
     # return (payload, span, aspect_ratio, airfoil, num_fowler_segments)
 
@@ -124,6 +132,11 @@ def analysis(payload, wing_area, aspect_ratio, airfoil, num_fowler_segments):
     logging.debug("S TakeOff: %.1f m" % take_off_length)
     logging.info(f"Finished Task TakeOff")
 
+    results.push(
+        ["take_off_lenght", "take_off_time"],
+        [take_off_length, take_off_time]
+    )
+
     # Geometry File with zsym = 0
     geometry_file.z_sym = 0
     geometry_file.build_geometry_file()
@@ -135,8 +148,13 @@ def analysis(payload, wing_area, aspect_ratio, airfoil, num_fowler_segments):
         delta_t=climb_time - take_off_time - transition_time
     )
     climb_height = min(climb_height, 100.0)
-    logging.debug("H Climb: %.1f m, V IAS %.1f m/s" % (climb_height, climb_ias))
 
+    results.push(
+        ["climb_height", "climb_ias"],
+        [climb_height, climb_ias]
+    )
+    
+    logging.debug("H Climb: %.1f m, V IAS %.1f m/s" % (climb_height, climb_ias))
     logging.info(f"Finished Task Climb")
 
     # Run Efficiency Analysis
@@ -146,12 +164,22 @@ def analysis(payload, wing_area, aspect_ratio, airfoil, num_fowler_segments):
     )
     logging.info(f"Finished Task Efficiency")
 
+    results.push(
+        ["e_efficiency", "eff_v1", "eff_t1", "eff_v2"],
+        [e_efficiency, eff_v1, eff_t1, eff_v2]
+    )
+
     # Run Cruise Analysis
     cruise_analysis = HorizontalFlight(Aircraft)
     cruise_analysis.optimize_flap_angle = True
     V_max = cruise_analysis.get_maximum_velocity_scipy()
     s_distance = V_max * cruise_time
     logging.info(f"Finished Task Cruise")
+
+    results.push(
+        ["V_max", "s_distance"],
+        [V_max, s_distance]
+    )
 
     # Calculate Score
     if take_off_length <= 40.0:
@@ -183,6 +211,28 @@ def analysis(payload, wing_area, aspect_ratio, airfoil, num_fowler_segments):
         - penalty_current
     ) * take_off_factor - penalty_round
 
+    results.push(
+        [
+            "score_payload",
+            "score_efficiency",
+            "score_distance",
+            "b_loading",
+            "penalty_current",
+            "take_off_factor",
+            "penalty_round",
+            "score_round"
+        ],
+        [
+            score_payload,
+            score_efficiency,
+            score_distance,
+            b_loading,
+            penalty_current,
+            take_off_factor,
+            penalty_round,
+            score_round
+        ]
+    )
     logging.debug("S Cruise: %.1f m" % s_distance)
 
     #wing_area = span**2 / aspect_ratio
@@ -199,36 +249,12 @@ def analysis(payload, wing_area, aspect_ratio, airfoil, num_fowler_segments):
     CL_eff_glide = Aircraft.mass * 9.81 / (0.5 * Constants.rho * v_eff_glide ** 2 * wing_area)
     CL_cruise = Aircraft.mass * 9.81 / (0.5 * Constants.rho * v_cruise ** 2 * wing_area)
 
-    return (
-        payload,
-        span,
-        aspect_ratio,
-        wing_area,
-        wing_loading,
-        Aircraft.mass,
-        airfoil,
-        num_fowler_segments,
-        take_off_length,
-        climb_height,
-        e_efficiency,
-        s_distance,
-        v_climb,
-        v_eff_climb,
-        v_eff_glide,
-        v_cruise,
-        CL_climb,
-        CL_eff_climb,
-        CL_eff_glide,
-        CL_cruise,
-        score_payload,
-        score_efficiency,
-        score_distance,
-        b_loading,
-        penalty_current,
-        take_off_factor,
-        penalty_round,
-        score_round,
+    results.push(
+        ["CL_climb", "CL_eff_climb", "CL_eff_glide", "CL_cruise", "wing_loading"],
+        [CL_climb, CL_eff_climb, CL_eff_glide, CL_cruise, wing_loading]
     )
+
+    return results.as_csv_line()
 
 
 if __name__ == "__main__":
