@@ -10,7 +10,7 @@
 1. run one after the other:
 
     ```sh
-    python3.11 -m venv .venv
+    python -m venv .venv
     .venv\Scripts\activate
     pip install -e .[dev]
     ```
@@ -24,6 +24,13 @@
 1. Wait for the program to finish
 1. Upload the created .csv file in RUN_IN_PYCHARM/ACC24_Baseline/ to the Google Drive
 1. Repeat from step 7 until all numbers are taken.
+1. After closing the console you only need to rerun
+
+    ```sh
+    .venv\Scripts\activate
+    ```
+
+    and continue from step 7
 
 ### Troubleshooting
 
@@ -38,6 +45,18 @@
     Try installing a gcc compiler.
 
 1. Try installing "wheel" using pip
+
+1. Replace
+
+    ```sh
+    python -m venv venv
+    ```
+
+    with
+
+    ```sh
+    path\to\python\installation\python.exe -m venv   .venv
+    ```
 
 ## Linux
 
