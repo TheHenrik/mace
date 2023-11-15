@@ -144,14 +144,18 @@ class FlightConditions:
     glidingflight: GlidingFlight = None
 
 class Data:
-    def __init__(self):
-        self.__dict__ = {}
+    def as_csv_line(self, delimitter = ";", header = False) -> str:
+        line = f"{delimitter} ".join(map(str, self.__dict__.values())) + "\n"
+        if header:
+            line = f"{delimitter} ".join(map(str, self.__dict__.keys())) + "\n" + line
+        return line
+    
 
 
 if __name__ == '__main__':
     results = Data()
     results.cl = 0.5
+    results.cd = 0.3
+    results.mass = 0.7
 
-    for key in results.__dict__.keys():
-        print(key)
-        print(results.__dict__[key])
+    print(results.as_csv_line(header=False))

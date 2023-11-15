@@ -53,12 +53,18 @@ def main():
 
 
 def handler(file: Path, *args, **kwargs):
+    first_line = True
     with open(file, "w") as f, Pool() as p:
         for r in tqdm(
             p.imap_unordered(partial(worker, **kwargs), product(*args)),
             total=reduce(mul, map(len, args)),
         ):
-            f.write(", ".join(map(str, r)) + "\n")
+            if first_line:
+                lines = r
+                first_line = False
+            else:
+                lines = r.split("\n", 1)[1]
+            f.write(lines)
             f.flush()
             os.fsync(f.fileno())
 
@@ -205,7 +211,7 @@ def analysis(payload, wing_area, aspect_ratio, airfoil, num_fowler_segments, bat
     results.penalty_round = penalty_round
     results.score_round = score_round
 
-    return results
+    return results.as_csv_line(header=True, delimitter=",")
 
 
 if __name__ == "__main__":
