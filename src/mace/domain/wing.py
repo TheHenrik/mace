@@ -627,14 +627,18 @@ class Wing:
             return l * th
         return 0
 
-    def part_wing_into(self, into_parts: int, total_mass, override=False):
+    def part_wing_into(self, total_mass, into_parts: int = 1, max_lenght: float = 1E100, override=True):
         wing_span = self.segments[-1].nose_outer[1]
-        part_len = 2 * wing_span / into_parts
-        pos = [-wing_span + (i + 1) * part_len for i in range(into_parts - 1)]
-        self.part_wing(pos, total_mass, mirror=False, override=override)
+        part_len = min(2 * wing_span / into_parts, max_lenght)
+        current = 0 if (wing_span//part_len)%2==0 else part_len/2
+        pos = []
+        while current < wing_span:
+            pos.append(current)
+            current += part_len
+        self.part_wing(pos, total_mass, mirror=True, override=override)
 
     def part_wing(
-        self, positions: list[float], total_mass, mirror=True, override=False
+        self, positions: list[float], total_mass: float, mirror=True, override=False
     ):
         if self.wing_binder is None or override:
             self.wing_binder = []
