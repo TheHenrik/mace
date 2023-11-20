@@ -25,8 +25,8 @@ class WingBinder:
     roving_count: float
 
     def __init__(self, position, height, moment_at_position) -> None:
-        self.position = position
-        self.height = height
+        self.position = abs(position)
+        self.height = abs(height)
         self.get_rovings(moment_at_position)
         self.get_mass()
 
@@ -34,7 +34,7 @@ class WingBinder:
         self,
     ):
         CONST = 375 / 1_000 * 6
-        self.mass = self.roving_count * self.height**2 * CONST
+        self.mass = (self.roving_count / 2 + 0.01) * self.height**2 * CONST
 
     def get_rovings(self, moment_at_position):
         # TODO Test me pls
@@ -606,7 +606,7 @@ class Wing:
         if not self.wing_binder is None:
             for wb in self.wing_binder:
                 masses.append(wb.mass)
-                cogs.append(np.array(0, wb.position, 0))
+                cogs.append(np.array([0, wb.position, 0]))
 
         faktor = 2 if self.symmetric else 1
         self.mass = faktor * sum(masses)
@@ -614,15 +614,16 @@ class Wing:
         return self.mass, self.cog * self.mass * np.array([2, 0, 2])
 
     def get_height_position(self, position: float) -> float:
+        position = abs(position)
         for segment in self.segments:
-            if segment.nose_outer[1] < position and segment.nose_inner[1] > position:
+            if segment.nose_outer[1] < position or segment.nose_inner[1] >= position:
                 continue
             l = (
-                np.sqrt(np.sum(segment.nose_inner - segment.back_inner))
+                np.sqrt(np.sum(np.square(segment.nose_inner - segment.back_inner)))
+                * (segment.nose_outer[1] - position)
+                + np.sqrt(np.sum(np.square(segment.nose_outer - segment.back_outer)))
                 * (segment.nose_inner[1] - position)
-                + np.sqrt(np.sum(segment.nose_outer - segment.back_outer))
-                * (segment.nose_inner[1] - position)
-            ) / 2
+            ) / np.sqrt(np.sum(np.square(segment.nose_outer - segment.nose_inner)))
             th = get_profil_thickness(segment.inner_airfoil)
             return l * th
         return 0

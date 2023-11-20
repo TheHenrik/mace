@@ -207,5 +207,5 @@ def analysis(payload, span, aspect_ratio, airfoil, num_fowler_segments):
 
 
 if __name__ == "__main__":
-    main()
-    # worker((3.57, 2.0, 10.0, "ag45c", 0))
+    # main()
+    worker((3.57, 2.0, 10.0, "ag45c", 0))
