@@ -30,11 +30,13 @@ class WingBinder:
         self.get_rovings(moment_at_position)
         self.get_mass()
 
-    def get_mass(
-        self,
-    ):
-        CONST = 375 / 1_000 * 6
-        self.mass = (self.roving_count / 2 + 0.01) * self.height**2 * CONST
+    def get_mass(self):
+        dens = 375
+        lenght = 60 / 1000
+        width = (self.roving_count + 1) / 100
+        # CONST = 375 / 1_000 * 6
+        # self.mass =  * self.height**2 * CONST
+        self.mass = dens * lenght * self.height * width
 
     def get_rovings(self, moment_at_position):
         # TODO Test me pls
@@ -616,7 +618,7 @@ class Wing:
     def get_height_position(self, position: float) -> float:
         position = abs(position)
         for segment in self.segments:
-            if segment.nose_outer[1] < position or segment.nose_inner[1] >= position:
+            if not (segment.nose_outer[1] > position and segment.nose_inner[1] <= position):
                 continue
             l = (
                 np.sqrt(np.sum(np.square(segment.nose_inner - segment.back_inner)))
@@ -647,8 +649,9 @@ class Wing:
             rev = [-pos for pos in positions if not pos == 0]
             positions.extend(rev)
         for position in positions:
+            position = abs(position)
             height = self.get_height_position(position)
-            wing_span = self.segments[-1].nose_outer[1] / 2
+            wing_span = self.segments[-1].nose_outer[1]
             moment = moment_at_position(total_mass, position, wing_span)
             self.wing_binder.append(WingBinder(position, height, moment))
 
