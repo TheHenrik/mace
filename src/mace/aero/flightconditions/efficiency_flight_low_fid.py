@@ -25,7 +25,7 @@ class EfficiencyFlight:
         self.plane = Aircraft
         self.mass = self.plane.mass
         self.s_ref = self.plane.reference_values.s_ref
-        self.get_thrust = GeneralFunctions(self.plane).current_thrust
+        # self.get_thrust = GeneralFunctions(self.plane).current_thrust
         self.optimize_flap_angle = True
         self.flap_angle = 0.0
         self.Aero = Aerodynamics(self.plane)
@@ -40,11 +40,16 @@ class EfficiencyFlight:
         self.drag_surrogate: np.ndarray = None
 
         self.plot_surface = False
+        
+        self.batt_time_at_start = 30.
 
-    def T(self, V, I):
-        thrust_array = self.plane.propulsion.thrust
-        thrust_force = I / 30 * np.interp(V, thrust_array[:, 0], thrust_array[:, 1])
-        return thrust_force
+    # def T(self, V, I):
+    #     thrust_array = self.plane.propulsion.thrust
+    #     thrust_force = I / 30 * np.interp(V, thrust_array[:, 0], thrust_array[:, 1])
+    #     return thrust_force
+    
+    def T(self, V, t_avg, I):
+        return self.plane.evaluate_thrust(V, t_avg, I=I)
 
     def get_drag_force(self, V):
         if V > self.v_min:
@@ -85,12 +90,14 @@ class EfficiencyFlight:
         m = self.mass
         h2 = self.h_end
         tges = self.t_ges
+        
+        t_avg = self.batt_time_at_start + t1 / 2
 
         def func(x):
             h1 = min(x[0], 100)
             v2 = max(x[1], 0)
 
-            eq1 = E0 + (T(v1, I) - D(v1)) * v1 * t1 - 1 / 2 * m * v1**2 - m * g * h1
+            eq1 = E0 + (T(v1, t_avg, I) - D(v1)) * v1 * t1 - 1 / 2 * m * v1**2 - m * g * h1
             eq2 = (
                 1 / 2 * m * v1**2
                 + m * g * h1
@@ -147,6 +154,33 @@ class EfficiencyFlight:
                 self.equation_system(E0, v1, t1, I, print_results=True)
                 logging.debug("points: ", round(points, 5))
                 logging.debug("\n")
+
+                c_length = self.plane.reference_values.c_ref
+                airfoil = Airfoil(self.plane.wings["main_wing"].airfoil)
+                airfoil.print_re_warnings = False
+                
+                cl_1 = self.mass * g / (0.5 * rho * v1 ** 2 * self.s_ref)
+                re_1 = functions.get_reynolds_number(v1, c_length)
+                flap_angle_1 = airfoil.check_for_best_flap_setting(re_1, cl_1)
+
+                cl_2 = self.mass * g / (0.5 * rho * v2 ** 2 * self.s_ref)
+                re_2 = functions.get_reynolds_number(v2, c_length)
+                flap_angle_2 = airfoil.check_for_best_flap_setting(re_2, cl_2)
+                
+                res = self.plane.results
+
+                res.efficiency_motor_on_air_speed = v1
+                res.efficiency_motor_on_cl = cl_1
+                res.efficiency_motor_on_reynolds = re_1
+                res.efficiency_motor_on_flap_angle = flap_angle_1
+
+                res.efficiency_motor_off_air_speed = v2
+                res.efficiency_motor_off_cl = cl_2
+                res.efficiency_motor_off_reynolds = re_2
+                res.efficiency_motor_off_flap_angle = flap_angle_2
+                
+                t_avg = self.batt_time_at_start + t1 / 2
+                res.efficiency_battery_voltage, res.efficiency_battery_soc = self.plane.battery.get_voltage(i=30., t=t_avg)
 
             return -points
 
@@ -210,7 +244,7 @@ class EfficiencyFlight:
 
     def get_v_max(self, I, v0=15.0):
         def func(v):
-            return self.T(v, I) - self.get_drag_force(v)
+            return self.T(v, self.batt_time_at_start, I) - self.get_drag_force(v)
 
         v_max = root_scalar(func, method="brentq", bracket=[v0 + 1, 40], xtol=0.5).root
         return v_max
@@ -234,7 +268,7 @@ class EfficiencyFlight:
         hend = self.h_end
         tend = self.t_ges
         t1_min = (tend * v2 * D(v2) + m * g * (hend - h0)) / (
-            v1 * (T(v1, I) - D(v1) + v2 * D(v2))
+            v1 * (T(v1, self.batt_time_at_start, I) - D(v1) + v2 * D(v2))
         )
         return t1_min
 

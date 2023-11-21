@@ -25,15 +25,19 @@ class Climb:
 
         self.flap_angle = 0.0
         self.optimize_flap_angle = True
+        
+        self.mid_time = 15.
 
-    def evaluate(self, CL, return_v=False):
+    def evaluate(self, CL, return_values=False):
         Aero = Aerodynamics(self.plane)
-        T = GeneralFunctions(self.plane).current_thrust
+        # T = GeneralFunctions(self.plane).current_thrust
+        T = self.plane.evaluate_thrust
 
         s = self.s_ref
         m = self.mass
         g = self.g
         V0 = ((2 * m * g) / (CL * self.rho * self.s_ref)) ** 0.5
+        t_avg = self.mid_time
 
         if self.optimize_flap_angle:
             c_length = self.plane.reference_values.c_ref
@@ -48,13 +52,20 @@ class Climb:
             Aero.evaluate(V=v, CL=CL, FLAP=self.flap_angle)
 
             CD = self.plane.aero_coeffs.drag_coeff.cd_tot
-            eq1 = q * CD * s + np.sin(alpha) * m * g - T(v)
+            eq1 = q * CD * s + np.sin(alpha) * m * g - T(v, t_avg)
             eq2 = np.cos(alpha) * m * g - q * CL * s
             return [eq1, eq2]
 
         v, alpha = fsolve(func, [V0, 0], xtol=12e-2, factor=10)
         V_vertical = v * np.sin(alpha)
-        if return_v:
+        if return_values:
+            res = self.plane.results
+            res.climb_air_speed = v
+            res.climb_rate = V_vertical
+            res.climb_flap_angle = self.flap_angle
+            res.climb_cl = CL
+            res.climb_reynolds = functions.get_reynolds_number(v, self.plane.reference_values.c_ref)
+            res.climb_battery_voltage, res.climb_battery_soc = self.plane.battery.get_voltage(i=30., t=t_avg)
             return v
         return -V_vertical
 
@@ -66,7 +77,7 @@ class Climb:
             method="bounded",
             tol=0.1,
         )
-        v = self.evaluate(res.x, return_v=True)
+        v = self.evaluate(res.x, return_values=True)
         return -res.fun, v
 
     def get_h_max(self, delta_t, h0=0):

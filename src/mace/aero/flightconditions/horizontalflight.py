@@ -28,6 +28,9 @@ class HorizontalFlight:
 
         self.Aero = Aerodynamics(self.plane)
         self.Aero.XFOIL.print_re_warnings = False
+        
+        self.batt_time_at_start = 40.
+        self.cruise_time = 90.
 
     def get_drag_force(self, V):
         plane = self.plane
@@ -104,8 +107,9 @@ class HorizontalFlight:
 
     def get_maximum_velocity_scipy(self):
         Aero = Aerodynamics(self.plane)
+        batt_mid_time = self.batt_time_at_start + self.cruise_time / 2
 
-        def func(V):
+        def func(V, return_values=False):
             CL = self.lift_coefficient(V)
             if self.optimize_flap_angle is True:
                 c_length = self.plane.reference_values.c_ref
@@ -114,7 +118,17 @@ class HorizontalFlight:
                 self.flap_angle = airfoil.check_for_best_flap_setting(re, CL)
             self.Aero.evaluate(CL=CL, V=V, FLAP=self.flap_angle)
             D = self.get_drag_force(V)
-            T = GeneralFunctions(self.plane).current_thrust(V)
+            #T = GeneralFunctions(self.plane).current_thrust(V)
+            T = self.plane.evaluate_thrust(V, batt_mid_time)
+            
+            if return_values:
+                results = self.plane.results
+                results.cruise_air_speed = V
+                results.cruise_flap_angle = self.flap_angle
+                results.cruise_cl = CL
+                results.cruise_drag_force = D
+                results.cruise_reynolds = re
+                results.cruise_battery_voltage, results.cruise_battery_soc = self.plane.battery.get_voltage(i=30., t=batt_mid_time)
             return D - T
 
         from scipy.optimize import root_scalar
@@ -122,6 +136,7 @@ class HorizontalFlight:
         v_min = self.flight_velocity(self.cl_start)
         v_max = self.flight_velocity(self.cl_end)
         res = root_scalar(func, bracket=(v_min, v_max), method="brentq", xtol=0.1)
+        func(res.root, return_values=True)
         return res.root
 
     def plot_fv_diagramm(self):

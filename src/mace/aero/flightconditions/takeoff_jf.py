@@ -20,7 +20,8 @@ class TakeOff:
         self.aero = Aerodynamics(self.plane)
         self.aero.XFOIL.print_re_warnings = False
         self.get_force = GeneralFunctions(self.plane).coefficient_to_lift_or_drag
-        self.get_thrust = GeneralFunctions(self.plane).current_thrust
+        #self.get_thrust = GeneralFunctions(self.plane).current_thrust
+        self.get_thrust = plane.evaluate_thrust
         self.flap_angle = 0.0
         self.t_step = 0.4
         self.cl_safety_factor = 1.0
@@ -50,6 +51,7 @@ class TakeOff:
         MAC = self.plane.wings["main_wing"].mean_aerodynamic_chord
 
         T = 0.0
+        T_total = 0.0
         S = 0.0
         V = 0.0
         CL_MAX = 0.0
@@ -65,15 +67,16 @@ class TakeOff:
             LIFT = self.get_force(V + V_wind, CL)
             DRAG = self.get_force(V + V_wind, CD)
             FRICTION = self.get_friction(0)
-            THRUST = self.get_thrust(V + V_wind)
+            THRUST = self.get_thrust(V + V_wind, T_total)
 
             ACCELL = (THRUST - DRAG - FRICTION) / MASS
             if V >= V_start_counter:
                 T += DELTA_T
+            T_total += DELTA_T
             S += 1 / 2 * ACCELL * DELTA_T**2 + V * DELTA_T
             V += ACCELL * DELTA_T
-            V_exakt = ACCELL * T
-            S_exakt = 1 / 2 * ACCELL * T**2
+            # V_exakt = ACCELL * T
+            # S_exakt = 1 / 2 * ACCELL * T**2
 
             if self.show_plot:
                 S_vec.append(S)
@@ -91,6 +94,16 @@ class TakeOff:
                 CL_MAX += delta_CL_flap
             else:
                 CL_MAX = self.manual_cl_max
+        
+        res = self.plane.results
+        res.take_off_length = S
+        res.take_off_time_from_counter_start = T
+        res.take_off_time_total = T_total
+        res.cl_max_at_take_off = CL_MAX
+        res.assumed_wind_speed = V_wind
+        res.take_off_ground_speed = V
+        res.take_off_air_speed = V + V_wind
+        res.takeoff_battery_voltage, res.takeoff_battery_soc = self.plane.battery.get_voltage(i=30., t=T_total)
 
         if T >= 20:
             logging.info("Takeoff failed")

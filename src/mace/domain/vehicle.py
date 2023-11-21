@@ -24,8 +24,11 @@ from mace.domain.results import (
     FlightConditions,
     HorizontalFlight,
     HorizontalFlightResults,
+    Data
 )
 from mace.domain.wing import Wing, WingSegment
+from mace.domain.battery import Battery
+from mace.domain.propeller import Propeller
 
 
 class Vehicle:
@@ -57,6 +60,10 @@ class Vehicle:
         self.landing_gear = LandingGear()
 
         self.miscs = []
+        
+        self.battery: Battery() = None
+        self.propeller: Propeller() = None
+        self.results = Data()
 
     def add_wing(self, position: str, wing: Wing):
         self.wings[position] = wing
@@ -327,6 +334,8 @@ class Vehicle:
             weighted_cog[misc.name] = misc.position
 
         mass["payload"] = self.payload
+        
+        mass["battery"] = self.battery.get_mass()
 
         self.mass = sum(mass.values())
         self.center_of_gravity = sum(weighted_cog.values()) / self.mass
@@ -374,6 +383,8 @@ class Vehicle:
         logging.debug(f"Box width: %.2f m" % box_width)
         logging.debug(f"Box length: %.2f m" % box_length)
         logging.debug("\n")
+        
+        return box_height, box_width, box_length
 
     def print_mass_table(self, fmt="simple"):
         header = [
@@ -427,7 +438,14 @@ class Vehicle:
             ]
         )
         logging.debug(tabulate(data, header, fmt))
-
+        
+    def evaluate_thrust(self, V, t, I=30.):
+        U, SOC = self.battery.get_voltage(I, t)
+        T0 = self.propeller.evaluate_thrust(V)
+        U_ref = self.propeller.reference_voltage
+        I_ref = self.propeller.reference_current
+        T = T0 * U / U_ref * I / I_ref
+        return T
 
 class Colour:
     PURPLE = "\033[95m"
