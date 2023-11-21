@@ -312,7 +312,7 @@ def vehicle_setup(
     ####################################################################################################################
 
     vehicle.build()
-    vehicle.wings["main_wing"].part_wing_into(4, vehicle.mass, override=True)
+    # vehicle.wings["main_wing"].part_wing_into(4, vehicle.mass, override=True)
     vehicle.print_mass_table()
     vehicle.get_reference_values()
     vehicle.get_stability_derivatives()

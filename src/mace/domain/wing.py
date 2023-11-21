@@ -25,8 +25,8 @@ class WingBinder:
     roving_count: float
 
     def __init__(self, position, height, moment_at_position) -> None:
-        self.position = abs(position)
-        self.height = abs(height)
+        self.position = position
+        self.height = height
         self.get_rovings(moment_at_position)
         self.get_mass()
 
@@ -649,7 +649,6 @@ class Wing:
             rev = [-pos for pos in positions if not pos == 0]
             positions.extend(rev)
         for position in positions:
-            position = abs(position)
             height = self.get_height_position(position)
             wing_span = self.segments[-1].nose_outer[1]
             moment = moment_at_position(total_mass, position, wing_span)
