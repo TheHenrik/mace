@@ -33,7 +33,7 @@ class WingBinder:
     def get_mass(self):
         dens = 375
         lenght = 60 / 1000
-        width = (self.roving_count + 1) / 100
+        width = (self.roving_count + 0) / 100
         # CONST = 375 / 1_000 * 6
         # self.mass =  * self.height**2 * CONST
         self.mass = dens * lenght * self.height * width
