@@ -33,7 +33,7 @@ class WingBinder:
     def get_mass(self):
         dens = 375
         lenght = 60 / 1000
-        width = (self.roving_count + 0) / 100
+        width = (self.roving_count + 0.5) / 100
         # CONST = 375 / 1_000 * 6
         # self.mass =  * self.height**2 * CONST
         self.mass = dens * lenght * self.height * width
@@ -621,9 +621,9 @@ class Wing:
             if not (segment.nose_outer[1] > position and segment.nose_inner[1] <= position):
                 continue
             l = (
-                np.sqrt(np.sum(np.square(segment.nose_inner - segment.back_inner)))
+                segment.inner_chord
                 * (segment.nose_outer[1] - position)
-                + np.sqrt(np.sum(np.square(segment.nose_outer - segment.back_outer)))
+                - segment.outer_chord
                 * (segment.nose_inner[1] - position)
             ) / np.sqrt(np.sum(np.square(segment.nose_outer - segment.nose_inner)))
             th = get_profil_thickness(segment.inner_airfoil)

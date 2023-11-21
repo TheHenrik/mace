@@ -348,7 +348,7 @@ def vehicle_setup(
     area_fowler = 0.
     for segment in vehicle.wings['main_wing'].segments:
         if segment.control_name == "fowler":
-            eta_fowler += 2 * segment.span / vehicle.wings.main_wing.span
+            eta_fowler += 2 * segment.span / vehicle.wings["main_wing"].span
             span_fowler += 2 * segment.span
             area_fowler += 2 * segment.area
 

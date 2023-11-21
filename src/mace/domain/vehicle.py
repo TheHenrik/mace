@@ -307,11 +307,11 @@ class Vehicle:
             5. CG -> Landing gear position
             6. CG -> Cargo Bay position
         """
-        self.transport_box_dimensions()
+        _, _, lenght = self.transport_box_dimensions()
         for _ in range(4):
             self.get_mass()
             self.calc_load()
-            self.wings["main_wing"].part_wing_into(self.mass, into_parts=4, override=True)
+            self.wings["main_wing"].part_wing_into(self.mass, max_lenght=lenght, override=True)
         self.get_mass()          
 
     def get_mass(self):
