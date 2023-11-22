@@ -72,7 +72,7 @@ class Airfoil:
         self.alpha_step = 0.1
 
         self.mach = 0
-        self.n_crit = 11
+        self.n_crit = 8
         self.n_iter = 150
         self.xtr_top = 100
         self.xtr_bot = 100

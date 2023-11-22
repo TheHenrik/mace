@@ -28,8 +28,8 @@ def main():
     payload = [3.57]
     aspect_ratio = [10.]
     wing_area = [0.6]
-    airfoil = ["ag45c"]
-    battery_capacity = [1.6, 2.0, 2.4, 2.8, 3.2]
+    airfoil = ["jf-a2", "jx-gp-055", "LAK24_v1", "LAK24_v2"]
+    battery_capacity = [2.4]
     propeller = ["aeronaut14x8"]
     
     match sys.argv:
@@ -54,7 +54,7 @@ def main():
 
 def handler(file: Path, *args, **kwargs):
     first_line = True
-    with open(file, "w") as f, Pool() as p:
+    with open(file, "w") as f, Pool(1) as p:
         for r in tqdm(
             p.imap_unordered(partial(worker, **kwargs), product(*args)),
             total=reduce(mul, map(len, args)),
