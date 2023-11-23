@@ -34,11 +34,11 @@ class WingBinder:
 
     def get_mass(self):
         dens = 375
-        lenght = 4 * np.sqrt(self.moment) / 1_00
+        lenght = 4 * np.sqrt(self.moment) / 100
         width = (self.roving_count + 1) / 1000
         # CONST = 375 / 1_000 * 6
         # self.mass =  * self.height**2 * CONST
-        self.mass = dens * lenght * self.height * width
+        self.mass = dens * lenght * self.height * width * 1.1
 
     def get_rovings(self, moment_at_position):
         # TODO Test me pls
