@@ -23,17 +23,19 @@ class WingBinder:
     height: float
     mass: float
     roving_count: float
+    moment: float
 
     def __init__(self, position, height, moment_at_position) -> None:
         self.position = position
-        self.height = height
+        self.height = height - 0.003
+        self.moment = moment_at_position
         self.get_rovings(moment_at_position)
         self.get_mass()
 
     def get_mass(self):
         dens = 375
-        lenght = 60 / 1000
-        width = (self.roving_count + 0.5) / 100
+        lenght = 4 * np.sqrt(self.moment) / 1_00
+        width = (self.roving_count + 1) / 1000
         # CONST = 375 / 1_000 * 6
         # self.mass =  * self.height**2 * CONST
         self.mass = dens * lenght * self.height * width
