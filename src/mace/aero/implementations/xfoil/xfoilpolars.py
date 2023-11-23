@@ -25,7 +25,7 @@ def get_xfoil_polar(
     cl_step: float = 0.05,
     n_iter=100,
     mach: float = 0,
-    n_crit: float = 11,
+    n_crit: float = 8,
     x_transition_top=100,
     x_transition_bottom=100,
     flap_angle: float = 0,
