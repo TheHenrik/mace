@@ -1,6 +1,6 @@
 import logging
 from itertools import product
-from multiprocessing import Pool
+from multiprocessing import Pool, freeze_support
 import sys
 import re
 from tqdm import tqdm
@@ -20,6 +20,8 @@ from mace.aero.implementations.avl import (
 )
 from mace.domain.params import Constants
 from mace.utils.mp import get_pid
+
+from mace.utils.file_path import root
 
 
 def main():
@@ -48,13 +50,13 @@ def main():
         case _:
             num_fowler_segments = [0]
 
-    path = Path(Path(__file__).parent, f"results_sweep.csv")
-    handler(path, payload, wing_area, aspect_ratio, airfoil, num_fowler_segments, battery_capacity, propeller)
+    path = Path(root(), f"results_sweep.csv")
+    handler(path, 2, payload, wing_area, aspect_ratio, airfoil, num_fowler_segments, battery_capacity, propeller)
 
 
-def handler(file: Path, *args, **kwargs):
+def handler(file: Path, threads: int, *args, **kwargs):
     first_line = True
-    with open(file, "w") as f, Pool(1) as p:
+    with open(file, "w") as f, Pool(threads) as p:
         for r in tqdm(
             p.imap_unordered(partial(worker, **kwargs), product(*args)),
             total=reduce(mul, map(len, args)),
@@ -70,11 +72,11 @@ def handler(file: Path, *args, **kwargs):
 
 
 def worker(args, **kwargs):
-    log_path = Path(Path(__file__).parents[2], "temporary", "default.log")
+    log_path = Path(root(), "temporary", "default.log")
     logging.basicConfig(filename=log_path, level=logging.INFO)
     logging.info(f"Started Task{get_pid()}")
     values = analysis(*args, **kwargs)
-    clean_temporary_pid(Path("temporary"))
+    clean_temporary_pid(Path(root(), "temporary"))
     logging.info(f"Finished Task{get_pid()}")
     return values
 
@@ -214,9 +216,44 @@ def analysis(payload, wing_area, aspect_ratio, airfoil, num_fowler_segments, bat
     return results.as_csv_line(header=True, delimitter=",")
 
 
+def _main():
+    logging.basicConfig(level=logging.INFO)
+    logging.info("Started programm")
+    while True:
+        print("Gebe die dir zugeteilte Nummer ein:")
+        input_number = int(input())   
+        print("Anzahl der zu nutzenden Threads:")
+        print("(Gebe Null ein, um alle Threads zu nutzen, der Computer wird dann für die nächste Zeit nicht benutzbar sein)")
+        print("(Eine Negative Zahl bestimmt die Anzahl der Threads, die nicht genutzt werden sollen)")
+        input_threads = int(input())
+        cpu_count = os.cpu_count()
+        if input_threads <= 0:
+            threads = cpu_count + input_threads
+        else:
+            threads = input_threads
+        if threads == 0 or threads > cpu_count:
+            print("Wrong input")
+        else:
+            break
+
+    payload = [3.57]
+    aspect_ratio = [10.]
+    wing_area = [0.6]
+    airfoil = ["jf-a2", "jx-gp-055", "LAK24_v1", "LAK24_v2"]
+    battery_capacity = [2.4]
+    propeller = ["aeronaut14x8"]
+    
+    first, second = divmod(input_number, 3)
+    airfoil = [airfoil[first]]
+    num_fowler_segments = [second]
+    path = Path(root(), f"results_sweep.csv")
+    logging.info("Finished Input")
+    handler(path, 2, payload, wing_area, aspect_ratio, airfoil, num_fowler_segments, battery_capacity, propeller)
+
+
 if __name__ == "__main__":
-    # clean_temporary(Path("temporary"))
-    # main()
+    if sys.platform.startswith('win'):
+        freeze_support()
+    clean_temporary(Path(root(), "temporary"))
+    _main()
     # worker((3.57, 0.61, 8.82, "acc22", 4, 1.6, "aeronaut14x8"))
-    from mace.utils.file_path import root
-    print(root())
