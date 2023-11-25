@@ -215,6 +215,8 @@ def analysis(payload, wing_area, aspect_ratio, airfoil, num_fowler_segments, bat
 
 
 if __name__ == "__main__":
-    clean_temporary(Path("temporary"))
+    # clean_temporary(Path("temporary"))
     # main()
-    worker((3.57, 0.61, 8.82, "acc22", 4, 1.6, "aeronaut14x8"))
+    # worker((3.57, 0.61, 8.82, "acc22", 4, 1.6, "aeronaut14x8"))
+    from mace.utils.file_path import root
+    print(root())
