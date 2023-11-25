@@ -217,7 +217,8 @@ def analysis(payload, wing_area, aspect_ratio, airfoil, num_fowler_segments, bat
 
 
 def _main():
-    logging.basicConfig(level=logging.INFO)
+    log_path = Path(root(), "temporary", "default.log")
+    logging.basicConfig(filename=log_path, level=logging.INFO)
     logging.info("Started programm")
     while True:
         print("Gebe die dir zugeteilte Nummer ein:")
@@ -246,7 +247,7 @@ def _main():
     first, second = divmod(input_number, 3)
     airfoil = [airfoil[first]]
     num_fowler_segments = [second]
-    path = Path(root(), f"results_sweep.csv")
+    path = Path(root(), f"results_sweep_{input_number}.csv")
     logging.info("Finished Input")
     handler(path, threads, payload, wing_area, aspect_ratio, airfoil, num_fowler_segments, battery_capacity, propeller)
 
