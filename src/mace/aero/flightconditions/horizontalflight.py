@@ -28,9 +28,9 @@ class HorizontalFlight:
 
         self.Aero = Aerodynamics(self.plane)
         self.Aero.XFOIL.print_re_warnings = False
-        
-        self.batt_time_at_start = 40.
-        self.cruise_time = 90.
+
+        self.batt_time_at_start = 40.0
+        self.cruise_time = 90.0
 
     def get_drag_force(self, V):
         plane = self.plane
@@ -118,9 +118,9 @@ class HorizontalFlight:
                 self.flap_angle = airfoil.check_for_best_flap_setting(re, CL)
             self.Aero.evaluate(CL=CL, V=V, FLAP=self.flap_angle)
             D = self.get_drag_force(V)
-            #T = GeneralFunctions(self.plane).current_thrust(V)
+            # T = GeneralFunctions(self.plane).current_thrust(V)
             T = self.plane.evaluate_thrust(V, batt_mid_time)
-            
+
             if return_values:
                 results = self.plane.results
                 results.cruise_air_speed = V
@@ -128,7 +128,10 @@ class HorizontalFlight:
                 results.cruise_cl = CL
                 results.cruise_drag_force = D
                 results.cruise_reynolds = re
-                results.cruise_battery_voltage, results.cruise_battery_soc = self.plane.battery.get_voltage(i=30., t=batt_mid_time)
+                (
+                    results.cruise_battery_voltage,
+                    results.cruise_battery_soc,
+                ) = self.plane.battery.get_voltage(i=30.0, t=batt_mid_time)
             return D - T
 
         from scipy.optimize import root_scalar

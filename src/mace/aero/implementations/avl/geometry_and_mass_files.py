@@ -5,8 +5,8 @@ from pathlib import Path
 from mace.domain import Plane
 from mace.domain import plane as pl
 from mace.domain.parser import PlaneParser
-from mace.utils.mp import get_pid
 from mace.utils.file_path import root
+from mace.utils.mp import get_pid
 
 # ========== Geometry File ==========
 

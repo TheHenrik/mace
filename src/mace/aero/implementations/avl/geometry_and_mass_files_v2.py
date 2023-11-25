@@ -4,8 +4,8 @@ from pathlib import Path
 
 # from mace.domain.vehicle import Vehicle
 from mace.domain.params import Constants, Units
-from mace.utils.mp import get_pid
 from mace.utils.file_path import root
+from mace.utils.mp import get_pid
 
 # ========== Geometry File ==========
 
@@ -83,10 +83,10 @@ class GeometryFile:
                 geometry_file.write(f"{  segment.s_space}")
             geometry_file.write(f"\n\n")
             geometry_file.write(f"AFIL  0.0  1.0\n")
-            segment_airfoil_path = os.path.join(airfoil_path, segment.inner_airfoil + ".dat")
-            geometry_file.write(
-                f'{segment_airfoil_path}\n\n'
+            segment_airfoil_path = os.path.join(
+                airfoil_path, segment.inner_airfoil + ".dat"
             )
+            geometry_file.write(f"{segment_airfoil_path}\n\n")
 
             if segment.control is not None:
                 GeometryFile.build_geo_surface_section_control(

@@ -1,5 +1,6 @@
 import logging
 import os  # operation system
+import stat
 import sys
 from pathlib import Path
 
@@ -10,9 +11,8 @@ from mace.aero.implementations.avl.geometry_and_mass_files import GeometryFile, 
 
 # from mace.domain.vehicle import Vehicle
 from mace.domain.parser import PlaneParser
-from mace.utils.mp import get_pid
-import stat
 from mace.utils.file_path import root
+from mace.utils.mp import get_pid
 
 
 class AVL:

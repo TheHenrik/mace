@@ -1,4 +1,5 @@
 import numpy as np
+
 from mace.utils.file_path import root
 
 
@@ -8,7 +9,9 @@ class Propulsor:
         self.battery_capacity: float = None
 
     def get_thrust_force(self, velocity: float, current: float, time: float):
-        thrust_force = np.interp(velocity, self.thrust_array[:, 0], self.thrust_array[:, 1])
+        thrust_force = np.interp(
+            velocity, self.thrust_array[:, 0], self.thrust_array[:, 1]
+        )
 
         return thrust_force
 

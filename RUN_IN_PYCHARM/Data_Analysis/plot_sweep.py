@@ -1,25 +1,25 @@
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
 import os
 from pathlib import Path
 
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
 # setup
-dir_path     = 'sweep_1_total.csv'
-plot_type    = 'trisurf'   # options: 2d, meshgrid, trisurf
-x_name       = 'span'
-y_name       = 'aspect_ratio'  # in 2d this is separate lines
-z_name       = 'score_round'  # in 2d this is y-axis
-cmap         = 'viridis_r'
-sep          = ';'
-show_plots   = True
-constant_parameters = {#"num_fowler_segments": 4,
-                        "payload": 3.23,
-                        #"span": 2.6,
-                        #"aspect_ratio": 8.,
-                        "airfoil": "acc22",
-                       }
+dir_path = "sweep_1_total.csv"
+plot_type = "trisurf"  # options: 2d, meshgrid, trisurf
+x_name = "span"
+y_name = "aspect_ratio"  # in 2d this is separate lines
+z_name = "score_round"  # in 2d this is y-axis
+cmap = "viridis_r"
+sep = ";"
+show_plots = True
+constant_parameters = {  # "num_fowler_segments": 4,
+    "payload": 3.23,
+    # "span": 2.6,
+    # "aspect_ratio": 8.,
+    "airfoil": "acc22",
+}
 
 
 def plot_function(

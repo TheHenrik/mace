@@ -5,6 +5,7 @@ from functools import cache
 from pathlib import Path
 
 import numpy as np
+
 from mace.utils.file_path import root
 
 
