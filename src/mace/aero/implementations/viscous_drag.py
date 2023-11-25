@@ -69,7 +69,8 @@ class ViscousDrag:
         S_sum = 0.0
         CD = 0.0
 
-        for surface in range(1, self.plane.avl.outputs.number_of_surfaces, 1):
+        for surface in range(self.plane.avl.outputs.number_of_surfaces):
+            surface += 1
             strips = self.plane.avl.outputs.surface_dictionary[surface]["strips"][:, 0]
             for element in range(len(strips)):
                 # initialize strip values

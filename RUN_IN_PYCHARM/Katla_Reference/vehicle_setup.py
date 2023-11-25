@@ -132,94 +132,94 @@ def vehicle_setup() -> Vehicle:
 
     vehicle.add_wing("main_wing", main_wing)
     ####################################################################################################################
-    # HORIZONTAL STABILIZER
-    horizontal_stabilizer = Wing()
-    horizontal_stabilizer.tag = "horizontal_stabilizer"
-    horizontal_stabilizer.origin = [0.891, 0, 0.0]
-    horizontal_stabilizer.airfoil = "ht14"
-
-    # Segment
-    segment = WingSegment()
-    segment.span = 0.1
-    segment.inner_chord = 0.123
-    segment.outer_chord = 0.12
-    segment.dihedral = 40.0
-    segment.inner_x_offset = 0.0
-    segment.outer_x_offset = 0.001
-    segment.wsb = empennage_construction
-    horizontal_stabilizer.add_segment(segment)
-
-    segment = WingSegment()
-    segment.span = 0.05
-    segment.inner_chord = 0.12
-    segment.outer_chord = 0.117
-    segment.dihedral = 40.0
-    segment.inner_x_offset = 0.001
-    segment.outer_x_offset = 0.003
-    segment.wsb = empennage_construction
-    horizontal_stabilizer.add_segment(segment)
-
-    segment = WingSegment()
-    segment.span = 0.05
-    segment.inner_chord = 0.117
-    segment.outer_chord = 0.111
-    segment.dihedral = 40.0
-    segment.inner_x_offset = 0.003
-    segment.outer_x_offset = 0.007
-    segment.wsb = empennage_construction
-    horizontal_stabilizer.add_segment(segment)
-
-    segment = WingSegment()
-    segment.span = 0.05
-    segment.inner_chord = 0.111
-    segment.outer_chord = 0.1
-    segment.dihedral = 40.0
-    segment.inner_x_offset = 0.007
-    segment.outer_x_offset = 0.014
-    segment.wsb = empennage_construction
-    horizontal_stabilizer.add_segment(segment)
-
-    segment = WingSegment()
-    segment.span = 0.05
-    segment.inner_chord = 0.1
-    segment.outer_chord = 0.077
-    segment.dihedral = 40.0
-    segment.inner_x_offset = 0.014
-    segment.outer_x_offset = 0.03
-    segment.wsb = empennage_construction
-    horizontal_stabilizer.add_segment(segment)
-
-    segment = WingSegment()
-    segment.span = 0.05
-    segment.inner_chord = 0.077
-    segment.outer_chord = 0.05
-    segment.dihedral = 40.0
-    segment.inner_x_offset = 0.03
-    segment.outer_x_offset = 0.05
-    segment.wsb = empennage_construction
-    horizontal_stabilizer.add_segment(segment)
-
-    # horizontal_stabilizer.reference_area = 0.08
-    horizontal_stabilizer.build(
-        resize_areas=False, resize_x_offset_from_hinge_angle=False
-    )
-
-    vehicle.add_wing("horizontal_stabilizer", horizontal_stabilizer)
+    # # HORIZONTAL STABILIZER
+    # horizontal_stabilizer = Wing()
+    # horizontal_stabilizer.tag = "horizontal_stabilizer"
+    # horizontal_stabilizer.origin = [0.891, 0, 0.0]
+    # horizontal_stabilizer.airfoil = "ht14"
+    # 
+    # # Segment
+    # segment = WingSegment()
+    # segment.span = 0.1
+    # segment.inner_chord = 0.123
+    # segment.outer_chord = 0.12
+    # segment.dihedral = 40.0
+    # segment.inner_x_offset = 0.0
+    # segment.outer_x_offset = 0.001
+    # segment.wsb = empennage_construction
+    # horizontal_stabilizer.add_segment(segment)
+    # 
+    # segment = WingSegment()
+    # segment.span = 0.05
+    # segment.inner_chord = 0.12
+    # segment.outer_chord = 0.117
+    # segment.dihedral = 40.0
+    # segment.inner_x_offset = 0.001
+    # segment.outer_x_offset = 0.003
+    # segment.wsb = empennage_construction
+    # horizontal_stabilizer.add_segment(segment)
+    # 
+    # segment = WingSegment()
+    # segment.span = 0.05
+    # segment.inner_chord = 0.117
+    # segment.outer_chord = 0.111
+    # segment.dihedral = 40.0
+    # segment.inner_x_offset = 0.003
+    # segment.outer_x_offset = 0.007
+    # segment.wsb = empennage_construction
+    # horizontal_stabilizer.add_segment(segment)
+    # 
+    # segment = WingSegment()
+    # segment.span = 0.05
+    # segment.inner_chord = 0.111
+    # segment.outer_chord = 0.1
+    # segment.dihedral = 40.0
+    # segment.inner_x_offset = 0.007
+    # segment.outer_x_offset = 0.014
+    # segment.wsb = empennage_construction
+    # horizontal_stabilizer.add_segment(segment)
+    # 
+    # segment = WingSegment()
+    # segment.span = 0.05
+    # segment.inner_chord = 0.1
+    # segment.outer_chord = 0.077
+    # segment.dihedral = 40.0
+    # segment.inner_x_offset = 0.014
+    # segment.outer_x_offset = 0.03
+    # segment.wsb = empennage_construction
+    # horizontal_stabilizer.add_segment(segment)
+    # 
+    # segment = WingSegment()
+    # segment.span = 0.05
+    # segment.inner_chord = 0.077
+    # segment.outer_chord = 0.05
+    # segment.dihedral = 40.0
+    # segment.inner_x_offset = 0.03
+    # segment.outer_x_offset = 0.05
+    # segment.wsb = empennage_construction
+    # horizontal_stabilizer.add_segment(segment)
+    # 
+    # # horizontal_stabilizer.reference_area = 0.08
+    # horizontal_stabilizer.build(
+    #     resize_areas=False, resize_x_offset_from_hinge_angle=False
+    # )
+    # 
+    # vehicle.add_wing("horizontal_stabilizer", horizontal_stabilizer)
 
     ####################################################################################################################
     # FUSELAGE
-    fuselage = Fuselage()
-
-    fuselage.add_segment(
-        origin=[-0.35, 0, 0.0], shape="rectangular", width=0.03, height=0.04
-    )
-    fuselage.add_segment(
-        origin=[1.01, 0, 0.0], shape="rectangular", width=0.02, height=0.02
-    )
-
-    fuselage.build()
-    logging.debug("f_length: %.3f m" % fuselage.length)
-    vehicle.add_fuselage("fuselage", fuselage)
+    # fuselage = Fuselage()
+    #
+    # fuselage.add_segment(
+    #     origin=[-0.35, 0, 0.0], shape="rectangular", width=0.03, height=0.04
+    # )
+    # fuselage.add_segment(
+    #     origin=[1.01, 0, 0.0], shape="rectangular", width=0.02, height=0.02
+    # )
+    #
+    # fuselage.build()
+    # logging.debug("f_length: %.3f m" % fuselage.length)
+    # vehicle.add_fuselage("fuselage", fuselage)
     ####################################################################################################################
 
     ####################################################################################################################
@@ -238,10 +238,7 @@ def vehicle_setup() -> Vehicle:
     logging.debug("Vehicle Mass", round(vehicle.mass, 3))
     # PLOT
     if __name__ == "__main__":
-        vehicle.plot_vehicle(azim=180, elev=0)
-        vehicle.plot_vehicle(azim=0, elev=90)
-        vehicle.plot_vehicle(azim=90, elev=0)
-    vehicle.plot_vehicle(azim=230, elev=30)
+        vehicle.plot_vehicle(azim=230, elev=30)
 
     return vehicle
 
