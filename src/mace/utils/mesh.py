@@ -5,6 +5,7 @@ from functools import cache
 from pathlib import Path
 
 import numpy as np
+from mace.utils.file_path import root
 
 
 def tri_area(first: np.ndarray, second: np.ndarray, third: np.ndarray) -> float:
@@ -50,7 +51,7 @@ def gen_profile(
 
 
 def get_profil(airfoil: str) -> np.ndarray:
-    file_location = Path(f"{Path(__file__).parents[3]}/data/airfoils/{airfoil}.dat")
+    file_location = Path(f"{root()}/data/airfoils/{airfoil}.dat")
     with open(file_location, "rt") as f:
         data = re.findall(r"([01]\.\d+) +([0\-]{1,2}\.\d+)", f.read())
     profil = [list(map(float, point)) for point in data]

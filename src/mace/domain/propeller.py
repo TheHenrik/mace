@@ -2,10 +2,11 @@ from pathlib import Path
 import os
 import numpy as np
 import scipy.interpolate as interp
+from mace.utils.file_path import root
 
 class Propeller:
     def __init__(self, propeller_tag):
-        tool_path = Path(__file__).resolve().parents[3]
+        tool_path = root()
         self.propeller_tag = propeller_tag
         self.surrogate_path = os.path.join(tool_path, "data", "prop_surrogates", propeller_tag + ".csv")
         self.surrogate_delimiter = ","

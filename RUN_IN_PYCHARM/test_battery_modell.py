@@ -2,9 +2,10 @@ from pathlib import Path
 import os
 import numpy as np
 import scipy.interpolate as interp
+from mace.utils.file_path import root
 class battery_model:
     def __init__(self):
-        tool_path = Path(__file__).resolve().parents[1]
+        tool_path = root()
         model = "bat_model_v1"
 
         self.surrogate_path = os.path.join(tool_path, "data", "battery_surrogates", model + ".csv")
@@ -89,7 +90,7 @@ if __name__ == '__main__':
     plt.plot(t, u2, label="calculated 2400mAh", color="red")
     plt.plot(t, u, label="calculated 3000mAh", color="blue")
 
-    tool_path = Path(__file__).resolve().parents[1]
+    tool_path = root()
     reference_data_path_1 = os.path.join(tool_path, "data", "battery_surrogates", "thrust_measurement_3000mAh.csv")
     reference_data_1 = np.loadtxt(reference_data_path_1, delimiter=",", skiprows=1)
 

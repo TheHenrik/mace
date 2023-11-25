@@ -12,13 +12,14 @@ from mace.aero.implementations.avl.geometry_and_mass_files import GeometryFile, 
 from mace.domain.parser import PlaneParser
 from mace.utils.mp import get_pid
 import stat
+from mace.utils.file_path import root
 
 
 class AVL:
     def __init__(self, plane):
         pid = get_pid()
         self.plane = plane
-        tool_path = Path(__file__).resolve().parents[5]
+        tool_path = root()
         self.avl_path = Path(tool_path, "bin", sys.platform, "avl")
         self.total_forces_file_name = Path(
             tool_path, "temporary", f"total_forces{pid}.avl"

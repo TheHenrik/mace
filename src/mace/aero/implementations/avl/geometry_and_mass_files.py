@@ -6,6 +6,7 @@ from mace.domain import Plane
 from mace.domain import plane as pl
 from mace.domain.parser import PlaneParser
 from mace.utils.mp import get_pid
+from mace.utils.file_path import root
 
 # ========== Geometry File ==========
 
@@ -908,7 +909,7 @@ class GeometryFile:
 
         Coordinate system: X downstream, Y out the right wing, Z up
         """
-        tool_path = Path(__file__).resolve().parents[5]
+        tool_path = root()
         file_path = Path(tool_path, "temporary", f"geometry_file{get_pid()}.avl")
         if os.path.exists(file_path):
             os.remove(file_path)
@@ -1298,7 +1299,7 @@ class MassFile:
         air density, in the units given above.  If these statements are absent,
         these constants default to 1.0, and will need to be changed manually at runtime.
         """
-        tool_path = Path(__file__).resolve().parents[5]
+        tool_path = root()
         file_path = Path(tool_path, "temporary", f"mass_file{get_pid()}.mass")
         if os.path.exists(file_path):
             os.remove(file_path)

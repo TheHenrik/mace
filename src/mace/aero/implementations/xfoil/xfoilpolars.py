@@ -7,6 +7,7 @@ import numpy as np
 
 from mace.aero.implementations import runsubprocess as runsub
 from mace.utils.mp import get_pid
+from mace.utils.file_path import root
 
 # ---Inputs---
 
@@ -62,7 +63,7 @@ def get_xfoil_polar(
     """
     # ---Inputfile writer---
 
-    tool_path = Path(__file__).resolve().parents[5]
+    tool_path = root()
     polar_file_path = Path(tool_path, "temporary", "polar_file.txt")
     input_file_path = Path(tool_path, "temporary", f"input_file_xfoil{get_pid()}.in")
     xfoil_path = Path(tool_path, "bin", sys.platform, "xfoil")
@@ -131,7 +132,7 @@ def get_xfoil_polar(
 # ---Test---
 
 if __name__ == "__main__":
-    tool_path = Path(__file__).resolve().parents[5]
+    tool_path = root()
     airfoil_name = os.path.join(tool_path, "data/airfoils/ag19.dat")
     alfa_start = 0
     alfa_end = 20

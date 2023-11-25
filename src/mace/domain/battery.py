@@ -2,11 +2,12 @@ from pathlib import Path
 import os
 import numpy as np
 import scipy.interpolate as interp
+from mace.utils.file_path import root
 
 
 class Battery:
     def __init__(self):
-        tool_path = Path(__file__).resolve().parents[3]
+        tool_path = root()
         model = "bat_model_v1"
 
         self.surrogate_path = os.path.join(tool_path, "data", "battery_surrogates", model + ".csv")
