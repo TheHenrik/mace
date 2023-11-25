@@ -236,7 +236,7 @@ def _main():
         else:
             break
 
-    payload = [3.57]
+    payload = [3.57, 3.0]
     aspect_ratio = [10.]
     wing_area = [0.6]
     airfoil = ["jf-a2", "jx-gp-055", "LAK24_v1", "LAK24_v2"]
@@ -248,7 +248,7 @@ def _main():
     num_fowler_segments = [second]
     path = Path(root(), f"results_sweep.csv")
     logging.info("Finished Input")
-    handler(path, 2, payload, wing_area, aspect_ratio, airfoil, num_fowler_segments, battery_capacity, propeller)
+    handler(path, threads, payload, wing_area, aspect_ratio, airfoil, num_fowler_segments, battery_capacity, propeller)
 
 
 if __name__ == "__main__":
