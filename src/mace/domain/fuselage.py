@@ -51,7 +51,7 @@ class Fuselage:
         self.length: float = 0.0
         self.diameter: float = 0.0
         self.segments = []
-        self.drag_correction: float = 2.6
+        self.drag_correction: float = 2.3
         self.area_specific_mass: float = 320 * 2.2 / 1000
         self.volume_specific_mass: float = 0.0
 
