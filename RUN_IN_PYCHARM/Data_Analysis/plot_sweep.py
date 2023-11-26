@@ -6,19 +6,19 @@ import numpy as np
 import pandas as pd
 
 # setup
-dir_path = "results_sweep.csv"
+dir_path = "results_sweep_validation_larger.csv"
 plot_type = "trisurf"  # options: 2d, meshgrid, trisurf
-x_name = "wing_area"
-y_name = "aspect_ratio"  # in 2d this is separate lines
-z_name = "mass_wing"  # in 2d this is y-axis
+x_name = "aspect_ratio"
+y_name = "wing_area"  # in 2d this is separate lines
+z_name = "score_factor_take_off"  # in 2d this is y-axis
 cmap = "viridis_r"
 sep = ","
 show_plots = True
 constant_parameters = {  # "num_fowler_segments": 4,
-    #"payload": 3.23,
+    "mass_payload": 3.57,
     # "span": 2.6,
-    # "aspect_ratio": 8.,
-    #"airfoil": "acc22",
+    #"aspect_ratio": 8.,
+    "main_wing_airfoil": "acc22",
 }
 
 

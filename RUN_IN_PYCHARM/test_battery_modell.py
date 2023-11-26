@@ -71,7 +71,7 @@ class battery_model:
 # Validation
 if __name__ == "__main__":
     model1 = battery_model()
-    model1.capacity = 3.0
+    model1.capacity = 4.0
 
     model2 = battery_model()
     model2.capacity = 2.4
@@ -97,79 +97,86 @@ if __name__ == "__main__":
 
     F2 = T_ref * u2 / u_ref
 
+    plt.plot(t, F, label=str(model1.capacity) + 'Ah')
+    plt.plot(t, F2, label=str(model2.capacity) + 'Ah')
+    plt.legend()
+    plt.grid('on')
+    plt.xlabel('t [s]')
+    plt.ylabel('F [N]')
+    plt.show()
     #plt.plot(t, u, label="calculated 3000mAh", color="blue")
 
-    tool_path = root()
-    reference_data_path_1 = os.path.join(
-        tool_path, "data", "battery_surrogates", "thrust_measurement_3000mAh.csv"
-    )
-    reference_data_1 = np.loadtxt(reference_data_path_1, delimiter=",", skiprows=1)
+    # tool_path = root()
+    # reference_data_path_1 = os.path.join(
+    #     tool_path, "data", "battery_surrogates", "thrust_measurement_3000mAh.csv"
+    # )
+    # reference_data_1 = np.loadtxt(reference_data_path_1, delimiter=",", skiprows=1)
+    #
+    # reference_data_path_2 = os.path.join(
+    #     tool_path, "data", "battery_surrogates", "thrust_measurement_2400mAh.csv"
+    # )
+    # reference_data_2 = np.loadtxt(reference_data_path_2, delimiter=",", skiprows=1)
+    #
+    # reference_data_path_3 = os.path.join(
+    #     tool_path, "data", "battery_surrogates", "voltage_measurement_2400mAh.csv"
+    # )
+    # reference_data_3 = np.loadtxt(reference_data_path_3, delimiter=",", skiprows=1)
+    #
+    # reference_data_path_4 = os.path.join(
+    #     tool_path, "data", "battery_surrogates", "voltage_measurement_3000mAh.csv"
+    # )
+    # reference_data_4 = np.loadtxt(reference_data_path_4, delimiter=",", skiprows=1)
+    #
+    # # plt.scatter(reference_data_1[:, 0], reference_data_1[:, 1], label="measured thrust 3000mAh", color="blue")
+    #
+    # # plt.plot(
+    # #     reference_data_4[:, 0],
+    # #     reference_data_4[:, 1],
+    # #     label="measurement voltage 3000mAh",
+    # #     linestyle="--",
+    # #     color="blue",
+    # # )
+    #
+    #
+    #
+    # # capacities = [1.7, 2.0, 2.5, 3.0]
+    # #
+    # # for capacity in capacities:
+    # #     model = battery_model()
+    # #     model.capacity = capacity
+    # #     u = np.zeros_like(t)
+    # #     soc = np.zeros_like(t)
+    # #     for i in range(len(t)):
+    # #         u[i], soc[i] = model.get_voltage(i=30., t=t[i])
+    # #     F = T_ref * u / u_ref
+    # #     plt.plot(t, F, label="calculated %imAh" % (capacity*1000), color="blue")
+    # #
+    # # Fmax = T_ref * 12.6 / u_ref * np.ones_like(t)
+    # # plt.plot(t, Fmax, label="max thrust", color="black")
+    # # plt.legend()
+    # # plt.show()
+    #
+    # fig, ax1 = plt.subplots()
+    # ax2 = ax1.twinx()
+    #ax3 = ax1.twinx()
 
-    reference_data_path_2 = os.path.join(
-        tool_path, "data", "battery_surrogates", "thrust_measurement_2400mAh.csv"
-    )
-    reference_data_2 = np.loadtxt(reference_data_path_2, delimiter=",", skiprows=1)
-
-    reference_data_path_3 = os.path.join(
-        tool_path, "data", "battery_surrogates", "voltage_measurement_2400mAh.csv"
-    )
-    reference_data_3 = np.loadtxt(reference_data_path_3, delimiter=",", skiprows=1)
-
-    reference_data_path_4 = os.path.join(
-        tool_path, "data", "battery_surrogates", "voltage_measurement_3000mAh.csv"
-    )
-    reference_data_4 = np.loadtxt(reference_data_path_4, delimiter=",", skiprows=1)
-
-    # plt.scatter(reference_data_1[:, 0], reference_data_1[:, 1], label="measured thrust 3000mAh", color="blue")
-
-    # plt.plot(
-    #     reference_data_4[:, 0],
-    #     reference_data_4[:, 1],
-    #     label="measurement voltage 3000mAh",
+    # ax1.plot(t, F2, label="Mace Thrust 2400mAh", color="red")
+    # ax1.scatter(reference_data_2[:, 0], reference_data_2[:, 1], label="Measured Thrust 2400mAh", marker='+', color='red')
+    # ax1.set_ylabel('F [N]', color='red')
+    # ax1.set_xlabel('t [s]')
+    #
+    # ax2.plot(t, u2, label="Mace Voltage 2400mAh", color="blue")
+    # ax2.plot(
+    #     reference_data_3[:, 0],
+    #     reference_data_3[:, 1],
+    #     label="measurement voltage 2400mAh",
     #     linestyle="--",
     #     color="blue",
     # )
-
-
-
-    # capacities = [1.7, 2.0, 2.5, 3.0]
     #
-    # for capacity in capacities:
-    #     model = battery_model()
-    #     model.capacity = capacity
-    #     u = np.zeros_like(t)
-    #     soc = np.zeros_like(t)
-    #     for i in range(len(t)):
-    #         u[i], soc[i] = model.get_voltage(i=30., t=t[i])
-    #     F = T_ref * u / u_ref
-    #     plt.plot(t, F, label="calculated %imAh" % (capacity*1000), color="blue")
-    #
-    # Fmax = T_ref * 12.6 / u_ref * np.ones_like(t)
-    # plt.plot(t, Fmax, label="max thrust", color="black")
-    # plt.legend()
+    # #ax3.plot(t, soc2)
+    # ax2.set_ylabel('U [V]', color='blue')
+    # #ax2.yticks(color='blue')
+    # ax1.grid('major', axis='both')
+    # ax2.legend()
     # plt.show()
-
-    fig, ax1 = plt.subplots()
-    ax2 = ax1.twinx()
-    #ax3 = ax1.twinx()
-
-    ax1.plot(t, F2, label="Mace Thrust 2400mAh", color="red")
-    ax1.scatter(reference_data_2[:, 0], reference_data_2[:, 1], label="Measured Thrust 2400mAh", marker='+', color='red')
-    ax1.set_ylabel('F [N]', color='red')
-    ax1.set_xlabel('t [s]')
-
-    ax2.plot(t, u2, label="Mace Voltage 2400mAh", color="blue")
-    ax2.plot(
-        reference_data_3[:, 0],
-        reference_data_3[:, 1],
-        label="measurement voltage 2400mAh",
-        linestyle="--",
-        color="blue",
-    )
-
-    #ax3.plot(t, soc2)
-    ax2.set_ylabel('U [V]', color='blue')
-    #ax2.yticks(color='blue')
-    ax1.grid('major', axis='both')
-    ax2.legend()
-    plt.show()

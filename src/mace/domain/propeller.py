@@ -33,14 +33,29 @@ class Propeller:
 
 
 if __name__ == "__main__":
-    propeller_tag = "aeronaut14x8"
+    propeller_tag = "aeronaut16x8"
     prop = Propeller(propeller_tag)
+    thrust_array = np.loadtxt(
+        prop.surrogate_path, skiprows=1, delimiter=prop.surrogate_delimiter
+    )
 
     import matplotlib.pyplot as plt
-
-    x = np.linspace(0.0, 25.0, 100)
+    x = np.linspace(0.0,40.0, 100)
     y = np.zeros_like(x)
     for i, _ in enumerate(x):
         y[i] = prop.evaluate_thrust(x[i])
     plt.plot(x, y)
+    plt.scatter(thrust_array[:,0], thrust_array[:,1])
+
+    propeller_tag = "vm14x10"
+    prop = Propeller(propeller_tag)
+    thrust_array = np.loadtxt(
+        prop.surrogate_path, skiprows=1, delimiter=prop.surrogate_delimiter
+    )
+    x = np.linspace(0.0,40.0, 100)
+    y = np.zeros_like(x)
+    for i, _ in enumerate(x):
+        y[i] = prop.evaluate_thrust(x[i])
+    plt.plot(x, y)
+    plt.scatter(thrust_array[:,0], thrust_array[:,1])
     plt.show()
