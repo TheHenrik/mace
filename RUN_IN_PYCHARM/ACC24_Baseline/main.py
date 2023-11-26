@@ -24,46 +24,6 @@ from mace.utils.file_path import root
 from mace.utils.mp import get_pid
 
 
-def main():
-    logging.basicConfig(level=logging.INFO)
-    logging.info("Started programm")
-    payload = [3.57]
-    aspect_ratio = [10.0]
-    wing_area = [0.6]
-    airfoil = ["jf-a2", "jx-gp-055", "LAK24_v1", "LAK24_v2"]
-    battery_capacity = [2.4]
-    propeller = ["aeronaut14x8"]
-
-    match sys.argv:
-        case _, "0":
-            num_fowler_segments = []
-        case _, "1":
-            num_fowler_segments = [4]
-        case _, "2":
-            num_fowler_segments = [0]
-        case _, "3":
-            num_fowler_segments = [1]
-        case _, "4":
-            num_fowler_segments = [2]
-        case _, "5":
-            num_fowler_segments = [3]
-        case _:
-            num_fowler_segments = [0]
-
-    path = Path(root(), f"results_sweep.csv")
-    handler(
-        path,
-        2,
-        payload,
-        wing_area,
-        aspect_ratio,
-        airfoil,
-        num_fowler_segments,
-        battery_capacity,
-        propeller,
-    )
-
-
 def handler(file: Path, threads: int, *args, **kwargs):
     first_line = True
     with open(file, "w") as f, Pool(threads) as p:
@@ -238,7 +198,7 @@ def analysis(
     return results.as_csv_line(header=True, delimitter=",")
 
 
-def _main():
+def main():
     log_path = Path(root(), "temporary", "default.log")
     clean_temporary(Path(root(), "temporary"))
     logging.basicConfig(filename=log_path, level=logging.INFO)
@@ -287,10 +247,10 @@ def _main():
             battery_capacity,
             propeller,
         )
-        print("Durchlauf erfolgreich beendet. Lade die Datei hoch")
-        print("Neuer durchlauf? (j/N)")
+        print("Durchlauf erfolgreich beendet. Lade die Datei hoch in den Google Drive.")
+        print("Weiterer durchlauf? (j/N)")
         r = input()
-        if r.lower == "j":
+        if r.lower() == "j":
             continue
         else:
             break
@@ -299,5 +259,5 @@ def _main():
 if __name__ == "__main__":
     if sys.platform.startswith("win"):
         freeze_support()
-    _main()
+    main()
     # worker((3.57, 0.61, 8.82, "acc22", 4, 1.6, "aeronaut14x8"))
