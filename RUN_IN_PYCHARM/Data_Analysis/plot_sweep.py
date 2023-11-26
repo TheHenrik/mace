@@ -6,19 +6,19 @@ import numpy as np
 import pandas as pd
 
 # setup
-dir_path = "sweep_1_total.csv"
+dir_path = "results_sweep.csv"
 plot_type = "trisurf"  # options: 2d, meshgrid, trisurf
-x_name = "span"
+x_name = "wing_area"
 y_name = "aspect_ratio"  # in 2d this is separate lines
-z_name = "score_round"  # in 2d this is y-axis
+z_name = "mass_wing"  # in 2d this is y-axis
 cmap = "viridis_r"
-sep = ";"
+sep = ","
 show_plots = True
 constant_parameters = {  # "num_fowler_segments": 4,
-    "payload": 3.23,
+    #"payload": 3.23,
     # "span": 2.6,
     # "aspect_ratio": 8.,
-    "airfoil": "acc22",
+    #"airfoil": "acc22",
 }
 
 
@@ -105,7 +105,7 @@ for key, value in constant_parameters.items():
     else:
         df = df[np.isclose(df[key], value, rtol=1e-03)]
 
-df = df[df["score_round"] > 0.0]
+#df = df[df["score_round"] > 0.0]
 if z_name == "all":
     cols = list(df.columns)
     cols = cols[2:]
