@@ -2,49 +2,45 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from mace.domain.fuselage import Fuselage, FuselageSegment
-from mace.domain.landing_gear import LandingGear, Wheel
+from mace.domain.landing_gear import LandingGear, Wheel, Strut
 from mace.domain.vehicle import Vehicle
 from mace.domain.wing import Wing, WingSegment
 
 
 def fuselage_setup():
     fuselage = Fuselage()
+    origin = np.array([0., 0., 0.])
+    shape = 'rectangular'
 
-    segment = FuselageSegment()
-    segment.origin[0] = -0.148
-    segment.width = 0.04
-    segment.height = 0.04
-    fuselage.add_segment(segment)
+    origin = -0.148
+    width = 0.04
+    height = 0.04
+    fuselage.add_segment([origin, 0, 0], shape, width, height)
 
-    segment = FuselageSegment()
-    segment.origin[0] = -0.1
-    segment.width = 0.085
-    segment.height = 0.107
-    fuselage.add_segment(segment)
+    origin = -0.1
+    width = 0.085
+    height = 0.107
+    fuselage.add_segment([origin, 0, 0], shape, width, height)
 
-    segment = FuselageSegment()
-    segment.origin[0] = -0.05
-    segment.width = 0.099
-    segment.height = 0.139
-    fuselage.add_segment(segment)
+    origin = -0.05
+    width = 0.099
+    height = 0.139
+    fuselage.add_segment([origin, 0, 0], shape, width, height)
 
-    segment = FuselageSegment()
-    segment.origin[0] = 0.0
-    segment.width = 0.102
-    segment.height = 0.151
-    fuselage.add_segment(segment)
+    origin = 0.0
+    width = 0.102
+    height = 0.151
+    fuselage.add_segment([origin, 0, 0], shape, width, height)
 
-    segment = FuselageSegment()
-    segment.origin[0] = 0.38
-    segment.width = 0.061
-    segment.height = 0.084
-    fuselage.add_segment(segment)
+    origin = 0.38
+    width = 0.061
+    height = 0.084
+    fuselage.add_segment([origin, 0, 0], shape, width, height)
 
-    segment = FuselageSegment()
-    segment.origin[0] = 0.38 + 0.088
-    segment.width = 0.04
-    segment.height = 0.04
-    fuselage.add_segment(segment)
+    origin = 0.38 + 0.088
+    width = 0.04
+    height = 0.04
+    fuselage.add_segment([origin, 0, 0], shape, width, height)
 
     fuselage.build()
     return fuselage
@@ -58,19 +54,16 @@ def wheel_setup():
 
     wheel1 = Wheel()
     wheel1.diameter = 0.1
-    wheel1.mass = 0.05
     wheel1.origin = np.array([-0.1, 0.0, -0.2])
     landing_gear.add_wheel(wheel1)
 
     wheel2 = Wheel()
     wheel2.diameter = 0.16
-    wheel2.mass = 0.05
     wheel2.origin = np.array([0.0, 0.27, -0.1])
     landing_gear.add_wheel(wheel2)
 
     wheel3 = Wheel()
     wheel3.diameter = wheel2.diameter
-    wheel3.mass = wheel2.mass
     wheel3.origin = np.array([0.0, -0.27, -0.1])
     wheel3.origin[1] = -wheel2.origin[1]
     landing_gear.add_wheel(wheel3)
@@ -82,15 +75,19 @@ def wheel_setup():
         l_calc += (
             wheel.origin[1] ** 2 + wheel.origin[2] ** 2
         ) ** 0.5 - vehicle.fuselages["fuselage"].diameter
-    landing_gear.effective_drag_length = l_calc
-    landing_gear.length_specific_cd = 0.0033
+    print(l_calc)
+
+    strut = Strut()
+    strut.effective_drag_length = l_calc
+    strut.length_specific_cd = 0.009
+
+    landing_gear.add_strut(strut)
 
     return landing_gear
 
-
+from mace.aero.implementations.aero import Aerodynamics
 if __name__ == "__main__":
     vehicle = Vehicle()
-
     fuselage = fuselage_setup()
     vehicle.add_fuselage("fuselage", fuselage)
 
@@ -107,21 +104,26 @@ if __name__ == "__main__":
     wheel_drag_vector_windtunnel = [-0.0273, -0.0178, 0.0755, 0.2262, 0.3918, 0.6585]
     gestaenge_drag_vector_windtunnel = [0.0, 0.03378, 0.17873, 0.483, 0.925, 1.2235]
 
+    Aero = Aerodynamics(vehicle)
+
     v_vector = np.linspace(0, 25, 50)
     fuse_drag_vector = np.zeros_like(v_vector)
     wheel_drag_vector = np.zeros_like(v_vector)
     gestaenge_drag_vector = np.zeros_like(v_vector)
     for i, v in enumerate(v_vector):
+        #Aero.evaluate(0, v, 0, 0)
+        #c_d_fuse = Aero.plane.aero_coeffs.drag_coeff.cd_fuse
         c_d_fuse = fuselage.get_drag_coefficient(v, 1)
         c_d_wheel = 0.0
         for wheel in vehicle.landing_gear.wheels:
             c_d_wheel += wheel.get_drag_coefficient(v, 1)
+        #c_d_landing_gear = Aero.plane.aero_coeffs.drag_coeff.cd_wheels
         fuse_drag_vector[i] = rho / 2 * v**2 * c_d_fuse * 1
         wheel_drag_vector[i] = rho / 2 * v**2 * c_d_wheel * 1
         c_d_landing_gear = vehicle.landing_gear.get_drag_coefficient(v, 1) - c_d_wheel
         gestaenge_drag_vector[i] = rho / 2 * v**2 * c_d_landing_gear
 
-    fig = plt.figure(dpi=400)
+    fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.plot(v_vector, fuse_drag_vector, label="MACE Widerstand ACC Rumpf")
     ax.scatter(
