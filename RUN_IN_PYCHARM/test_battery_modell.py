@@ -96,10 +96,8 @@ if __name__ == "__main__":
     # plt.plot(t, F, label="calculated 3000mAh", color="blue")
 
     F2 = T_ref * u2 / u_ref
-    # plt.plot(t, F2, label="calculated 2400mAh", color="red")
 
-    plt.plot(t, u2, label="calculated 2400mAh", color="red")
-    plt.plot(t, u, label="calculated 3000mAh", color="blue")
+    #plt.plot(t, u, label="calculated 3000mAh", color="blue")
 
     tool_path = root()
     reference_data_path_1 = os.path.join(
@@ -123,24 +121,16 @@ if __name__ == "__main__":
     reference_data_4 = np.loadtxt(reference_data_path_4, delimiter=",", skiprows=1)
 
     # plt.scatter(reference_data_1[:, 0], reference_data_1[:, 1], label="measured thrust 3000mAh", color="blue")
-    # plt.scatter(reference_data_2[:, 0], reference_data_2[:, 1], label="measured thrust 2400mAh", color="red")
-    plt.plot(
-        reference_data_3[:, 0],
-        reference_data_3[:, 1],
-        label="measurement voltage 2400mAh",
-        linestyle="--",
-        color="red",
-    )
-    plt.plot(
-        reference_data_4[:, 0],
-        reference_data_4[:, 1],
-        label="measurement voltage 3000mAh",
-        linestyle="--",
-        color="blue",
-    )
 
-    plt.legend()
-    plt.show()
+    # plt.plot(
+    #     reference_data_4[:, 0],
+    #     reference_data_4[:, 1],
+    #     label="measurement voltage 3000mAh",
+    #     linestyle="--",
+    #     color="blue",
+    # )
+
+
 
     # capacities = [1.7, 2.0, 2.5, 3.0]
     #
@@ -158,3 +148,28 @@ if __name__ == "__main__":
     # plt.plot(t, Fmax, label="max thrust", color="black")
     # plt.legend()
     # plt.show()
+
+    fig, ax1 = plt.subplots()
+    ax2 = ax1.twinx()
+    #ax3 = ax1.twinx()
+
+    ax1.plot(t, F2, label="Mace Thrust 2400mAh", color="red")
+    ax1.scatter(reference_data_2[:, 0], reference_data_2[:, 1], label="Measured Thrust 2400mAh", marker='+', color='red')
+    ax1.set_ylabel('F [N]', color='red')
+    ax1.set_xlabel('t [s]')
+
+    ax2.plot(t, u2, label="Mace Voltage 2400mAh", color="blue")
+    ax2.plot(
+        reference_data_3[:, 0],
+        reference_data_3[:, 1],
+        label="measurement voltage 2400mAh",
+        linestyle="--",
+        color="blue",
+    )
+
+    #ax3.plot(t, soc2)
+    ax2.set_ylabel('U [V]', color='blue')
+    #ax2.yticks(color='blue')
+    ax1.grid('major', axis='both')
+    ax2.legend()
+    plt.show()
