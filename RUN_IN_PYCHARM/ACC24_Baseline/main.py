@@ -264,16 +264,16 @@ def _main():
         else:
             break
 
-    first, second = divmod(input_number, 3)
-    airfoil = [airfoil[first]]
-    num_fowler_segments = [second]
-
     payload = [3.57, 3.0]
     aspect_ratio = [10.0]
     wing_area = [0.6]
     airfoil = ["jf-a2", "jx-gp-055", "LAK24_v1", "LAK24_v2"]
     battery_capacity = [2.4]
     propeller = ["aeronaut14x8"]
+
+    first, second = divmod(input_number, 3)
+    airfoil = [airfoil[first]]
+    num_fowler_segments = [second]
 
     path = Path(root(), f"results_sweep_{input_number}.csv")
     logging.info("Finished Input")
