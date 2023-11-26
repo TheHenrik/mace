@@ -52,7 +52,7 @@ class WingBinder:
         K100 = (G100 - J100) / 2
         m = K100 * C100 * 10**6
         n = np.ceil(m)
-        self.roving_count = n
+        self.roving_count = m
 
 
 class WingSegmentBuild:
