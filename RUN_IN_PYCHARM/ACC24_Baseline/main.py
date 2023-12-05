@@ -89,6 +89,7 @@ def analysis(
         battery_capacity=battery_capacity,
         propeller=propeller,
     )
+
     logging.debug("M Payload: %.2f kg" % Aircraft.payload)
     # return (payload, span, aspect_ratio, airfoil, num_fowler_segments)
 
@@ -204,8 +205,13 @@ def main():
     logging.basicConfig(filename=log_path, level=logging.INFO)
     logging.info("Started programm")
     while True:
-        print("Gebe die dir zugeteilte Nummer ein:")
-        input_number = int(input())
+        print("Gebe die dir zugeteilte Nummer ein (Mehrfacheingabe möglich):")
+        try:
+            input_number = input()
+            input_number = map(int, re.findall(r"\d+", input_number))
+        except ValueError: 
+            print("Fehler in der Eingabe")
+
         print("Anzahl der zu nutzenden Threads:")
         print(
             "(Gebe Null ein, um alle Threads zu nutzen, der Computer wird dann für die nächste Zeit nicht benutzbar sein)"
@@ -213,42 +219,48 @@ def main():
         print(
             "(Eine Negative Zahl bestimmt die Anzahl der Threads, die nicht genutzt werden sollen)"
         )
-        input_threads = int(input())
-        cpu_count = os.cpu_count()
-        if input_threads <= 0:
-            threads = cpu_count + input_threads
-        else:
-            threads = input_threads
-        if threads == 0 or threads > cpu_count:
-            print("Anzahl der eingegebenen Threads kontrollieren.")
-            continue 
+        try:
+            input_threads = int(input())
+            cpu_count = os.cpu_count()
+            if input_threads <= 0:
+                threads = cpu_count + input_threads
+            else:
+                threads = input_threads
+            if threads == 0 or threads > cpu_count:
+                print("Anzahl der eingegebenen Threads kontrollieren.")
+                continue 
+        except ValueError:
+            print("Bitte eine Positive Ganzzahl eingeben.")
+            continue
 
-        payload = [3.57, 3.0]
-        aspect_ratio = [10.0]
-        wing_area = [0.6]
-        airfoil = ["jf-a2", "jx-gp-055", "LAK24_v1", "LAK24_v2"]
-        battery_capacity = [2.4]
-        propeller = ["aeronaut14x8"]
+        for number in input_number:
+            payload = [3.57, 3.0]
+            aspect_ratio = [10.0]
+            wing_area = [0.6]
+            airfoil = ["jf-a2", "jx-gp-055", "LAK24_v1", "LAK24_v2"]
+            battery_capacity = [2.4]
+            propeller = ["aeronaut14x8"]
+            
+            first, second = divmod(number, 3)
+            airfoil = [airfoil[first]]
+            num_fowler_segments = [second]
 
-        first, second = divmod(input_number, 3)
-        airfoil = [airfoil[first]]
-        num_fowler_segments = [second]
+            path = Path(root(), f"results_sweep_{number}.csv")
+            logging.info("Finished Input")
+            handler(
+                path,
+                threads,
+                payload,
+                wing_area,
+                aspect_ratio,
+                airfoil,
+                num_fowler_segments,
+                battery_capacity,
+                propeller,
+            )
+            print("Durchlauf erfolgreich beendet. Lade die Datei hoch in den Google Drive.")
 
-        path = Path(root(), f"results_sweep_{input_number}.csv")
-        logging.info("Finished Input")
-        handler(
-            path,
-            threads,
-            payload,
-            wing_area,
-            aspect_ratio,
-            airfoil,
-            num_fowler_segments,
-            battery_capacity,
-            propeller,
-        )
-        print("Durchlauf erfolgreich beendet. Lade die Datei hoch in den Google Drive.")
-        print("Weiterer durchlauf? (j/N)")
+        print("Weiterer Durchlauf? (j/N)")
         r = input()
         if r.lower() == "j":
             continue
