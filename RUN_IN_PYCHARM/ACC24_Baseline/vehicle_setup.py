@@ -14,12 +14,12 @@ from mace.domain.wing import Wing, WingSegment, WingSegmentBuild
 
 
 def vehicle_setup(
-    payload=4.59,
-    wing_area=0.6,
-    aspect_ratio=10.0,
-    airfoil="ag45c",
-    num_fowler_segments=0,
-    battery_capacity=3.0,
+    payload=5.,
+    wing_area=0.61, #ACC17=1.22, ACC22=0.61
+    aspect_ratio=9.6, #ACC17=12.52, ACC22=9.6
+    airfoil="acc22", #acc22
+    num_fowler_segments=4, #ACC17=0, ACC22=4
+    battery_capacity=2.4,
     propeller="aeronaut14x8",
 ) -> Vehicle:
 
@@ -32,7 +32,7 @@ def vehicle_setup(
     vehicle.center_of_gravity = [0.112, 0.0, 0.0]
 
     main_wing_construction = WingSegmentBuild(
-        build_type="Negativ", surface_weight=0.380
+        build_type="Negativ", surface_weight=0.190
     )
     empennage_construction = WingSegmentBuild(
         build_type="Positiv", surface_weight=0.08, core_material_density=37.0
@@ -116,15 +116,27 @@ def vehicle_setup(
     # HORIZONTAL STABILIZER
     horizontal_stabilizer = Wing()
     horizontal_stabilizer.tag = "horizontal_stabilizer"
-    horizontal_stabilizer.origin = [b_ref * 0.35, 0, 0.0]
+    horizontal_stabilizer.origin = [b_ref * 0.3 + 0.4*MAC, 0, 0.0]
     horizontal_stabilizer.airfoil = "ht14"
+
+    # Resize Wing
+    l_ht = horizontal_stabilizer.origin[0] - main_wing.origin[0]
+
+    v_ht = 0.45  # 0.75 # 0.583*2 * 1.414
+    v_vt = 0.027
+
+    S_ht = v_ht * S_ref * MAC / l_ht
+    S_vt = v_vt * S_ref * b_ref / l_ht
+
+    S_vtail = S_ht + S_vt
+    V_tail_angle = np.arctan((S_vt/S_ht)**0.5) / np.pi * 180
 
     # Segment
     segment = WingSegment()
     segment.inner_chord = 0.25
     segment.outer_chord = 0.228
     segment.flap_chord_ratio = 0.4
-    segment.dihedral = 40.0
+    segment.dihedral = V_tail_angle
     segment.wsb = empennage_construction
     horizontal_stabilizer.add_segment(segment)
 
@@ -133,20 +145,14 @@ def vehicle_setup(
     segment.inner_chord = 0.228
     segment.outer_chord = 0.12
     segment.flap_chord_ratio = 0.4
-    segment.dihedral = 40.0
+    segment.dihedral = V_tail_angle
     segment.wsb = empennage_construction
     horizontal_stabilizer.add_segment(segment)
 
-    # Resize Wing
-    l_ht = horizontal_stabilizer.origin[0] - main_wing.origin[0]
-
-    v_ht = 0.75  # 0.583*2 * 1.414
     horizontal_stabilizer.aspect_ratio = 7.0
-    horizontal_stabilizer.get_stabilizer_area_from_volume_coefficient(
-        v_ht, l_ht, S_ref, MAC
-    )
+    horizontal_stabilizer.reference_area = S_vtail
 
-    horizontal_stabilizer.build(resize_x_offset_from_hinge_angle=True)
+    horizontal_stabilizer.build(resize_x_offset_from_hinge_angle=True, resize_areas=True)
 
     vehicle.add_wing("horizontal_stabilizer", horizontal_stabilizer)
     ####################################################################################################################
@@ -165,7 +171,7 @@ def vehicle_setup(
         origin=[-b_ref * 0.1, 0, 0.0], shape="rectangular", width=0.04, height=0.04
     )
     fuselage.add_segment(
-        origin=[b_ref * 0.35, 0, 0.0], shape="rectangular", width=0.04, height=0.04
+        origin=[b_ref * 0.3 + 0.4*MAC, 0, 0.0], shape="rectangular", width=0.04, height=0.04
     )
 
     fuselage.area_specific_mass = 0.616
@@ -395,7 +401,6 @@ def vehicle_setup(
     vehicle.results.transport_box_height = box_height
     vehicle.results.transport_box_width = box_width
     vehicle.results.transport_box_length = box_length
-
     return vehicle
 
 

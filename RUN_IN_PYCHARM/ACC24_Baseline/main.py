@@ -234,16 +234,18 @@ def main():
             continue
 
         for number in input_number:
-            payload = [3.57, 3.0]
+            payload = [3.57, 3.57 + 0.51]
             aspect_ratio = [10.0]
-            wing_area = [0.6]
-            airfoil = ["jf-a2", "jx-gp-055", "LAK24_v1", "LAK24_v2"]
+            wing_area = [0.5, 0.7]
+            airfoil = ["ag45c"]
             battery_capacity = [2.4]
-            propeller = ["aeronaut14x8"]
-            
-            first, second = divmod(number, 3)
-            airfoil = [airfoil[first]]
-            num_fowler_segments = [second]
+            propeller = ["aeronaut16x8"]
+            num_fowler_segments = [0]
+
+            # first, second = divmod(number, 3)
+            # airfoil = [airfoil[first]]
+            # num_fowler_segments = [second]
+
 
             path = Path(root(), f"results_sweep_{number}.csv")
             logging.info("Finished Input")

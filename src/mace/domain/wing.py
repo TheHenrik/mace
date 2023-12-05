@@ -34,7 +34,7 @@ class WingBinder:
 
     def get_mass(self):
         dens = 375
-        lenght = 4 * np.sqrt(self.moment) / 100
+        lenght = 4 * np.cbrt(self.moment) / 100
         width = (self.roving_count + 1) / 1000
         # CONST = 375 / 1_000 * 6
         # self.mass =  * self.height**2 * CONST
@@ -609,7 +609,7 @@ class Wing:
             cogs.append(tmp_cogs)
         if not self.wing_binder is None:
             for wb in self.wing_binder:
-                masses.append(wb.mass)
+                masses.append(wb.mass / 2)
                 cogs.append(np.array([0, wb.position, 0]))
 
         faktor = 2 if self.symmetric else 1

@@ -70,15 +70,15 @@ class battery_model:
 
 # Validation
 if __name__ == "__main__":
-    model1 = battery_model()
-    model1.capacity = 4.0
+    # model1 = battery_model()
+    # model1.capacity = 4.1
 
     model2 = battery_model()
     model2.capacity = 2.4
     print(model2.get_mass())
     import matplotlib.pyplot as plt
 
-    T_ref = 17.837
+    T_ref = 20.082
     u_ref = 11.35
 
     t = np.linspace(0, 220.0, 100)
@@ -89,29 +89,30 @@ if __name__ == "__main__":
     soc2 = np.zeros_like(t)
 
     for i in range(len(t)):
-        u[i], soc[i] = model1.get_voltage(i=30.0, t=t[i])
+        #u[i], soc[i] = model1.get_voltage(i=30.0, t=t[i])
         u2[i], soc2[i] = model2.get_voltage(i=30.0, t=t[i])
 
-    F = T_ref * u / u_ref
+    #F = T_ref * u / u_ref
     # plt.plot(t, F, label="calculated 3000mAh", color="blue")
 
     F2 = T_ref * u2 / u_ref
 
-    plt.plot(t, F, label=str(model1.capacity) + 'Ah')
+    #plt.plot(t, F, label=str(model1.capacity) + 'Ah')
     plt.plot(t, F2, label=str(model2.capacity) + 'Ah')
     plt.legend()
     plt.grid('on')
     plt.xlabel('t [s]')
     plt.ylabel('F [N]')
+    #plt.axis([0, 250, 0, 22])
     plt.show()
     #plt.plot(t, u, label="calculated 3000mAh", color="blue")
 
-    # tool_path = root()
-    # reference_data_path_1 = os.path.join(
-    #     tool_path, "data", "battery_surrogates", "thrust_measurement_3000mAh.csv"
-    # )
-    # reference_data_1 = np.loadtxt(reference_data_path_1, delimiter=",", skiprows=1)
-    #
+    tool_path = root()
+    reference_data_path_1 = os.path.join(
+        tool_path, "data", "battery_surrogates", "thrust_measurement_3000mAh.csv"
+    )
+    reference_data_1 = np.loadtxt(reference_data_path_1, delimiter=",", skiprows=1)
+
     # reference_data_path_2 = os.path.join(
     #     tool_path, "data", "battery_surrogates", "thrust_measurement_2400mAh.csv"
     # )
@@ -127,7 +128,7 @@ if __name__ == "__main__":
     # )
     # reference_data_4 = np.loadtxt(reference_data_path_4, delimiter=",", skiprows=1)
     #
-    # # plt.scatter(reference_data_1[:, 0], reference_data_1[:, 1], label="measured thrust 3000mAh", color="blue")
+    plt.scatter(reference_data_1[:, 0], reference_data_1[:, 1], label="measured thrust 3000mAh", color="blue")
     #
     # # plt.plot(
     # #     reference_data_4[:, 0],
@@ -179,4 +180,4 @@ if __name__ == "__main__":
     # #ax2.yticks(color='blue')
     # ax1.grid('major', axis='both')
     # ax2.legend()
-    # plt.show()
+    plt.show()
