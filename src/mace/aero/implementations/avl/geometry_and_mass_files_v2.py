@@ -4,6 +4,7 @@ from pathlib import Path
 
 # from mace.domain.vehicle import Vehicle
 from mace.domain.params import Constants, Units
+from mace.utils.file_path import root
 from mace.utils.mp import get_pid
 
 # ========== Geometry File ==========
@@ -62,7 +63,7 @@ class GeometryFile:
         return chord_inner, chord_outer
 
     def build_geo_surface_section(self, geometry_file, wing):
-        tool_path = Path(__file__).resolve().parents[5]
+        tool_path = root()
         airfoil_path = os.path.join(tool_path, "data", "airfoils")
 
         chord_outer = 0
@@ -82,10 +83,10 @@ class GeometryFile:
                 geometry_file.write(f"{  segment.s_space}")
             geometry_file.write(f"\n\n")
             geometry_file.write(f"AFIL  0.0  1.0\n")
-            segment_airfoil_path = os.path.join(airfoil_path, segment.inner_airfoil + ".dat")
-            geometry_file.write(
-                f'{segment_airfoil_path}\n\n'
+            segment_airfoil_path = os.path.join(
+                airfoil_path, segment.inner_airfoil + ".dat"
             )
+            geometry_file.write(f"{segment_airfoil_path}\n\n")
 
             if segment.control is not None:
                 GeometryFile.build_geo_surface_section_control(
@@ -141,7 +142,7 @@ class GeometryFile:
 
         Coordinate system: X downstream, Y out the right wing, Z up
         """
-        tool_path = Path(__file__).resolve().parents[5]
+        tool_path = root()
         file_path = Path(tool_path, "temporary", f"geometry_file{get_pid()}.avl")
         if os.path.exists(file_path):
             os.remove(file_path)
@@ -529,7 +530,7 @@ class MassFile:
         air density, in the units given above.  If these statements are absent,
         these constants default to 1.0, and will need to be changed manually at runtime.
         """
-        tool_path = Path(__file__).resolve().parents[5]
+        tool_path = root()
         file_path = Path(tool_path, "temporary", f"mass_file{get_pid()}.mass")
         if os.path.exists(file_path):
             os.remove(file_path)

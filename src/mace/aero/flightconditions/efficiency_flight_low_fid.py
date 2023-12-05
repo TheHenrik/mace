@@ -3,7 +3,7 @@ import time
 import warnings
 
 import numpy as np
-from scipy.optimize import fsolve, root_scalar, minimize, differential_evolution
+from scipy.optimize import differential_evolution, fsolve, minimize, root_scalar
 from skopt import BayesSearchCV, gp_minimize
 
 import mace.aero.generalfunctions as functions
@@ -40,14 +40,14 @@ class EfficiencyFlight:
         self.drag_surrogate: np.ndarray = None
 
         self.plot_surface = False
-        
-        self.batt_time_at_start = 30.
+
+        self.batt_time_at_start = 30.0
 
     # def T(self, V, I):
     #     thrust_array = self.plane.propulsion.thrust
     #     thrust_force = I / 30 * np.interp(V, thrust_array[:, 0], thrust_array[:, 1])
     #     return thrust_force
-    
+
     def T(self, V, t_avg, I):
         return self.plane.evaluate_thrust(V, t_avg, I=I)
 
@@ -90,14 +90,19 @@ class EfficiencyFlight:
         m = self.mass
         h2 = self.h_end
         tges = self.t_ges
-        
+
         t_avg = self.batt_time_at_start + t1 / 2
 
         def func(x):
             h1 = min(x[0], 100)
             v2 = max(x[1], 0)
 
-            eq1 = E0 + (T(v1, t_avg, I) - D(v1)) * v1 * t1 - 1 / 2 * m * v1**2 - m * g * h1
+            eq1 = (
+                E0
+                + (T(v1, t_avg, I) - D(v1)) * v1 * t1
+                - 1 / 2 * m * v1**2
+                - m * g * h1
+            )
             eq2 = (
                 1 / 2 * m * v1**2
                 + m * g * h1
@@ -158,15 +163,15 @@ class EfficiencyFlight:
                 c_length = self.plane.reference_values.c_ref
                 airfoil = Airfoil(self.plane.wings["main_wing"].airfoil)
                 airfoil.print_re_warnings = False
-                
-                cl_1 = self.mass * g / (0.5 * rho * v1 ** 2 * self.s_ref)
+
+                cl_1 = self.mass * g / (0.5 * rho * v1**2 * self.s_ref)
                 re_1 = functions.get_reynolds_number(v1, c_length)
                 flap_angle_1 = airfoil.check_for_best_flap_setting(re_1, cl_1)
 
-                cl_2 = self.mass * g / (0.5 * rho * v2 ** 2 * self.s_ref)
+                cl_2 = self.mass * g / (0.5 * rho * v2**2 * self.s_ref)
                 re_2 = functions.get_reynolds_number(v2, c_length)
                 flap_angle_2 = airfoil.check_for_best_flap_setting(re_2, cl_2)
-                
+
                 res = self.plane.results
 
                 res.efficiency_motor_on_air_speed = v1
@@ -178,9 +183,12 @@ class EfficiencyFlight:
                 res.efficiency_motor_off_cl = cl_2
                 res.efficiency_motor_off_reynolds = re_2
                 res.efficiency_motor_off_flap_angle = flap_angle_2
-                
+
                 t_avg = self.batt_time_at_start + t1 / 2
-                res.efficiency_battery_voltage, res.efficiency_battery_soc = self.plane.battery.get_voltage(i=30., t=t_avg)
+                (
+                    res.efficiency_battery_voltage,
+                    res.efficiency_battery_soc,
+                ) = self.plane.battery.get_voltage(i=30.0, t=t_avg)
 
             return -points
 

@@ -5,6 +5,7 @@ from pathlib import Path
 import numpy as np
 
 import mace.aero.implementations.xfoil.xfoilpolars as xfoilpolars
+from mace.utils.file_path import root
 
 
 class Airfoil:
@@ -27,7 +28,7 @@ class Airfoil:
         The airfoil must be located in the data/airfoils folder,
         and the name must be the same as the file name.
         """
-        tool_path = Path(__file__).resolve().parents[4]
+        tool_path = root()
         self.airfoil_path = os.path.join(
             tool_path, "data", "airfoils", foil_name + ".dat"
         )
@@ -186,7 +187,7 @@ class Airfoil:
         flap_angle_list = self.flap_angle_list
         surrogate_path = self.surrogate_path
         polar_data = np.array([])
-        tool_path = Path(__file__).resolve().parents[4]
+        tool_path = root()
 
         for i, flap_angle in enumerate(flap_angle_list):
             self.surrogate_path = os.path.join(
@@ -282,7 +283,7 @@ class Airfoil:
         flap_angle_list = self.flap_angle_list
         original_flap_angle = self.flap_angle
         original_surrogate_path = self.surrogate_path
-        tool_path = Path(__file__).resolve().parents[4]
+        tool_path = root()
 
         for i, flap_angle in enumerate(flap_angle_list):
             self.surrogate_path = os.path.join(
@@ -327,7 +328,7 @@ class Airfoil:
         flap_angle_list = self.flap_angle_list
         surrogate_path = self.surrogate_path
         polar_data = np.array([])
-        tool_path = Path(__file__).resolve().parents[4]
+        tool_path = root()
 
         for i, flap_angle in enumerate(flap_angle_list):
             self.surrogate_path = os.path.join(
@@ -423,7 +424,7 @@ class Airfoil:
         flap_angle_list = self.flap_angle_list
         original_flap_angle = self.flap_angle
         original_surrogate_path = self.surrogate_path
-        tool_path = Path(__file__).resolve().parents[4]
+        tool_path = root()
 
         for i, flap_angle in enumerate(flap_angle_list):
             self.surrogate_path = os.path.join(

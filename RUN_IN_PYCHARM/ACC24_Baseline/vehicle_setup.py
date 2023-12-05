@@ -5,27 +5,27 @@ from pathlib import Path
 import numpy as np
 
 from mace.aero.implementations.avl.athenavortexlattice import AVL
+from mace.domain.battery import Battery
 from mace.domain.fuselage import Fuselage, FuselageSegment
 from mace.domain.landing_gear import LandingGear, Strut, Wheel
+from mace.domain.propeller import Propeller
 from mace.domain.vehicle import Vehicle
 from mace.domain.wing import Wing, WingSegment, WingSegmentBuild
-from mace.domain.battery import Battery
-from mace.domain.propeller import Propeller
 
 
 def vehicle_setup(
-    payload=4.59, 
-    wing_area=0.6, 
-    aspect_ratio=10.0, 
-    airfoil="ag45c", 
-    num_fowler_segments=0, 
-    battery_capacity=3.0, 
-    propeller="aeronaut14x8"
+    payload=4.59,
+    wing_area=0.6,
+    aspect_ratio=10.0,
+    airfoil="ag45c",
+    num_fowler_segments=0,
+    battery_capacity=3.0,
+    propeller="aeronaut14x8",
 ) -> Vehicle:
-    
+
     vehicle = Vehicle()
     vehicle.payload = payload
-    vehicle.mass = 2.
+    vehicle.mass = 2.0
     logging.debug("M Empty: %.2f kg" % vehicle.mass)
     vehicle.mass += vehicle.payload
 
@@ -100,7 +100,7 @@ def vehicle_setup(
 
     # Resize Wing
     main_wing.hinge_angle = 1.0
-    #main_wing.span = span
+    # main_wing.span = span
     main_wing.reference_area = wing_area
     main_wing.aspect_ratio = aspect_ratio
     main_wing.build(resize_x_offset_from_hinge_angle=True, resize_areas=True)
@@ -330,23 +330,26 @@ def vehicle_setup(
     if __name__ == "__main__":
         vehicle.plot_vehicle(azim=230, elev=30)
 
-
     # Return results
     vehicle.results.span = vehicle.reference_values.b_ref
     vehicle.results.aspect_ratio = vehicle.reference_values.AR
     vehicle.results.mean_aerodynamic_chord = vehicle.reference_values.c_ref
     vehicle.results.wing_area = vehicle.reference_values.s_ref
-    vehicle.results.horizontal_stabilizer_area = vehicle.wings['horizontal_stabilizer'].reference_area
+    vehicle.results.horizontal_stabilizer_area = vehicle.wings[
+        "horizontal_stabilizer"
+    ].reference_area
     vehicle.results.wing_loading = vehicle.mass / vehicle.reference_values.s_ref
     vehicle.results.battery_capacity = vehicle.battery.capacity
     vehicle.results.propeller = vehicle.propeller.propeller_tag
-    vehicle.results.main_wing_airfoil = vehicle.wings['main_wing'].airfoil
-    vehicle.results.horizontal_stabilizer_airfoil = vehicle.wings['horizontal_stabilizer'].airfoil
+    vehicle.results.main_wing_airfoil = vehicle.wings["main_wing"].airfoil
+    vehicle.results.horizontal_stabilizer_airfoil = vehicle.wings[
+        "horizontal_stabilizer"
+    ].airfoil
 
-    eta_fowler = 0.
-    span_fowler = 0.
-    area_fowler = 0.
-    for segment in vehicle.wings['main_wing'].segments:
+    eta_fowler = 0.0
+    span_fowler = 0.0
+    area_fowler = 0.0
+    for segment in vehicle.wings["main_wing"].segments:
         if segment.control_name == "fowler":
             eta_fowler += 2 * segment.span / vehicle.wings["main_wing"].span
             span_fowler += 2 * segment.span
@@ -355,24 +358,28 @@ def vehicle_setup(
     vehicle.results.fowler_affected_span = span_fowler
     vehicle.results.fowler_affected_span_ratio = eta_fowler
     vehicle.results.fowler_affected_area = area_fowler
-    vehicle.results.fowler_affected_area_ratio = area_fowler / vehicle.reference_values.s_ref
+    vehicle.results.fowler_affected_area_ratio = (
+        area_fowler / vehicle.reference_values.s_ref
+    )
 
-    vehicle.results.fuselage_wetted_area = vehicle.fuselages['fuselage'].area
-    vehicle.results.fuselage_length = vehicle.fuselages['fuselage'].length
-    vehicle.results.fuselage_diameter = vehicle.fuselages['fuselage'].diameter
+    vehicle.results.fuselage_wetted_area = vehicle.fuselages["fuselage"].area
+    vehicle.results.fuselage_length = vehicle.fuselages["fuselage"].length
+    vehicle.results.fuselage_diameter = vehicle.fuselages["fuselage"].diameter
 
-    vehicle.results.cargo_bay_length = vehicle.fuselages['cargo_bay'].length
-    vehicle.results.cargo_bay_wetted_area = vehicle.fuselages['cargo_bay'].area
+    vehicle.results.cargo_bay_length = vehicle.fuselages["cargo_bay"].length
+    vehicle.results.cargo_bay_wetted_area = vehicle.fuselages["cargo_bay"].area
 
     vehicle.results.mass_total = vehicle.mass
     vehicle.results.mass_empty = vehicle.mass - vehicle.payload
     vehicle.results.mass_payload = vehicle.payload
     vehicle.results.mass_battery = vehicle.battery.get_mass()
-    vehicle.results.mass_fuselage = vehicle.fuselages['fuselage'].mass
-    vehicle.results.mass_cargo_bay = vehicle.fuselages['cargo_bay'].mass
-    vehicle.results.mass_wing = vehicle.wings['main_wing'].mass
-    vehicle.results.mass_horizontal_stabilizer = vehicle.wings['horizontal_stabilizer'].mass
-    vehicle.results.mass_pylon = vehicle.wings['pylon'].mass
+    vehicle.results.mass_fuselage = vehicle.fuselages["fuselage"].mass
+    vehicle.results.mass_cargo_bay = vehicle.fuselages["cargo_bay"].mass
+    vehicle.results.mass_wing = vehicle.wings["main_wing"].mass
+    vehicle.results.mass_horizontal_stabilizer = vehicle.wings[
+        "horizontal_stabilizer"
+    ].mass
+    vehicle.results.mass_pylon = vehicle.wings["pylon"].mass
     vehicle.results.mass_landing_gear = vehicle.landing_gear.mass
     vehicle.results.mass_misc = 0
     for misc in vehicle.miscs:
@@ -384,7 +391,7 @@ def vehicle_setup(
     vehicle.results.c_n_beta = Cnb
     vehicle.results.x_neutral_point = XNP
     vehicle.results.static_margin = SM
-    
+
     vehicle.results.transport_box_height = box_height
     vehicle.results.transport_box_width = box_width
     vehicle.results.transport_box_length = box_length

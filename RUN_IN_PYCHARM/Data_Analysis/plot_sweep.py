@@ -1,25 +1,25 @@
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
 import os
 from pathlib import Path
 
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
 # setup
-dir_path     = 'sweep_1_total.csv'
-plot_type    = 'trisurf'   # options: 2d, meshgrid, trisurf
-x_name       = 'span'
-y_name       = 'aspect_ratio'  # in 2d this is separate lines
-z_name       = 'score_round'  # in 2d this is y-axis
-cmap         = 'viridis_r'
-sep          = ';'
-show_plots   = True
-constant_parameters = {#"num_fowler_segments": 4,
-                        "payload": 3.23,
-                        #"span": 2.6,
-                        #"aspect_ratio": 8.,
-                        "airfoil": "acc22",
-                       }
+dir_path = "results_sweep_validation_larger.csv"
+plot_type = "trisurf"  # options: 2d, meshgrid, trisurf
+x_name = "aspect_ratio"
+y_name = "wing_area"  # in 2d this is separate lines
+z_name = "score_factor_take_off"  # in 2d this is y-axis
+cmap = "viridis_r"
+sep = ","
+show_plots = True
+constant_parameters = {  # "num_fowler_segments": 4,
+    "mass_payload": 3.57,
+    # "span": 2.6,
+    #"aspect_ratio": 8.,
+    "main_wing_airfoil": "acc22",
+}
 
 
 def plot_function(
@@ -105,7 +105,7 @@ for key, value in constant_parameters.items():
     else:
         df = df[np.isclose(df[key], value, rtol=1e-03)]
 
-df = df[df["score_round"] > 0.0]
+#df = df[df["score_round"] > 0.0]
 if z_name == "all":
     cols = list(df.columns)
     cols = cols[2:]

@@ -11,7 +11,7 @@ class Wheel:
         self.mass: float = 0.0
         self.origin: np.ndarray = np.array([0.0, 0.0, 0.0])
         self.diameter: float = 0.0
-        self.drag_correction: float = 3.0
+        self.drag_correction: float = 3.
 
     def get_drag_coefficient(self, V, S_ref):
         Re_L = V * np.pi / 4 * self.diameter / params.Constants.ny
@@ -33,7 +33,7 @@ class Strut:
         self.mass: float = 0.0
         self.origin: np.ndarray = np.array([0.0, 0.0, 0.0])
         self.effective_drag_length: float = 0.0
-        self.length_specific_cd: float = 0.0033
+        self.length_specific_cd: float = 0.003
 
 
 class LandingGear:

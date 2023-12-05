@@ -12,6 +12,7 @@ from mace.aero.implementations.avl.geometry_and_mass_files import GeometryFile, 
 from mace.aero.implementations.xfoil import xfoilpolars
 from mace.domain import Plane, params
 from mace.domain.parser import PlaneParser
+from mace.utils.file_path import root
 
 
 class ViscousDrag:
@@ -122,7 +123,7 @@ class ViscousDrag:
         For other velocities please intput them. The function will compare it with horizontal flight and
         will use an optimized reynoldsnumber. (Therefore cl has to be higher than 0.)
         """
-        tool_path = Path(__file__).resolve().parents[4]
+        tool_path = root()
         logfile_path = os.path.join(tool_path, "temporary", "logfile.txt")
 
         logfile = open(logfile_path, "w")

@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from mace.aero.implementations.airfoil_analyses import Airfoil
+from mace.utils.file_path import root
 
 if __name__ == "__main__":
     airfoil_name = "ag40"
@@ -29,7 +30,7 @@ if __name__ == "__main__":
                 clplot.append(cl)
         ax.plot(cdplot, clplot, label="re=" + str(int(re)))
 
-    tool_path = Path(__file__).resolve().parents[2]
+    tool_path = root()
     if flap_angle == 6:
         reference_path = os.path.join(
             tool_path, "data", "reference_values", "T1_Re0.600_M0.00_N9.0_6f_2.csv"

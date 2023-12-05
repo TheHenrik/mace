@@ -10,8 +10,10 @@ from mace.aero.implementations.avl import (
     geometry_and_mass_files_v2 as geometry_and_mass_files,
 )
 from mace.aero.implementations.avl.athenavortexlattice import AVL
+from mace.domain.battery import Battery
 from mace.domain.fuselage import Fuselage, FuselageSegment
 from mace.domain.landing_gear import LandingGear, Wheel
+from mace.domain.propeller import Propeller
 from mace.domain.results import (
     AeroCoeffs,
     Avl,
@@ -21,14 +23,12 @@ from mace.domain.results import (
     Cl,
     Climb,
     ClimbResults,
+    Data,
     FlightConditions,
     HorizontalFlight,
     HorizontalFlightResults,
-    Data
 )
 from mace.domain.wing import Wing, WingSegment
-from mace.domain.battery import Battery
-from mace.domain.propeller import Propeller
 
 
 class Vehicle:
@@ -60,7 +60,7 @@ class Vehicle:
         self.landing_gear = LandingGear()
 
         self.miscs = []
-        
+
         self.battery: Battery() = None
         self.propeller: Propeller() = None
         self.results = Data()
@@ -311,8 +311,14 @@ class Vehicle:
         for _ in range(4):
             self.get_mass()
             self.calc_load()
-            self.wings["main_wing"].part_wing_into(self.mass, into_parts=4, override=True)
-        self.get_mass()          
+            self.wings["main_wing"].part_wing_into(
+                self.mass, max_lenght=lenght, override=True
+            )
+        self.results.binder_count = len(self.wings["main_wing"].wing_binder)
+        self.results.binder_mass = sum(
+            wb.mass for wb in self.wings["main_wing"].wing_binder
+        )
+        self.get_mass()
 
     def get_mass(self):
         mass = defaultdict()
@@ -334,7 +340,7 @@ class Vehicle:
             weighted_cog[misc.name] = misc.position
 
         mass["payload"] = self.payload
-        
+
         mass["battery"] = self.battery.get_mass()
 
         self.mass = sum(mass.values())
@@ -383,7 +389,7 @@ class Vehicle:
         logging.debug(f"Box width: %.2f m" % box_width)
         logging.debug(f"Box length: %.2f m" % box_length)
         logging.debug("\n")
-        
+
         return box_height, box_width, box_length
 
     def print_mass_table(self, fmt="simple"):
@@ -438,14 +444,15 @@ class Vehicle:
             ]
         )
         logging.debug(tabulate(data, header, fmt))
-        
-    def evaluate_thrust(self, V, t, I=30.):
+
+    def evaluate_thrust(self, V, t, I=30.0):
         U, SOC = self.battery.get_voltage(I, t)
         T0 = self.propeller.evaluate_thrust(V)
         U_ref = self.propeller.reference_voltage
         I_ref = self.propeller.reference_current
         T = T0 * U / U_ref * I / I_ref
         return T
+
 
 class Colour:
     PURPLE = "\033[95m"

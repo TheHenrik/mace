@@ -25,8 +25,8 @@ class Climb:
 
         self.flap_angle = 0.0
         self.optimize_flap_angle = True
-        
-        self.mid_time = 15.
+
+        self.mid_time = 15.0
 
     def evaluate(self, CL, return_values=False):
         Aero = Aerodynamics(self.plane)
@@ -64,8 +64,13 @@ class Climb:
             res.climb_rate = V_vertical
             res.climb_flap_angle = self.flap_angle
             res.climb_cl = CL
-            res.climb_reynolds = functions.get_reynolds_number(v, self.plane.reference_values.c_ref)
-            res.climb_battery_voltage, res.climb_battery_soc = self.plane.battery.get_voltage(i=30., t=t_avg)
+            res.climb_reynolds = functions.get_reynolds_number(
+                v, self.plane.reference_values.c_ref
+            )
+            (
+                res.climb_battery_voltage,
+                res.climb_battery_soc,
+            ) = self.plane.battery.get_voltage(i=30.0, t=t_avg)
             return v
         return -V_vertical
 

@@ -6,8 +6,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from mace.aero.implementations.airfoil_analyses import Airfoil
+from mace.utils.file_path import root
 
-tool_path = Path(__file__).resolve().parents[2]
+tool_path = root()
 
 # for i in range(len(airfoil.re_list)):
 #     polar = np.loadtxt(airfoil.surrogate_path, delimiter=",", skiprows=1)

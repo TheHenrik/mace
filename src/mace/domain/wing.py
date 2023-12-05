@@ -34,11 +34,11 @@ class WingBinder:
 
     def get_mass(self):
         dens = 375
-        lenght = 4 * np.sqrt(self.moment) / 1_00
+        lenght = 4 * np.sqrt(self.moment) / 100
         width = (self.roving_count + 1) / 1000
         # CONST = 375 / 1_000 * 6
         # self.mass =  * self.height**2 * CONST
-        self.mass = dens * lenght * self.height * width
+        self.mass = dens * lenght * self.height * width * 1.1
 
     def get_rovings(self, moment_at_position):
         # TODO Test me pls
@@ -47,12 +47,12 @@ class WingBinder:
         sigma = 700 * (10**6)
         H100 = D100 / sigma
         C100 = 10 / 1_000
-        G100 = max_height# - 0.4 / 1_000
+        G100 = max_height  # - 0.4 / 1_000
         J100 = np.cbrt(((C100 * (G100**3)) - (6 * G100 * H100)) / C100)
         K100 = (G100 - J100) / 2
         m = K100 * C100 * 10**6
-        n = np.ceil(m)
-        self.roving_count = n
+        # n = np.ceil(m)
+        self.roving_count = m
 
 
 class WingSegmentBuild:
@@ -620,22 +620,24 @@ class Wing:
     def get_height_position(self, position: float) -> float:
         position = abs(position)
         for segment in self.segments:
-            if not (segment.nose_outer[1] > position and segment.nose_inner[1] <= position):
+            if not (
+                segment.nose_outer[1] > position and segment.nose_inner[1] <= position
+            ):
                 continue
             l = (
-                segment.inner_chord
-                * (segment.nose_outer[1] - position)
-                - segment.outer_chord
-                * (segment.nose_inner[1] - position)
+                segment.inner_chord * (segment.nose_outer[1] - position)
+                - segment.outer_chord * (segment.nose_inner[1] - position)
             ) / np.sqrt(np.sum(np.square(segment.nose_outer - segment.nose_inner)))
             th = get_profil_thickness(segment.inner_airfoil)
             return l * th
         return 0
 
-    def part_wing_into(self, total_mass, into_parts: int = 1, max_lenght: float = 1E100, override=True):
+    def part_wing_into(
+        self, total_mass, into_parts: int = 1, max_lenght: float = 1e100, override=True
+    ):
         wing_span = self.segments[-1].nose_outer[1]
         part_len = min(2 * wing_span / into_parts, max_lenght)
-        current = 0 if (wing_span//part_len)%2==0 else part_len/2
+        current = 0 if ((2 * wing_span) // part_len) % 2 == 0 else part_len / 2
         pos = []
         while current < wing_span:
             pos.append(current)

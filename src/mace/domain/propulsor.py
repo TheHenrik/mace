@@ -1,5 +1,7 @@
 import numpy as np
 
+from mace.utils.file_path import root
+
 
 class Propulsor:
     def __init__(self):
@@ -7,7 +9,9 @@ class Propulsor:
         self.battery_capacity: float = None
 
     def get_thrust_force(self, velocity: float, current: float, time: float):
-        thrust_force = np.interp(velocity, thrust_array[:, 0], thrust_array[:, 1])
+        thrust_force = np.interp(
+            velocity, self.thrust_array[:, 0], self.thrust_array[:, 1]
+        )
 
         return thrust_force
 
@@ -28,7 +32,7 @@ if __name__ == "__main__":
     import os
     from pathlib import Path
 
-    tool_path = Path(__file__).resolve().parents[3]
+    tool_path = root()
     prop_surrogate_path = os.path.join(
         tool_path, "data", "prop_surrogates", "aeronaut14x8.csv"
     )

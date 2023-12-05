@@ -1,15 +1,16 @@
 import logging
-from itertools import product
-from multiprocessing import Pool
-import sys
-import re
-from tqdm import tqdm
-from operator import mul
-from functools import reduce, partial
-import numpy as np
-from vehicle_setup import vehicle_setup
-from pathlib import Path
 import os
+import re
+import sys
+from functools import partial, reduce
+from itertools import product
+from multiprocessing import Pool, freeze_support
+from operator import mul
+from pathlib import Path
+
+import numpy as np
+from tqdm import tqdm
+from vehicle_setup import vehicle_setup
 
 from mace.aero.flightconditions.climb_scipy import Climb
 from mace.aero.flightconditions.efficiency_flight_low_fid import EfficiencyFlight
@@ -19,42 +20,13 @@ from mace.aero.implementations.avl import (
     geometry_and_mass_files_v2 as geometry_and_mass_files,
 )
 from mace.domain.params import Constants
+from mace.utils.file_path import root
 from mace.utils.mp import get_pid
 
 
-def main():
-    logging.basicConfig(level=logging.INFO)
-    logging.info("Started programm")
-    payload = [3.57]
-    aspect_ratio = [10.]
-    wing_area = [0.6]
-    airfoil = ["jf-a2", "jx-gp-055", "LAK24_v1", "LAK24_v2"]
-    battery_capacity = [2.4]
-    propeller = ["aeronaut14x8"]
-    
-    match sys.argv:
-        case _, "0":
-            num_fowler_segments = []
-        case _, "1":
-            num_fowler_segments = [4]
-        case _, "2":
-            num_fowler_segments = [0]
-        case _, "3":
-            num_fowler_segments = [1]
-        case _, "4":
-            num_fowler_segments = [2]
-        case _, "5":
-            num_fowler_segments = [3]
-        case _:
-            num_fowler_segments = [0]
-
-    path = Path(Path(__file__).parent, f"results_sweep.csv")
-    handler(path, payload, wing_area, aspect_ratio, airfoil, num_fowler_segments, battery_capacity, propeller)
-
-
-def handler(file: Path, *args, **kwargs):
+def handler(file: Path, threads: int, *args, **kwargs):
     first_line = True
-    with open(file, "w") as f, Pool(1) as p:
+    with open(file, "w") as f, Pool(threads) as p:
         for r in tqdm(
             p.imap_unordered(partial(worker, **kwargs), product(*args)),
             total=reduce(mul, map(len, args)),
@@ -70,11 +42,11 @@ def handler(file: Path, *args, **kwargs):
 
 
 def worker(args, **kwargs):
-    log_path = Path(Path(__file__).parents[2], "temporary", "default.log")
+    log_path = Path(root(), "temporary", "default.log")
     logging.basicConfig(filename=log_path, level=logging.INFO)
     logging.info(f"Started Task{get_pid()}")
     values = analysis(*args, **kwargs)
-    clean_temporary_pid(Path("temporary"))
+    clean_temporary_pid(Path(root(), "temporary"))
     logging.info(f"Finished Task{get_pid()}")
     return values
 
@@ -92,7 +64,15 @@ def clean_temporary(path: Path):
             file.unlink()
 
 
-def analysis(payload, wing_area, aspect_ratio, airfoil, num_fowler_segments, battery_capacity, propeller):
+def analysis(
+    payload,
+    wing_area,
+    aspect_ratio,
+    airfoil,
+    num_fowler_segments,
+    battery_capacity,
+    propeller,
+):
     # Define Analysis
     climb_time = 30.0
     cruise_time = 90.0
@@ -141,7 +121,11 @@ def analysis(payload, wing_area, aspect_ratio, airfoil, num_fowler_segments, bat
     # Run Climb Analysis
     climb_analysis = Climb(Aircraft)
     climb_analysis.optimize_flap_angle = True
-    climb_analysis.mid_time = (climb_time- take_off_time - transition_time) / 2 + take_off_time + transition_time
+    climb_analysis.mid_time = (
+        (climb_time - take_off_time - transition_time) / 2
+        + take_off_time
+        + transition_time
+    )
     climb_height, climb_ias = climb_analysis.get_h_max(
         delta_t=climb_time - take_off_time - transition_time
     )
@@ -214,7 +198,66 @@ def analysis(payload, wing_area, aspect_ratio, airfoil, num_fowler_segments, bat
     return results.as_csv_line(header=True, delimitter=",")
 
 
+def main():
+    log_path = Path(root(), "temporary", "default.log")
+    clean_temporary(Path(root(), "temporary"))
+    logging.basicConfig(filename=log_path, level=logging.INFO)
+    logging.info("Started programm")
+    while True:
+        print("Gebe die dir zugeteilte Nummer ein:")
+        input_number = int(input())
+        print("Anzahl der zu nutzenden Threads:")
+        print(
+            "(Gebe Null ein, um alle Threads zu nutzen, der Computer wird dann für die nächste Zeit nicht benutzbar sein)"
+        )
+        print(
+            "(Eine Negative Zahl bestimmt die Anzahl der Threads, die nicht genutzt werden sollen)"
+        )
+        input_threads = int(input())
+        cpu_count = os.cpu_count()
+        if input_threads <= 0:
+            threads = cpu_count + input_threads
+        else:
+            threads = input_threads
+        if threads == 0 or threads > cpu_count:
+            print("Anzahl der eingegebenen Threads kontrollieren.")
+            continue 
+
+        payload = [3.57, 3.0]
+        aspect_ratio = [10.0]
+        wing_area = [0.6]
+        airfoil = ["jf-a2", "jx-gp-055", "LAK24_v1", "LAK24_v2"]
+        battery_capacity = [2.4]
+        propeller = ["aeronaut14x8"]
+
+        first, second = divmod(input_number, 3)
+        airfoil = [airfoil[first]]
+        num_fowler_segments = [second]
+
+        path = Path(root(), f"results_sweep_{input_number}.csv")
+        logging.info("Finished Input")
+        handler(
+            path,
+            threads,
+            payload,
+            wing_area,
+            aspect_ratio,
+            airfoil,
+            num_fowler_segments,
+            battery_capacity,
+            propeller,
+        )
+        print("Durchlauf erfolgreich beendet. Lade die Datei hoch in den Google Drive.")
+        print("Weiterer durchlauf? (j/N)")
+        r = input()
+        if r.lower() == "j":
+            continue
+        else:
+            break
+
+
 if __name__ == "__main__":
-    clean_temporary(Path("temporary"))
-    # main()
-    worker((3.57, 0.61, 8.82, "acc22", 4, 1.6, "aeronaut14x8"))
+    if sys.platform.startswith("win"):
+        freeze_support()
+    main()
+    # worker((3.57, 0.61, 8.82, "acc22", 4, 1.6, "aeronaut14x8"))
