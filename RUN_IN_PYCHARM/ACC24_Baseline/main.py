@@ -234,17 +234,18 @@ def main():
             continue
 
         for number in input_number:
-            payload = list(np.linspace(3.57, 4.57, 50))
-            aspect_ratio = [10.0, 9.0]
-            wing_area = [0.5, 0.6, 0.7]
-            airfoil = ["ag45c"]
+            payload = list(np.arange(15, 27, 2) * 0.17)
+            print(payload)
+            aspect_ratio = [8, 9, 10, 11, 12, 13, 14, 15, 16]
+            wing_area = [0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75]
+            airfoil = ["acc22", "ag19", "ag25", "ag40", "ag45c", "LAK24_v1", "LAK24_v2", "jx-gp-055"]
             battery_capacity = [2.4]
-            propeller = ["aeronaut16x8"]
+            propeller = ["aeronaut16x8", "freudenthaler14x8"]
             num_fowler_segments = [0, 1]
 
-            first, second = divmod(number, 1_000)
+            first, second = divmod(number, 9)
             airfoil = [airfoil[first]]
-            payload = [payload[second]]
+            aspect_ratio = [aspect_ratio[second]]
 
 
             path = Path(root(), f"results_sweep_{number}.csv")
