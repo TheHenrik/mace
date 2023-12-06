@@ -34,8 +34,8 @@ class WingBinder:
 
     def get_mass(self):
         dens = 375
-        lenght = 4 * np.cbrt(self.moment) / 100
-        width = (self.roving_count + 1) / 1000
+        lenght = 4.5 * np.cbrt(self.moment) / 100
+        width = (self.roving_count + 2) / 1000
         # CONST = 375 / 1_000 * 6
         # self.mass =  * self.height**2 * CONST
         self.mass = dens * lenght * self.height * width * 1.1
@@ -183,9 +183,9 @@ class WingSegment:
         J100 = np.cbrt(((C100 * (G100**3)) - (6 * G100 * H100)) / C100)
         K100 = (G100 - J100) / 2
         m = K100 * C100 * 10**6
-        n = int(np.ceil(m))
-        self.roving_count = n
-        return n
+        # n = int(np.ceil(m))
+        self.roving_count = m
+        return m
 
 
 class Wing:

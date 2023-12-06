@@ -444,7 +444,7 @@ class Vehicle:
             ]
         )
         logging.debug(tabulate(data, header, fmt))
-        #print(tabulate(data, header, fmt))
+        # print(tabulate(data, header, fmt))
 
     def evaluate_thrust(self, V, t, I=30.0):
         U, SOC = self.battery.get_voltage(I, t)
