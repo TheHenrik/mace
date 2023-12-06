@@ -14,11 +14,11 @@ from mace.domain.wing import Wing, WingSegment, WingSegmentBuild
 
 
 def vehicle_setup(
-    payload=5.,
-    wing_area=0.61, #ACC17=1.22, ACC22=0.61
-    aspect_ratio=9.6, #ACC17=12.52, ACC22=9.6
-    airfoil="acc22", #acc22
-    num_fowler_segments=4, #ACC17=0, ACC22=4
+    payload=3.5,
+    wing_area=0.6, #ACC17=1.22, ACC22=0.61
+    aspect_ratio=12., #ACC17=12.52, ACC22=9.6
+    airfoil="ag40", #acc22
+    num_fowler_segments=0, #ACC17=0, ACC22=4
     battery_capacity=2.4,
     propeller="aeronaut14x8",
 ) -> Vehicle:
@@ -48,50 +48,167 @@ def vehicle_setup(
     main_wing.angle = 2.0
     main_wing.symmetric = True
 
-    # Inner segment
+    # # Inner segment
+    # segment = WingSegment()
+    # segment.span = 0.45
+    # segment.inner_chord = 1.0
+    # segment.outer_chord = 0.9
+    # segment.dihedral = 1
+    # segment.control = True
+    # if num_fowler_segments >= 1:
+    #     segment.control_name = "fowler"
+    # segment.wsb = main_wing_construction
+    # main_wing.add_segment(segment)
+    #
+    # # Mid segment
+    # segment = WingSegment()
+    # segment.span = 0.3
+    # segment.inner_chord = 0.9
+    # segment.outer_chord = 0.7
+    # segment.dihedral = 5
+    # segment.control = True
+    # if num_fowler_segments >= 2:
+    #     segment.control_name = "fowler"
+    # segment.wsb = main_wing_construction
+    # main_wing.add_segment(segment)
+    #
+    # # Outer segment
+    # segment = WingSegment()
+    # segment.span = 0.15
+    # segment.inner_chord = 0.7
+    # segment.outer_chord = 0.4
+    # segment.dihedral = 5
+    # segment.outer_twist = 0
+    # segment.control = True
+    # if num_fowler_segments >= 3:
+    #     segment.control_name = "fowler"
+    # segment.wsb = main_wing_construction
+    # main_wing.add_segment(segment)
+    #
+    # # Outer segment
+    # segment = WingSegment()
+    # segment.span = 0.05
+    # segment.inner_chord = 0.4
+    # segment.outer_chord = 0.2
+    # segment.dihedral = 5
+    # segment.outer_twist = 0
+    # segment.control = True
+    # if num_fowler_segments >= 4:
+    #     segment.control_name = "fowler"
+    # segment.wsb = main_wing_construction
+    # main_wing.add_segment(segment)
+
     segment = WingSegment()
-    segment.span = 0.45
-    segment.inner_chord = 1.0
-    segment.outer_chord = 0.9
-    segment.dihedral = 1
+    segment.span = 0.25
+    segment.inner_chord = 0.235
+    segment.outer_chord = 0.229
+    segment.dihedral = 3
+    segment.inner_x_offset = 0.0
+    segment.outer_x_offset = -0.001
     segment.control = True
     if num_fowler_segments >= 1:
         segment.control_name = "fowler"
     segment.wsb = main_wing_construction
     main_wing.add_segment(segment)
 
-    # Mid segment
     segment = WingSegment()
-    segment.span = 0.3
-    segment.inner_chord = 0.9
-    segment.outer_chord = 0.7
-    segment.dihedral = 5
+    segment.span = 0.25
+    segment.inner_chord = 0.229
+    segment.outer_chord = 0.222
+    segment.dihedral = 3
+    segment.inner_x_offset = -0.001
+    segment.outer_x_offset = -0.002
+    segment.control = True
+    if num_fowler_segments >= 1:
+        segment.control_name = "fowler"
+    segment.wsb = main_wing_construction
+    main_wing.add_segment(segment)
+
+    segment = WingSegment()
+    segment.span = 0.2
+    segment.inner_chord = 0.222
+    segment.outer_chord = 0.210
+    segment.dihedral = 3
+    segment.inner_x_offset = -0.002
+    segment.outer_x_offset = 0.002
     segment.control = True
     if num_fowler_segments >= 2:
         segment.control_name = "fowler"
     segment.wsb = main_wing_construction
     main_wing.add_segment(segment)
 
-    # Outer segment
     segment = WingSegment()
-    segment.span = 0.15
-    segment.inner_chord = 0.7
-    segment.outer_chord = 0.4
-    segment.dihedral = 5
-    segment.outer_twist = 0
+    segment.span = 0.2
+    segment.inner_chord = 0.210
+    segment.outer_chord = 0.197
+    segment.dihedral = 3
+    segment.inner_x_offset = 0.004
+    segment.outer_x_offset = 0.003
+    segment.control = True
+    if num_fowler_segments >= 2:
+        segment.control_name = "fowler"
+    segment.wsb = main_wing_construction
+    main_wing.add_segment(segment)
+
+    segment = WingSegment()
+    segment.span = 0.2
+    segment.inner_chord = 0.197
+    segment.outer_chord = 0.174
+    segment.dihedral = 3
+    segment.inner_x_offset = 0.003
+    segment.outer_x_offset = 0.013
     segment.control = True
     if num_fowler_segments >= 3:
         segment.control_name = "fowler"
     segment.wsb = main_wing_construction
     main_wing.add_segment(segment)
 
-    # Outer segment
+    segment = WingSegment()
+    segment.span = 0.15
+    segment.inner_chord = 0.174
+    segment.outer_chord = 0.144
+    segment.dihedral = 3
+    segment.inner_x_offset = 0.013
+    segment.outer_x_offset = 0.028
+    segment.control = True
+    if num_fowler_segments >= 3:
+        segment.control_name = "fowler"
+    segment.wsb = main_wing_construction
+    main_wing.add_segment(segment)
+
+    segment = WingSegment()
+    segment.span = 0.1
+    segment.inner_chord = 0.144
+    segment.outer_chord = 0.115
+    segment.dihedral = 3
+    segment.inner_x_offset = 0.028
+    segment.outer_x_offset = 0.045
+    segment.control = True
+    if num_fowler_segments >= 4:
+        segment.control_name = "fowler"
+    segment.wsb = main_wing_construction
+    main_wing.add_segment(segment)
+
+    segment = WingSegment()
+    segment.span = 0.07
+    segment.inner_chord = 0.115
+    segment.outer_chord = 0.08
+    segment.dihedral = 3
+    segment.inner_x_offset = 0.045
+    segment.outer_x_offset = 0.068
+    segment.control = True
+    if num_fowler_segments >= 4:
+        segment.control_name = "fowler"
+    segment.wsb = main_wing_construction
+    main_wing.add_segment(segment)
+
     segment = WingSegment()
     segment.span = 0.05
-    segment.inner_chord = 0.4
-    segment.outer_chord = 0.2
-    segment.dihedral = 5
-    segment.outer_twist = 0
+    segment.inner_chord = 0.08
+    segment.outer_chord = 0.05
+    segment.dihedral = 3
+    segment.inner_x_offset = 0.068
+    segment.outer_x_offset = 0.09
     segment.control = True
     if num_fowler_segments >= 4:
         segment.control_name = "fowler"
