@@ -235,7 +235,6 @@ def main():
 
         for number in input_number:
             payload = list(np.arange(15, 27, 2) * 0.17)
-            print(payload)
             aspect_ratio = [8, 9, 10, 11, 12, 13, 14, 15, 16]
             wing_area = [0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75]
             airfoil = ["acc22", "ag19", "ag25", "ag40", "ag45c", "LAK24_v1", "LAK24_v2", "jx-gp-055"]
