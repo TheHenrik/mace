@@ -140,5 +140,5 @@ if __name__ == "__main__":
     reynolds = 200000
     n_iter = 80  # wenn keine Konvergenz reduzieren, Ergebnisse scheinen annähernd gleich zu bleiben
 
-    polar_daten = get_xfoil_polar(airfoil_name, reynolds, cl=0.5)
-    logging.debug(polar_daten)
+    polar_daten = get_xfoil_polar(airfoil_name, reynolds, cl=1., flap_angle=5, x_hinge=0.6)
+    print(polar_daten)

@@ -31,6 +31,7 @@ class ViscousDrag:
         self.rho = params.Constants.rho
 
         self.print_re_warnings = True
+        self.sensitivity_study_drag_factor = 1.0
 
     def match_segment_to_strip(self, surface: int, y: float, z: float):
         i = 0
@@ -97,6 +98,7 @@ class ViscousDrag:
                     airfoil_name,
                     flap_angle=flap_angle,
                     x_hinge=(1 - segment.flap_chord_ratio),
+                    sensitivity_study_factor=self.sensitivity_study_drag_factor,
                 )
                 airfoil.print_re_warnings = self.print_re_warnings
 

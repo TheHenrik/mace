@@ -30,6 +30,7 @@ class TakeOff:
         self.manual_cl_max = 0
         self.show_plot = False
         self.delta_cl_fowler = 1.08
+        self.cl_max_factor = 1.0
 
     def get_friction(self, lift):
         return (self.plane.mass * params.Constants.g - lift) * self.mu
@@ -92,6 +93,7 @@ class TakeOff:
                         S_FOWLER += 2 * segment.area
                 delta_CL_flap = self.delta_cl_fowler * S_FOWLER / S_REF
                 CL_MAX += delta_CL_flap
+                CL_MAX *= self.cl_max_factor
             else:
                 CL_MAX = self.manual_cl_max
 

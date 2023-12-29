@@ -31,6 +31,8 @@ class HorizontalFlight:
 
         self.batt_time_at_start = 40.0
         self.cruise_time = 90.0
+        
+        self.xtol = 0.1
 
     def get_drag_force(self, V):
         plane = self.plane
@@ -114,7 +116,8 @@ class HorizontalFlight:
             if self.optimize_flap_angle is True:
                 c_length = self.plane.reference_values.c_ref
                 re = functions.get_reynolds_number(V, c_length)
-                airfoil = Airfoil(self.plane.wings["main_wing"].airfoil)
+                x_hinge = 1 - self.plane.wings["main_wing"].segments[0].flap_chord_ratio
+                airfoil = Airfoil(self.plane.wings["main_wing"].airfoil, x_hinge=x_hinge)
                 self.flap_angle = airfoil.check_for_best_flap_setting(re, CL)
             self.Aero.evaluate(CL=CL, V=V, FLAP=self.flap_angle)
             D = self.get_drag_force(V)
@@ -138,7 +141,7 @@ class HorizontalFlight:
 
         v_min = self.flight_velocity(self.cl_start)
         v_max = self.flight_velocity(self.cl_end)
-        res = root_scalar(func, bracket=(v_min, v_max), method="brentq", xtol=0.1)
+        res = root_scalar(func, bracket=(v_min, v_max), method="brentq", xtol=self.xtol)
         func(res.root, return_values=True)
         return res.root
 

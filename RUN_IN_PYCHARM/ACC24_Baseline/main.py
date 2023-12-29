@@ -111,6 +111,7 @@ def analysis(
     takeoff_analysis.v_wind = 2.2  # 3.08 average in Aachen
     takeoff_analysis.v_start_counter = 1.333
     takeoff_analysis.show_plot = False
+    takeoff_analysis.cl_max_factor = 1.0
     take_off_length, take_off_time = takeoff_analysis.evaluate()
     logging.debug("S TakeOff: %.1f m" % take_off_length)
     logging.info(f"Finished Task TakeOff")
@@ -121,7 +122,9 @@ def analysis(
 
     # Run Climb Analysis
     climb_analysis = Climb(Aircraft)
+    climb_analysis.sensitivity_study_drag_factor = 1.0
     climb_analysis.optimize_flap_angle = True
+    climb_analysis.tolerance = 0.1# / 10
     climb_analysis.mid_time = (
         (climb_time - take_off_time - transition_time) / 2
         + take_off_time
@@ -137,7 +140,9 @@ def analysis(
 
     # Run Efficiency Analysis
     efficiency_flight = EfficiencyFlight(Aircraft)
+    efficiency_flight.tolerance = 0.1# / 10
     efficiency_flight.batt_time_at_start = climb_time
+    efficiency_flight.Aero.XFOIL.sensitivity_study_drag_factor = 1.05
     e_efficiency, eff_v1, eff_t1, eff_v2 = efficiency_flight.optimizer(
         climb_ias, climb_height, I=30.0
     )
@@ -145,8 +150,10 @@ def analysis(
 
     # Run Cruise Analysis
     cruise_analysis = HorizontalFlight(Aircraft)
+    cruise_analysis.Aero.XFOIL.sensitivity_study_drag_factor = 1.
     cruise_analysis.batt_time_at_start = efficiency_flight.batt_time_at_start + eff_t1
     cruise_analysis.optimize_flap_angle = True
+    cruise_analysis.xtol = 0.1# / 10
     V_max = cruise_analysis.get_maximum_velocity_scipy()
     s_distance = V_max * cruise_time
     logging.info(f"Finished Task Cruise")
@@ -234,13 +241,13 @@ def main():
             continue
 
         for number in input_number:
-            payload = list(np.arange(15, 27, 2) * 0.17)
-            aspect_ratio = [8, 9, 10, 11, 12, 13, 14, 15, 16]
-            wing_area = [0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75]
-            airfoil = ["acc22", "ag19", "ag25", "ag40", "ag45c", "LAK24_v1", "LAK24_v2", "jx-gp-055"]
+            payload = [4.25]
+            aspect_ratio = [10.]
+            wing_area = [0.65]
+            airfoil = ["LAK24_v1"]
             battery_capacity = [2.4]
-            propeller = ["aeronaut16x8", "freudenthaler14x8"]
-            num_fowler_segments = [0, 1]
+            propeller = ["freudenthaler14x8"]
+            num_fowler_segments = [0]
 
             first, second = divmod(number, 9)
             airfoil = [airfoil[first]]

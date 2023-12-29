@@ -42,6 +42,8 @@ class EfficiencyFlight:
         self.plot_surface = False
 
         self.batt_time_at_start = 30.0
+        
+        self.tolerance = 0.1
 
     # def T(self, V, I):
     #     thrust_array = self.plane.propulsion.thrust
@@ -58,7 +60,8 @@ class EfficiencyFlight:
             if self.optimize_flap_angle:
                 c_length = self.plane.reference_values.c_ref
                 re = functions.get_reynolds_number(V, c_length)
-                airfoil = Airfoil(self.plane.wings["main_wing"].airfoil)
+                x_hinge = 1 - self.plane.wings["main_wing"].segments[0].flap_chord_ratio
+                airfoil = Airfoil(self.plane.wings["main_wing"].airfoil, x_hinge=x_hinge)
                 airfoil.print_re_warnings = False
                 self.flap_angle = airfoil.check_for_best_flap_setting(re, CL)
 
@@ -116,6 +119,9 @@ class EfficiencyFlight:
         if np.all(np.isclose(func(root), [0.0, 0.0], atol=1e-1)):
             if print_results:
                 logging.debug(
+                    "->   h1:", round(min(root[0], 100), 1), "v2:", round(root[1], 1)
+                )
+                print(
                     "->   h1:", round(min(root[0], 100), 1), "v2:", round(root[1], 1)
                 )
             return root
@@ -178,11 +184,14 @@ class EfficiencyFlight:
                 res.efficiency_motor_on_cl = cl_1
                 res.efficiency_motor_on_reynolds = re_1
                 res.efficiency_motor_on_flap_angle = flap_angle_1
+                res.efficiency_motor_on_time = t1
 
                 res.efficiency_motor_off_air_speed = v2
                 res.efficiency_motor_off_cl = cl_2
                 res.efficiency_motor_off_reynolds = re_2
                 res.efficiency_motor_off_flap_angle = flap_angle_2
+                res.efficiency_motor_off_time = self.t_ges - t1
+        
 
                 t_avg = self.batt_time_at_start + t1 / 2
                 (
@@ -209,7 +218,7 @@ class EfficiencyFlight:
                 func=objective_function,
                 bounds=[(0, 1), (0, 1)],
                 strategy="best1bin",
-                tol=0.1,
+                tol=self.tolerance,
                 workers=1,
             )
             v1_scale = result.x[0]

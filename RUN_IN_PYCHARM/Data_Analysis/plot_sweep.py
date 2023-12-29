@@ -4,21 +4,27 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from scipy.interpolate import RegularGridInterpolator
 
-# setup
-dir_path = "results_sweep_battery.csv"
-plot_type = "trisurf"  # options: 2d, meshgrid, trisurf
-x_name = "battery_capacity"
-y_name = "wing_area"  # in 2d this is separate lines
-z_name = "take_off_length"  # in 2d this is y-axis
+# Beispiel: Wing loading x Wing Area
+
+dir_path = "aka_v9.csv"
+plot_type = "2d"  # options: 2d, meshgrid, trisurf, contourf
+x_name = "mass_payload"
+y_name = "main_wing_airfoil"  # in 2d this is separate lines
+z_name = "score_round"  # in 2d this is y-axis
 cmap = "viridis_r"
 sep = ","
+interpol = False
 show_plots = True
+zlim = [0, 0]
 constant_parameters = {  # "num_fowler_segments": 4,
-    "mass_payload": 3.57+0.51+0.51,
-    # "span": 2.6,
-    #"aspect_ratio": 8.,
-    #"main_wing_airfoil": "ag45c",
+    #"mass_payload": 4.25,
+    #"wing_area": 0.65,
+    #"aspect_ratio": 10.,
+    # "fowler_affected_area_ratio": 0,
+    # "propeller": "freudenthaler14x8",
+    # "main_wing_airfoil": "LAK24_v1",
 }
 
 
@@ -65,6 +71,31 @@ def plot_function(
         ax.set_ylim([500, 2500])
         plt.grid()
         plt.savefig(dir_path + "/" + file_name + "_" + z_name + ".png")
+    elif plot_type == "contourf":
+        # create the figure to plot
+        if interpol is True:
+            interp = RegularGridInterpolator((X, Y), Z.T, method="cubic")
+
+            x_int_vec = np.linspace(min(x_data), max(x_data), 100)
+            y_int_vec = np.linspace(min(y_data), max(y_data), 100)
+            X, Y = np.meshgrid(x_int_vec, y_int_vec)
+            Z = np.empty([len(x_int_vec), len(y_int_vec)])
+
+
+            for i, x in enumerate(x_int_vec):
+                for j, y in enumerate(y_int_vec):
+                    Z[j, i] = interp([x, y]).T
+                    # Zd[j, i] = interpn((machs, altitudes), Z.T, [ma, alt], method="linear")
+
+        fig = plt.figure(z_name)
+        ax = plt.subplot(1, 1, 1)
+        CS = ax.contourf(X, Y, Z, cmap=cmap)
+        C = ax.contour(X, Y, Z, colors="black", linewidths=0.5)
+        ax.clabel(CS, inline=1, fontsize=10)
+        plt.colorbar(CS, label='Competition Score')
+        ax.set_xlabel(x_name)
+        ax.set_ylabel(y_name)
+        #plt.savefig(dir_path + "/" + file_name + "_" + z_name + ".png")
     else:
         # create the figure to plot
         fig = plt.figure(z_name)
@@ -77,6 +108,8 @@ def plot_function(
         ax.set_ylabel(y_name)
         ax.set_zlabel(z_name)
         ax.set_proj_type("ortho")
+        if zlim != [0, 0]:
+            ax.set_zlim(zlim)
         cbaxes = fig.add_axes(
             [0.9, 0.2, 0.02, 0.6]
         )  # x-pos, y-pos, width, height -> measured from bottom left corner
@@ -105,7 +138,8 @@ for key, value in constant_parameters.items():
     else:
         df = df[np.isclose(df[key], value, rtol=1e-03)]
 
-#df = df[df["score_round"] > 0.0]
+df = df[df["score_round"] > 0.0]
+#df = df[df["wing_loading"] < 9.6]
 if z_name == "all":
     cols = list(df.columns)
     cols = cols[2:]

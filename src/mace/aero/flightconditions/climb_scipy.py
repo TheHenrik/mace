@@ -27,9 +27,13 @@ class Climb:
         self.optimize_flap_angle = True
 
         self.mid_time = 15.0
+        
+        self.tolerance = 0.1
+        self.sensitivity_study_drag_factor = 1.0
 
     def evaluate(self, CL, return_values=False):
         Aero = Aerodynamics(self.plane)
+        Aero.XFOIL.sensitivity_study_drag_factor = self.sensitivity_study_drag_factor
         # T = GeneralFunctions(self.plane).current_thrust
         T = self.plane.evaluate_thrust
 
@@ -42,7 +46,8 @@ class Climb:
         if self.optimize_flap_angle:
             c_length = self.plane.reference_values.c_ref
             re = functions.get_reynolds_number(V0, c_length)
-            airfoil = Airfoil(self.plane.wings["main_wing"].airfoil)
+            x_hinge = 1 - self.plane.wings["main_wing"].segments[0].flap_chord_ratio
+            airfoil = Airfoil(self.plane.wings["main_wing"].airfoil, x_hinge=x_hinge)
             self.flap_angle = airfoil.check_for_best_flap_setting(re, CL)
 
         def func(x):
@@ -80,7 +85,7 @@ class Climb:
             self.evaluate,
             bounds=(self.cl_start, self.cl_end),
             method="bounded",
-            tol=0.1,
+            tol=self.tolerance,
         )
         v = self.evaluate(res.x, return_values=True)
         return -res.fun, v

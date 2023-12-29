@@ -14,13 +14,13 @@ from mace.domain.wing import Wing, WingSegment, WingSegmentBuild
 
 
 def vehicle_setup(
-    payload=3.5,
-    wing_area=0.6, #ACC17=1.22, ACC22=0.61
-    aspect_ratio=12., #ACC17=12.52, ACC22=9.6
-    airfoil="ag40", #acc22
+    payload=4.25,
+    wing_area=0.65, #ACC17=1.22, ACC22=0.61
+    aspect_ratio=10., #ACC17=12.52, ACC22=9.6
+    airfoil="LAK24_v1", #acc22
     num_fowler_segments=0, #ACC17=0, ACC22=4
     battery_capacity=2.4,
-    propeller="aeronaut14x8",
+    propeller="freudenthaler14x8",
 ) -> Vehicle:
 
     vehicle = Vehicle()
@@ -233,7 +233,7 @@ def vehicle_setup(
     # HORIZONTAL STABILIZER
     horizontal_stabilizer = Wing()
     horizontal_stabilizer.tag = "horizontal_stabilizer"
-    horizontal_stabilizer.origin = [b_ref * 0.3 + 0.4*MAC, 0, 0.0]
+    horizontal_stabilizer.origin = [b_ref * 0.3 + 0.4*MAC, 0, 0.0] # + 0.3
     horizontal_stabilizer.airfoil = "ht14"
 
     # Resize Wing

@@ -637,7 +637,7 @@ class Wing:
     ):
         wing_span = self.segments[-1].nose_outer[1]
         part_len = min(2 * wing_span / into_parts, max_lenght)
-        current = 0 if ((2 * wing_span) // part_len) % 2 == 0 else part_len / 2
+        current = 0 if np.ceil((2 * wing_span) / part_len) % 2 == 0 else part_len / 2
         pos = []
         while current < wing_span:
             pos.append(current)

@@ -29,7 +29,7 @@ from mace.domain.results import (
     HorizontalFlightResults,
 )
 from mace.domain.wing import Wing, WingSegment
-
+from mace.utils.mesh import get_profil_thickness
 
 class Vehicle:
     wings: dict[str, Wing] = None
@@ -356,34 +356,45 @@ class Vehicle:
     def transport_box_dimensions(self):
         """
         Checks if the box dimensions are correct
+
+        box height equals the maximum of: wing chord, fuselage width, cargo bay width
+        box width equals the sum of: segment thickness, cargo bay height, fuselage height
         """
+        max_length: float = 0.1
         box_height: float = 0
         box_width: float = 0
         box_length: float = 0
         airfoil_thickness_to_chord: float = 0.1
 
-        for wing in self.wings.values():
-            for segment in wing.segments:
-                box_height = max(box_height, segment.inner_chord, segment.outer_chord)
-                box_width += segment.inner_chord * airfoil_thickness_to_chord
-        pass
+        while max_length > box_length:
+            box_width = 0
+            max_length = 0
 
-        for fuse in self.fuselages.values():
-            fuse_other_dimension = 0
-            for segment in fuse.segments:
-                if segment.width > segment.height:
-                    box_height = max(box_height, segment.width)
-                    fuse_other_dimension = max(fuse_other_dimension, segment.height)
-                else:
-                    box_height = max(box_height, segment.height)
-                    fuse_other_dimension = max(fuse_other_dimension, segment.width)
-            box_width += fuse_other_dimension
+            for wing in self.wings.values():
+                for i, segment in enumerate(wing.segments):
+                    box_height = max(box_height, segment.inner_chord, segment.outer_chord)
+                    if i == 0:
+                        airfoil_thickness_to_chord = get_profil_thickness(wing.airfoil)
+                        box_width += segment.inner_chord * airfoil_thickness_to_chord * wing.number_of_parts
+                    #box_width += segment.inner_chord * airfoil_thickness_to_chord
+            pass
 
-        box_length = 1.4 - box_height - box_width
+            for fuse in self.fuselages.values():
+                fuse_other_dimension = 0
+                for segment in fuse.segments:
+                    if segment.width > segment.height:
+                        box_height = max(box_height, segment.width)
+                        fuse_other_dimension = max(fuse_other_dimension, segment.height)
+                    else:
+                        box_height = max(box_height, segment.height)
+                        fuse_other_dimension = max(fuse_other_dimension, segment.width)
+                box_width += fuse_other_dimension
+            
+            box_length = 1.4 - box_width - box_height
+            for wing in self.wings.values():
+                max_length = max(max_length, wing.span / wing.number_of_parts)
+                wing.number_of_parts = int(np.ceil(wing.span / box_length))
 
-        for wing in self.wings.values():
-            wing.number_of_parts = int(np.ceil(wing.span / box_length))
-            logging.debug(f"Wing {wing.tag} has {wing.number_of_parts} parts")
 
         logging.debug(f"Box height: %.2f m" % box_height)
         logging.debug(f"Box width: %.2f m" % box_width)

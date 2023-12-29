@@ -21,6 +21,7 @@ class Airfoil:
         x_hinge: float = 0.75,
         z_hinge: float = 0.0,
         drag_correction_factor: float = 1.09,
+        sensitivity_study_factor: float = 1.0,
     ):
         """
          Initialize the airfoil
@@ -79,8 +80,8 @@ class Airfoil:
         self.xtr_bot = 100
 
         self.flap_angle = flap_angle
-        self.x_hinge = 0.75
-        self.z_hinge = 0.0
+        self.x_hinge = x_hinge
+        self.z_hinge = z_hinge
 
         self.print_re_warnings = True
         self.must_rebuild_surrogate = False
@@ -88,6 +89,7 @@ class Airfoil:
         self.flap_angle_list = np.arange(-4, 12, 2)
 
         self.drag_correction_factor = drag_correction_factor
+        self.sensitivity_study_factor = sensitivity_study_factor
 
     def build_single_flap_surrogate(self):
         """
@@ -507,7 +509,10 @@ class Airfoil:
         )
 
         CD = np.interp(re, [lower_re, upper_re], [CDv_lower, CDv_upper])
-
+        
+        if self.sensitivity_study_factor != 1.0:
+            CD = CD * self.sensitivity_study_factor
+            
         return CD
 
     def get_cl_max(self, re: float) -> float:
@@ -591,9 +596,9 @@ class Airfoil:
 
 if __name__ == "__main__":
 
-    airf = Airfoil("acc22", flap_angle=12.0)
+    airf = Airfoil("acc22", flap_angle=12.0, x_hinge=0.6)
     # airf.flap_angle_list = np.array([0, 6])
-    # airf.must_rebuild_surrogate = True
+    airf.must_rebuild_surrogate = True
     # airf.re_list = np.array([100000, 200000])
 
     # CD = airf.get_cd(136000, 1.0)
