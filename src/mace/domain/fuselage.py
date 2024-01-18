@@ -112,13 +112,14 @@ class Fuselage:
         cog = np.array([0.0, 0.0, 0.0])
         for i in range(lenght - 1):
             a, b, c = mesh(self.segments[i].profile, self.segments[i + 1].profile)
-            cog += c * area
+            cog += c * a
             area += a
             volume += b
+
         self.mass = area * self.area_specific_mass
         self.volume = volume * self.volume_specific_mass
         self.area = area
-        self.cog = cog * area
+        self.cog = cog / area
 
         return self.mass, cog * self.mass
 

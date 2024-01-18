@@ -349,7 +349,7 @@ class AVL:
 
             SM = -Cma / CLa
             l_mu = self.plane.wings["main_wing"].mean_aerodynamic_chord
-            ac = self.plane.wings["main_wing"].neutral_point[0]
+            ac = self.plane.wings["main_wing"].neutral_point[0] + self.plane.wings["main_wing"].origin[0]
             XCG = XNP - SM * self.plane.wings["main_wing"].mean_aerodynamic_chord
             percentMAC = (XCG - (ac - 0.25 * l_mu)) / l_mu
 
@@ -364,7 +364,7 @@ class AVL:
             logging.debug("percentMAC: %.1f %%" % (100 * percentMAC))
             logging.debug("\n")
 
-            return CLa, Cma, Cnb, XNP, SM
+            return CLa, Cma, Cnb, XNP, SM, percentMAC
 
 
 def read_avl_output():

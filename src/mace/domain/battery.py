@@ -20,6 +20,7 @@ class Battery:
 
         self.capacity_specific_mass = 0.0776
         self.mass_offset = 0.0272
+        self.origin = np.array([0.0, 0.0, 0.0])
 
     def get_voltage(self, i, t):
         # Correction to account slow current increase (wrong esc setting during measurement)

@@ -247,7 +247,7 @@ class EfficiencyFlight:
             for i, v1 in enumerate(v1_vec):
                 for j, t1 in enumerate(t1_vec):
                     points[i, j] = -1.0 * objective_function(
-                        [v1, t1], print_results=True
+                        [v1, t1], print_results=False
                     )
             x, y = np.meshgrid(v1_vec, t1_vec)
             fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
@@ -294,9 +294,10 @@ if __name__ == "__main__":
     from mace.aero.implementations.avl import (
         geometry_and_mass_files_v2 as geometry_and_mass_files,
     )
-    from mace.test.vehicle_setup_acc import vehicle_setup
+    from mace.test.vehicle_setup_acc_v2 import vehicle_setup
 
     Aircraft = vehicle_setup()
+    print(Aircraft.mass)
     Aircraft.mass -= 0.0
     mass_file = geometry_and_mass_files.MassFile(Aircraft)
     mass_file.build_mass_file()
@@ -306,7 +307,7 @@ if __name__ == "__main__":
 
     efficiency_flight = EfficiencyFlight(Aircraft)
     efficiency_flight.plot_surface = True
-    v0 = 17.1
-    h0 = 40.28
+    v0 = 15.1
+    h0 = 2.47 * 19.8
     efficiency_flight.optimizer(v0, h0)
     # print(result)

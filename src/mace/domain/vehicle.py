@@ -37,6 +37,8 @@ class Vehicle:
     def __init__(self):
         self.tag = "Vehicle"
         self.payload = 0.0
+        self.center_of_gravity_payload = np.array([0.0, 0.0, 0.0])
+
         self.mass = 0.0
         self.center_of_gravity = [0.0, 0.0, 0.0]
         self.wings = {}
@@ -287,9 +289,9 @@ class Vehicle:
         geometry_file.build_geometry_file()
 
         avl = AVL(self)
-        CLa, Cma, Cnb, XNP, SM = avl.get_stability_data()
+        CLa, Cma, Cnb, XNP, SM, percentMAC = avl.get_stability_data()
 
-        return CLa, Cma, Cnb, XNP, SM
+        return CLa, Cma, Cnb, XNP, SM, percentMAC
 
     def build(self):
         """
@@ -332,16 +334,18 @@ class Vehicle:
 
         mass["landing_gear"], weighted_cog["landing_gear"] = (
             self.landing_gear.mass,
-            self.landing_gear.center_of_gravity,
+            self.landing_gear.center_of_gravity * self.landing_gear.mass,
         )
 
         for misc in self.miscs:
             mass[misc.name] = misc.mass
-            weighted_cog[misc.name] = misc.position
+            weighted_cog[misc.name] = misc.position * misc.mass
 
         mass["payload"] = self.payload
+        weighted_cog["payload"] = self.center_of_gravity_payload * self.payload
 
         mass["battery"] = self.battery.get_mass()
+        weighted_cog["battery"] = self.battery.origin * mass["battery"]
 
         self.mass = sum(mass.values())
         self.center_of_gravity = sum(weighted_cog.values()) / self.mass
