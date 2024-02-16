@@ -445,7 +445,7 @@ def vehicle_setup(
     # vehicle.wings["main_wing"].part_wing_into(4, vehicle.mass, override=True)
     vehicle.print_mass_table()
     vehicle.get_reference_values()
-    CLa, Cma, Cnb, XNP, SM = vehicle.get_stability_derivatives()
+    CLa, Cma, Cnb, XNP, SM, percentMAC = vehicle.get_stability_derivatives()
     box_height, box_width, box_length = vehicle.transport_box_dimensions()
 
     logging.debug(f"Vehicle Mass: {vehicle.mass:.3f}")

@@ -21,9 +21,7 @@ def vehicle_setup(
     num_fowler_segments=0, #ACC17=0, ACC22=4
     battery_capacity=3.,
     propeller="freudenthaler14x8",
-    main_wing_x=0.18,
-    battery_origin_x=-0.1,
-    front_wheel_percent_mac=0.2,
+    main_wing_x=0.25,
 ) -> Vehicle:
 
     vehicle = Vehicle()
@@ -49,14 +47,14 @@ def vehicle_setup(
     main_wing.tag = "main_wing"
     main_wing.origin = [main_wing_x, 0, -0.04]
     main_wing.airfoil = airfoil
-    main_wing.angle = 0.
+    main_wing.angle = 2.0
     main_wing.symmetric = True
 
     segment = WingSegment()
     segment.flap_chord_ratio = 0.3
-    segment.span = 0.424
-    segment.inner_chord = 0.298
-    segment.outer_chord = 0.298
+    segment.span = 0.25
+    segment.inner_chord = 0.222
+    segment.outer_chord = 0.222
     segment.dihedral = 0
     segment.inner_x_offset = 0.0
     segment.outer_x_offset = -0.001
@@ -68,10 +66,10 @@ def vehicle_setup(
 
     segment = WingSegment()
     segment.flap_chord_ratio = 0.3
-    segment.span = 0.607 - 0.424
-    segment.inner_chord = 0.298
-    segment.outer_chord = 0.285
-    segment.dihedral = 5
+    segment.span = 0.25
+    segment.inner_chord = 0.222
+    segment.outer_chord = 0.222
+    segment.dihedral = 0
     segment.inner_x_offset = -0.001
     segment.outer_x_offset = -0.002
     segment.control = True
@@ -82,9 +80,9 @@ def vehicle_setup(
 
     segment = WingSegment()
     segment.flap_chord_ratio = 0.3
-    segment.span = 0.780 - 0.607
-    segment.inner_chord = 0.285
-    segment.outer_chord = 0.266
+    segment.span = 0.2
+    segment.inner_chord = 0.222
+    segment.outer_chord = 0.210
     segment.dihedral = 5
     segment.inner_x_offset = -0.002
     segment.outer_x_offset = 0.002
@@ -96,9 +94,9 @@ def vehicle_setup(
 
     segment = WingSegment()
     segment.flap_chord_ratio = 0.3
-    segment.span = 0.953 - 0.780
-    segment.inner_chord = 0.266
-    segment.outer_chord = 0.234
+    segment.span = 0.2
+    segment.inner_chord = 0.210
+    segment.outer_chord = 0.197
     segment.dihedral = 5
     segment.inner_x_offset = 0.004
     segment.outer_x_offset = 0.003
@@ -110,9 +108,9 @@ def vehicle_setup(
 
     segment = WingSegment()
     segment.flap_chord_ratio = 0.3
-    segment.span = 1.083 - 0.953
-    segment.inner_chord = 0.234
-    segment.outer_chord = 0.194
+    segment.span = 0.2
+    segment.inner_chord = 0.197
+    segment.outer_chord = 0.174
     segment.dihedral = 5
     segment.inner_x_offset = 0.003
     segment.outer_x_offset = 0.013
@@ -124,9 +122,9 @@ def vehicle_setup(
 
     segment = WingSegment()
     segment.flap_chord_ratio = 0.3
-    segment.span = 1.17 - 1.083
-    segment.inner_chord = 0.194
-    segment.outer_chord = 0.155
+    segment.span = 0.15
+    segment.inner_chord = 0.174
+    segment.outer_chord = 0.144
     segment.dihedral = 5
     segment.inner_x_offset = 0.013
     segment.outer_x_offset = 0.028
@@ -138,9 +136,9 @@ def vehicle_setup(
 
     segment = WingSegment()
     segment.flap_chord_ratio = 0.3
-    segment.span = 1.23 - 1.17
-    segment.inner_chord = 0.155
-    segment.outer_chord = 0.107
+    segment.span = 0.1
+    segment.inner_chord = 0.144
+    segment.outer_chord = 0.115
     segment.dihedral = 5
     segment.inner_x_offset = 0.028
     segment.outer_x_offset = 0.045
@@ -152,9 +150,9 @@ def vehicle_setup(
 
     segment = WingSegment()
     segment.flap_chord_ratio = 0.3
-    segment.span = 1.273 - 1.23
-    segment.inner_chord = 0.107
-    segment.outer_chord = 0.067
+    segment.span = 0.07
+    segment.inner_chord = 0.115
+    segment.outer_chord = 0.08
     segment.dihedral = 5
     segment.inner_x_offset = 0.045
     segment.outer_x_offset = 0.068
@@ -164,6 +162,19 @@ def vehicle_setup(
     segment.wsb = main_wing_construction
     main_wing.add_segment(segment)
 
+    segment = WingSegment()
+    segment.flap_chord_ratio = 0.3
+    segment.span = 0.05
+    segment.inner_chord = 0.08
+    segment.outer_chord = 0.05
+    segment.dihedral = 5
+    segment.inner_x_offset = 0.068
+    segment.outer_x_offset = 0.09
+    segment.control = True
+    if num_fowler_segments >= 4:
+        segment.control_name = "fowler"
+    segment.wsb = main_wing_construction
+    main_wing.add_segment(segment)
 
     # Resize Wing
     main_wing.hinge_angle = 0.0
@@ -229,107 +240,91 @@ def vehicle_setup(
 
     battery = Battery()
     battery.capacity = battery_capacity
-    battery.origin = np.array([battery_origin_x, 0, 0])
+    battery.origin = np.array([-0.1, 0, 0])
 
     vehicle.battery = battery
     ####################################################################################################################
     # FUSELAGE
-    fuselage = Fuselage()
-
-    fuselage.add_segment(
-        origin=[-0.25, 0, 0.0], shape="rectangular", width=0.04, height=0.04
-    )
-    fuselage.add_segment(
-        origin=[-0.15, 0, 0.0], shape="rectangular", width=0.09, height=0.06
-    )
-    fuselage.add_segment(
-        origin=[0., 0, 0], shape="rectangular", width=0.11, height=0.07
-    )
-    fuselage.add_segment(
-        origin=[0.85, 0, 0], shape="rectangular", width=0.11, height=0.07
-    )
-    fuselage.add_segment(
-        origin=[0.85 + 0.2, 0, 0.0], shape="rectangular", width=0.09, height=0.06
-    )
-    fuselage.add_segment(
-        origin=[0.85 + 0.3, 0, 0.0], shape="rectangular", width=0.04, height=0.04
-    )
-    fuselage.add_segment(
-        origin=[0.85 + 0.6, 0, 0.0], shape="rectangular", width=0.04, height=0.04
-    )
-
-    fuselage.area_specific_mass = 0.616
-    fuselage.build()
-    logging.debug("f_length: %.3f m" % fuselage.length)
-    vehicle.add_fuselage("fuselage", fuselage)
+    # fuselage = Fuselage()
+    #
+    # fuselage.add_segment(
+    #     origin=[-0.25, 0, 0.0], shape="rectangular", width=0.04, height=0.04
+    # )
+    # fuselage.add_segment(
+    #     origin=[-0.15, 0, 0.0], shape="rectangular", width=0.09, height=0.06
+    # )
+    # fuselage.add_segment(
+    #     origin=[0., 0, 0], shape="rectangular", width=0.11, height=0.07
+    # )
+    # fuselage.add_segment(
+    #     origin=[0.85, 0, 0], shape="rectangular", width=0.11, height=0.07
+    # )
+    # fuselage.add_segment(
+    #     origin=[0.85 + 0.2, 0, 0.0], shape="rectangular", width=0.09, height=0.06
+    # )
+    # fuselage.add_segment(
+    #     origin=[0.85 + 0.3, 0, 0.0], shape="rectangular", width=0.04, height=0.04
+    # )
+    # fuselage.add_segment(
+    #     origin=[0.85 + 0.6, 0, 0.0], shape="rectangular", width=0.04, height=0.04
+    # )
+    #
+    # fuselage.area_specific_mass = 0.616
+    # fuselage.build()
+    # logging.debug("f_length: %.3f m" % fuselage.length)
+    # vehicle.add_fuselage("fuselage", fuselage)
     ####################################################################################################################
     # LANDING GEAR
-    landing_gear = LandingGear()
-
-    # Nose wheel
-    wheel1 = Wheel()
-    wheel1.diameter = 0.07
-    wheel1.drag_correction = 0.  # 3.
-    wheel1.origin = np.array(
-        [1.33, 0.0, -0.02]
-    )
-    landing_gear.add_wheel(wheel1)
-
-    sporn_auflage_x = wheel1.origin[0]
-    sporn_auflage_z = wheel1.origin[2] - wheel1.diameter / 2.0
-    root_chord = main_wing.segments[0].inner_chord
-    main_wheel_origin_x = main_wing_x + front_wheel_percent_mac * root_chord
-
-    delta_x = sporn_auflage_x - main_wheel_origin_x
-    delta_z = np.tan(10 / 180 * np.pi) * delta_x
-
-    main_wheel_auflage_z = sporn_auflage_z - delta_z
-    main_wheel_diameter = 0.13
-    main_wheel_origin_z = main_wheel_auflage_z + main_wheel_diameter / 2.0
-    main_wheel_origin_y = abs(main_wheel_auflage_z  - main_wing.origin[2]) + 0.02
-
-    # Main wheels
-    wheel2 = Wheel()
-    wheel2.diameter = main_wheel_diameter
-    wheel2.drag_correction = 0.  # 3.
-    wheel2.origin = np.array(
-        [
-            main_wheel_origin_x,
-            main_wheel_origin_y,
-            main_wheel_origin_z,
-        ]
-    )
-    landing_gear.add_wheel(wheel2)
-
-    # Main wheels
-    wheel3 = Wheel()
-    wheel3.diameter = main_wheel_diameter
-    wheel3.drag_correction = 0.  # 3.
-    wheel3.origin = np.array(
-        [
-            main_wheel_origin_x,
-            -main_wheel_origin_y,
-            main_wheel_origin_z,
-        ]
-    )
-
-    print(wheel3.origin)
-    landing_gear.add_wheel(wheel3)
-
-    Height = -main_wheel_auflage_z
-    landing_gear.height = Height
-
-    # Landing gear strut
-    strut = Strut()
-    strut.mass = 0.08
-    strut.origin = np.array([vehicle.center_of_gravity[0] + 0.1, 0, wheel2.origin[2]])
-    strut.effective_drag_length = (wheel2.origin[1] ** 2 + wheel2.origin[2] ** 2) ** 0.5 * 2 + abs(wheel1.origin[2])
-    strut.length_specific_cd = 0.  # 0.003
-    landing_gear.add_strut(strut)
-
-    landing_gear.finalize()
-
-    vehicle.landing_gear = landing_gear
+    # Height = 0.3
+    # landing_gear = LandingGear()
+    # landing_gear.height = Height
+    #
+    # # Nose wheel
+    # wheel1 = Wheel()
+    # wheel1.diameter = 0.09
+    # wheel1.drag_correction = 0.  # 3.
+    # wheel1.origin = np.array(
+    #     [1.35, 0.0, -0.07]
+    # )
+    # landing_gear.add_wheel(wheel1)
+    #
+    # # Main wheels
+    # wheel2 = Wheel()
+    # wheel2.diameter = 0.14
+    # wheel2.drag_correction = 0.  # 3.
+    # wheel2.origin = np.array(
+    #     [
+    #         main_wing_x + 0.1,
+    #         0.25,
+    #         -(Height - wheel2.diameter / 2.0),
+    #     ]
+    # )
+    # landing_gear.add_wheel(wheel2)
+    #
+    # # Main wheels
+    # wheel3 = Wheel()
+    # wheel3.diameter = wheel2.diameter
+    # wheel3.drag_correction = 0.  # 3.
+    # wheel3.origin = np.array(
+    #     [
+    #         main_wing_x + 0.1,
+    #         -wheel2.origin[1],
+    #         wheel2.origin[2]]
+    # )
+    # wheel3.origin[1] = -wheel2.origin[1]
+    # landing_gear.add_wheel(wheel3)
+    #
+    # # Landing gear strut
+    # strut = Strut()
+    # strut.mass = 0.08
+    # strut.origin = np.array([vehicle.center_of_gravity[0] + 0.1, 0, wheel2.origin[2]])
+    # strut.effective_drag_length = (wheel2.origin[1] ** 2 + wheel2.origin[2] ** 2) ** 0.5 * 2 + abs(wheel1.origin[2])
+    # strut.length_specific_cd = 0.  # 0.003
+    # landing_gear.add_strut(strut)
+    #
+    # landing_gear.finalize()
+    #
+    # vehicle.landing_gear = landing_gear
 
     ####################################################################################################################
 
@@ -394,9 +389,9 @@ def vehicle_setup(
         area_fowler / vehicle.reference_values.s_ref
     )
 
-    vehicle.results.fuselage_wetted_area = vehicle.fuselages["fuselage"].area
-    vehicle.results.fuselage_length = vehicle.fuselages["fuselage"].length
-    vehicle.results.fuselage_diameter = vehicle.fuselages["fuselage"].diameter
+    # vehicle.results.fuselage_wetted_area = vehicle.fuselages["fuselage"].area
+    # vehicle.results.fuselage_length = vehicle.fuselages["fuselage"].length
+    # vehicle.results.fuselage_diameter = vehicle.fuselages["fuselage"].diameter
 
     #vehicle.results.cargo_bay_length = vehicle.fuselages["cargo_bay"].length
     #vehicle.results.cargo_bay_wetted_area = vehicle.fuselages["cargo_bay"].area
@@ -405,7 +400,7 @@ def vehicle_setup(
     vehicle.results.mass_empty = vehicle.mass - vehicle.payload
     vehicle.results.mass_payload = vehicle.payload
     vehicle.results.mass_battery = vehicle.battery.get_mass()
-    vehicle.results.mass_fuselage = vehicle.fuselages["fuselage"].mass
+#    vehicle.results.mass_fuselage = vehicle.fuselages["fuselage"].mass
 #    vehicle.results.mass_cargo_bay = vehicle.fuselages["cargo_bay"].mass
     vehicle.results.mass_wing = vehicle.wings["main_wing"].mass
     vehicle.results.mass_horizontal_stabilizer = vehicle.wings[

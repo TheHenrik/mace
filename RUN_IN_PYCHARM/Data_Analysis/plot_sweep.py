@@ -8,8 +8,8 @@ from scipy.interpolate import RegularGridInterpolator
 
 # Beispiel: Wing loading x Wing Area
 
-dir_path = "2024-1-16.csv"
-plot_type = "2d"  # options: 2d, meshgrid, trisurf, contourf
+dir_path = "2024-1-19.csv"
+plot_type = "meshgrid"  # options: 2d, meshgrid, trisurf, contourf
 x_name = "mass_payload"
 y_name = "wing_area"  # in 2d this is separate lines
 z_name = "score_round"  # in 2d this is y-axis
@@ -21,9 +21,9 @@ zlim = [0, 0]
 constant_parameters = {  # "num_fowler_segments": 4,
     #"mass_payload": 4.25,
     #"wing_area": 0.65,
-    #"aspect_ratio": 10.,
+    "aspect_ratio": 10.,
     # "fowler_affected_area_ratio": 0,
-    "propeller": "freudenthaler14x8",
+    # "propeller": "freudenthaler14x8",
     # "main_wing_airfoil": "LAK24_v1",
 }
 

@@ -61,7 +61,7 @@ class TakeOff:
         S_vec = []
         V_vec = []
         while CL_MAX < self.cl_safety_factor * REQ_CL and T < 20:
-            self.aero.evaluate(CL=None, V=V, FLAP=self.flap_angle, ALPHA=0.0)
+            self.aero.evaluate(CL=None, V=V, FLAP=self.flap_angle, ALPHA=2.0)
             CL = self.plane.aero_coeffs.lift_coeff.cl_tot
             CD = self.plane.aero_coeffs.drag_coeff.cd_tot
 
@@ -102,6 +102,7 @@ class TakeOff:
         res.take_off_time_from_counter_start = T
         res.take_off_time_total = T_total
         res.cl_max_at_take_off = CL_MAX
+        res.required_cl_at_take_off = REQ_CL
         res.assumed_wind_speed = V_wind
         res.take_off_ground_speed = V
         res.take_off_air_speed = V + V_wind

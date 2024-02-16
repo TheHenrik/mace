@@ -142,7 +142,7 @@ def analysis(
     efficiency_flight = EfficiencyFlight(Aircraft)
     efficiency_flight.tolerance = 0.1# / 10
     efficiency_flight.batt_time_at_start = climb_time
-    efficiency_flight.Aero.XFOIL.sensitivity_study_drag_factor = 1.0
+    efficiency_flight.Aero.XFOIL.sensitivity_study_drag_factor = 1.05
     e_efficiency, eff_v1, eff_t1, eff_v2 = efficiency_flight.optimizer(
         climb_ias, climb_height, I=30.0
     )
@@ -150,7 +150,7 @@ def analysis(
 
     # Run Cruise Analysis
     cruise_analysis = HorizontalFlight(Aircraft)
-    cruise_analysis.Aero.XFOIL.sensitivity_study_drag_factor = 1.0
+    cruise_analysis.Aero.XFOIL.sensitivity_study_drag_factor = 1.
     cruise_analysis.batt_time_at_start = efficiency_flight.batt_time_at_start + eff_t1
     cruise_analysis.optimize_flap_angle = True
     cruise_analysis.xtol = 0.1# / 10
@@ -241,9 +241,9 @@ def main():
             continue
 
         for number in input_number:
-            payload = [4.25-0.17]
-            aspect_ratio = [10.]
-            wing_area = [0.65]
+            payload = [4.25, 4.25-0.17, 4.25-0.34, 4.25+0.17, 4.25+0.34]
+            aspect_ratio = [9., 9.5, 10., 10.5]
+            wing_area = [0.62, 0.63, 0.64, 0.65]
             airfoil = ["acc24"]
             battery_capacity = [2.4]
             propeller = ["aeronaut14x8"]

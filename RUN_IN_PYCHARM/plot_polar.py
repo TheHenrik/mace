@@ -10,8 +10,8 @@ import os
 tool_path = root()
 airfoil_surrogate_path = Path(tool_path, "data", "surrogates")
 
-airfoils = ['LAK24_v1', 'LAK24_v3']
-re = 5e5
+airfoils = ['LAK24_v1', 'acc24', 'acc24cl']
+re = 300_000
 flap_setting = 0
 
 global_cl_max = 0
