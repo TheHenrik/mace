@@ -34,6 +34,13 @@ class ViscousDrag:
         self.sensitivity_study_drag_factor = 1.0
 
     def match_segment_to_strip(self, surface: int, y: float, z: float):
+        """
+        :param surface: Surface (Wing) number
+        :param y: y-coordinate of the strip (relevant for non-vertical wings)
+        :param z: z-coordinate of the strip (relevant for vertical wings)
+        
+        This function matches the AVL strip to the corresponding Mace wing segment.
+        """
         i = 0
         for wing in self.plane.wings.values():
             if wing.symmetric:
@@ -63,6 +70,7 @@ class ViscousDrag:
         It uses the AVL output file to get the geometry and flight condition. Since AVL is not dependent on the
         flight velocity, the velocity defined in the Plane object is used additionally.
         """
+        
         AVL(self.plane).read_avl_output()
         V = self.plane.aero_coeffs.velocity
         FLAP = self.plane.aero_coeffs.flap_angle

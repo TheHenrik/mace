@@ -21,6 +21,8 @@ class Aerodynamics:
         """
         :param CL: Lift coefficient
         :param V: Velocity
+        :param FLAP: Flap angle (deg) (optional)
+        :param ALPHA: Angle of attack (deg) (optional, instead of CL definition)
 
         Returns the drag coefficient for a given lift coefficient.
         """

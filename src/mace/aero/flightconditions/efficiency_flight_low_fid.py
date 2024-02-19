@@ -21,39 +21,61 @@ warnings.filterwarnings("ignore", category=UserWarning)
 
 
 class EfficiencyFlight:
+    """
+    This method is used to estimate the scoring for the efficiency task in the Air Cargo Challenge 2024.
+    Hereby, the scoring is calculated based on the distance and energy consumption of the aircraft.
+
+    Score = distance^2 / (2 * distance + energy) [Distance in km, Energy in Wh]
+    ... evaluated during in 90 seconds of flight, after a 30 seconds runtime (approx. 25 seconds climb after takeoff)
+
+    The efficiency flight analysis is based on the following assumptions:
+    1. The aircraft flies in 2 stationary conditions: motor on, with velocity v1, full throttle and a duration t1,
+         and motor off, with velocity v2, and a duration t2 = t_ges - t1
+    2. The efficiency flights begins with the initial climb height and speed and ends in the minimum height of 10 m and v2
+    3. A small climb/descent angle is assumed to lower the complexity of the problem
+    4. The calculation is based on an energy method, with initial energy, energy gain and loss and final energy after t1, tges
+    5. An optimization algorithm is used to find the optimal v1 and t1, which maximizes the score
+    """
     def __init__(self, Aircraft: Vehicle) -> None:
+        """
+        :param Aircraft: Vehicle object
+
+        This initializes the efficiency flight analysis by setting up default values
+        """
         self.plane = Aircraft
         self.mass = self.plane.mass
         self.s_ref = self.plane.reference_values.s_ref
-        # self.get_thrust = GeneralFunctions(self.plane).current_thrust
         self.optimize_flap_angle = True
         self.flap_angle = 0.0
         self.Aero = Aerodynamics(self.plane)
         self.Aero.XFOIL.print_re_warnings = False
-
         self.h_end = 10.0
         self.t_ges = 90.0
         self.v_min = 10.0
         self.v_max = 100.0
-
         self.is_drag_surrogate_build = False
         self.drag_surrogate: np.ndarray = None
-
         self.plot_surface = False
-
         self.batt_time_at_start = 30.0
-        
         self.tolerance = 0.1
 
-    # def T(self, V, I):
-    #     thrust_array = self.plane.propulsion.thrust
-    #     thrust_force = I / 30 * np.interp(V, thrust_array[:, 0], thrust_array[:, 1])
-    #     return thrust_force
 
     def T(self, V, t_avg, I):
+        """
+        :param V: Velocity [m/s]
+        :param t_avg: Average total time (from begin of battery discharge) of operating point [s]
+        :param I: Current [A]
+
+        This funtion returns the thrust, under consideration of velocity dependency, throttle condition and battery discharge
+        """
         return self.plane.evaluate_thrust(V, t_avg, I=I)
 
     def get_drag_force(self, V):
+        """
+        :param V: Velocity [m/s]
+
+        This function returns the drag force, while the flap angle is optimized for the current operating point
+        """
         if V > self.v_min:
             CL = self.mass * g / (0.5 * rho * V**2 * self.s_ref)
 
@@ -74,6 +96,12 @@ class EfficiencyFlight:
         return drag_force
 
     def D(self, V):
+        """
+        :param V: Velocity [m/s]
+
+        This function returns the drag force from a built surrogate model, to save computation time.
+        If the surrogate model is not built yet, it is built and saved for future use.
+        """
         vmin = self.v_min
         vmax = self.v_max
         v_vec = np.linspace(vmin, vmax, 20)
@@ -88,6 +116,15 @@ class EfficiencyFlight:
         return drag_force
 
     def equation_system(self, E0, v1, t1, I, print_results=False):
+        """
+        :param E0: Initial energy [J]
+        :param v1: Velocity [m/s]
+        :param t1: Duration of motor on [s]
+        :param I: Current [A]
+        :param print_results: If True, the results are printed
+
+        This function solves the equation system for the efficiency flight analysis
+        """
         T = self.T
         D = self.D
         m = self.mass
@@ -131,6 +168,13 @@ class EfficiencyFlight:
             return [0, 0]
 
     def optimizer(self, v0, h0, I=30):
+        """
+        :param v0: Initial velocity [m/s]
+        :param h0: Initial height [m]
+        :param I: Current [A]
+
+        This function optimizes the efficiency flight analysis for the given aircraft and initial conditions
+        """
         self.v_min = self.get_v_min(v0=v0)
         self.v_max = self.get_v_max(I, v0=self.v_min)
         E0 = 1 / 2 * self.mass * v0**2 + self.mass * g * h0
@@ -260,6 +304,12 @@ class EfficiencyFlight:
             np.save("points_+1600.npy", points)
 
     def get_v_max(self, I, v0=15.0):
+        """
+        :param I: Current [A]
+        :param v0: Initial velocity (optional, for initial guess) [m/s]
+
+        This function returns the maximum velocity for the given aircraft and current
+        """
         def func(v):
             return self.T(v, self.batt_time_at_start, I) - self.get_drag_force(v)
 
@@ -267,6 +317,11 @@ class EfficiencyFlight:
         return v_max
 
     def get_v_min(self, v0=15.0):
+        """
+        :param v0: Initial velocity (optional, for initial guess) [m/s]
+
+        This function returns the minimum velocity (stall speed) for the given aircraft
+        """
         c_length = self.plane.reference_values.c_ref
         airfoil = Airfoil(self.plane.wings["main_wing"].airfoil)
         v_min = v0 - 1
@@ -279,6 +334,16 @@ class EfficiencyFlight:
         return v_min
 
     def get_t1_min(self, v1, v2, I, h0):
+        """
+        :param v1: Velocity with motor on [m/s]
+        :param v2: Velocity with motor off [m/s]
+        :param I: Current [A]
+        :param h0: Initial height [m]
+
+        This function returns the minimum duration of motor on for the given aircraft and initial conditions.
+        It is used to avoid a high number of meaningless combinations in the optimization process, where the aircraft
+        is not able to glide the required time without going below the minimum height.
+        """
         m = self.mass
         D = self.D
         T = self.T
