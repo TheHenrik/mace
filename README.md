@@ -25,11 +25,6 @@ pip install -e .
  pip install -e .[dev]
  ```
 
-To open the GUI run:
-
-```powershell
-mace-gui
-```
 
 If you want to uninstall, run:
 
