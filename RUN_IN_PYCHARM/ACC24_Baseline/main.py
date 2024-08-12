@@ -42,11 +42,11 @@ def handler(file: Path, threads: int, *args, **kwargs):
 
 
 def worker(args, **kwargs):
-    log_path = Path(root(), "temporary", "default.log")
+    log_path = Path(root(), "tmp", "default.log")
     logging.basicConfig(filename=log_path, level=logging.INFO)
     logging.info(f"Started Task{get_pid()}")
     values = analysis(*args, **kwargs)
-    clean_temporary_pid(Path(root(), "temporary"))
+    clean_temporary_pid(Path(root(), "tmp"))
     logging.info(f"Finished Task{get_pid()}")
     return values
 
@@ -207,8 +207,8 @@ def analysis(
 
 
 def main():
-    log_path = Path(root(), "temporary", "default.log")
-    clean_temporary(Path(root(), "temporary"))
+    log_path = Path(root(), "tmp", "default.log")
+    clean_temporary(Path(root(), "tmp"))
     logging.basicConfig(filename=log_path, level=logging.INFO)
     logging.info("Started programm")
     while True:

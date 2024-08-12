@@ -64,8 +64,8 @@ def get_xfoil_polar(
     # ---Inputfile writer---
 
     tool_path = root()
-    polar_file_path = Path(tool_path, "temporary", "polar_file.txt")
-    input_file_path = Path(tool_path, "temporary", f"input_file_xfoil{get_pid()}.in")
+    polar_file_path = Path(tool_path, "tmp", "polar_file.txt")
+    input_file_path = Path(tool_path, "tmp", f"input_file_xfoil{get_pid()}.in")
     xfoil_path = Path(tool_path, "bin", sys.platform, "xfoil")
 
     if os.path.exists(polar_file_path):

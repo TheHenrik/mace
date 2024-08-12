@@ -124,7 +124,7 @@ class ViscousDrag:
         will use an optimized reynoldsnumber. (Therefore cl has to be higher than 0.)
         """
         tool_path = root()
-        logfile_path = os.path.join(tool_path, "temporary", "logfile.txt")
+        logfile_path = os.path.join(tool_path, "tmp", "logfile.txt")
 
         logfile = open(logfile_path, "w")
         cd_local_to_global = 0

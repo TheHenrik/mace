@@ -910,7 +910,7 @@ class GeometryFile:
         Coordinate system: X downstream, Y out the right wing, Z up
         """
         tool_path = root()
-        file_path = Path(tool_path, "temporary", f"geometry_file{get_pid()}.avl")
+        file_path = Path(tool_path, "tmp", f"geometry_file{get_pid()}.avl")
         if os.path.exists(file_path):
             os.remove(file_path)
 
@@ -1300,7 +1300,7 @@ class MassFile:
         these constants default to 1.0, and will need to be changed manually at runtime.
         """
         tool_path = root()
-        file_path = Path(tool_path, "temporary", f"mass_file{get_pid()}.mass")
+        file_path = Path(tool_path, "tmp", f"mass_file{get_pid()}.mass")
         if os.path.exists(file_path):
             os.remove(file_path)
 
