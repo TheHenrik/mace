@@ -118,15 +118,11 @@ def get_xfoil_polar(
         input_file.write(f"quit \n")
 
     # ---Run XFOIL---
-    cmd = str(xfoil_path) + " <" + str(input_file_path)  # external command to run
-    runsub.run_subprocess(cmd)
 
-    polar_data = np.loadtxt(polar_file_path, skiprows=12)
+    cmd = f"{xfoil_path} < {input_file_path}"
+    runsub._run_subprocess(cmd, timeout=15)
 
-    list_of_process_ids = runsub.find_process_id_by_name("xfoil")
-    runsub.kill_subprocesses(list_of_process_ids)
-
-    return polar_data  #   alpha    CL        CD       CDp       CM     Top_Xtr  Bot_Xtr
+    return np.loadtxt(polar_file_path, skiprows=12)  #   alpha    CL        CD       CDp       CM     Top_Xtr  Bot_Xtr
 
 
 # ---Test---
