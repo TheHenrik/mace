@@ -9,9 +9,10 @@ import psutil
 
 def _run_subprocess(cmd, timeout=10):
     try:
-        subprocess.run(
+        p = subprocess.run(
             cmd, capture_output=True, timeout=timeout, shell=True, check=True
         )
+        p.check_returncode()
     except subprocess.TimeoutExpired as err:
         logging.critical(f"Process timed out: {err}")
     except subprocess.CalledProcessError as err:
@@ -29,9 +30,11 @@ def run_subprocess(cmd, timeout=5):
                 cmd, shell=True, start_new_session=True, stdout=devnull
             )
             p.wait(timeout=timeout)
-    except subprocess.TimeoutExpired:
-        # print(p.pid)
-        pass
+            p.kill()
+    except subprocess.TimeoutExpired as err:
+        logging.critical(f"Process timed out: {err}")
+    except subprocess.CalledProcessError as err:
+        logging.error(f"Process returned: {err}")
 
 
 def check_if_process_running(process_name):  # wird derzeit nicht benötigt.
