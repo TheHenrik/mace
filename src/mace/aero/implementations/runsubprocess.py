@@ -19,22 +19,24 @@ def _run_subprocess(cmd, timeout=10):
         logging.error(f"Process returned: {err}")
 
 
-def run_subprocess(cmd, timeout=5):
+def run_subprocess(cmd, timeout=5, killall=False):
     """
     runs a subprocess with an external command cmd.
     """
     # cmd = "C:/Users/Gregor/Documents/Modellflug/Software/XFOIL/xfoil.exe < input_file.in"
     try:
-        with open(os.devnull, "w") as devnull:
-            p = subprocess.Popen(
-                cmd, shell=True, start_new_session=True, stdout=devnull
-            )
-            p.wait(timeout=timeout)
-            p.kill()
+        p = subprocess.Popen(
+            cmd, shell=True, start_new_session=True, stdout=subprocess.DEVNULL
+        )
+        p.wait(timeout=timeout)
     except subprocess.TimeoutExpired as err:
         logging.critical(f"Process timed out: {err}")
+        if killall:
+            kill_subprocesses(find_process_id_by_name("xfoil"))
     except subprocess.CalledProcessError as err:
         logging.error(f"Process returned: {err}")
+    finally:
+        p.kill()
 
 
 def check_if_process_running(process_name):  # wird derzeit nicht benötigt.
@@ -77,14 +79,14 @@ def kill_subprocesses(list_of_process_ids):
     kills all subprocesses with a mentioned PID in the list_of_process_ids.
     """
     if len(list_of_process_ids) > 0:
-        print("Process exists / PID and other details are:")
+        logging.info("Process exists / PID and other details are:")
         for elem in list_of_process_ids:
             process_id = elem["pid"]
             process_name = elem["name"]
             process_creation_time = time.strftime(
                 "%Y-%m-%d-%H:%M:%S", time.localtime(elem["create_time"])
             )
-            print((process_id, process_name, process_creation_time))
+            logging.info((process_id, process_name, process_creation_time))
             os.kill(process_id, signal.SIGTERM)
     else:
         pass

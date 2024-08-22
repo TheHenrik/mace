@@ -120,7 +120,7 @@ def get_xfoil_polar(
     # ---Run XFOIL---
 
     cmd = f"{xfoil_path} < {input_file_path}"
-    runsub._run_subprocess(cmd, timeout=15)
+    runsub.run_subprocess(cmd, timeout=15, killall=True)
 
     return np.loadtxt(polar_file_path, skiprows=12)  #   alpha    CL        CD       CDp       CM     Top_Xtr  Bot_Xtr
 
