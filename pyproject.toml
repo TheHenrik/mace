@@ -7,6 +7,7 @@ name = "mace"
 version = "0.0.1"
 authors = [
   { name="Tjalf Stadel", email="tjalf13+mace@gmail.com" },
+  { name="Jannik Frank", email="jannik.frank@Akamodell.de" },
 ]
 description = "A package for evaluating and analysing modell Aircraft"
 readme = "README.md"
@@ -20,6 +21,8 @@ dependencies=[
     'matplotlib', 
     'tqdm',
     'psutil'
+    'bs4',
+    'requests',
 ]
 
 classifiers = [
@@ -34,8 +37,6 @@ keywords = ["modell aircraft",
 
 [project.optional-dependencies]
 dev = [
-  'bs4',
-  'requests',
   'black',
   'isort',
   'pytest',
