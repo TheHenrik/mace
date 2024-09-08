@@ -51,7 +51,7 @@ class ViscousDrag:
                 break
 
         for segment in this_wing.segments:
-            if this_wing.vertical == False:
+            if not this_wing.vertical:
                 if segment.nose_inner[1] < abs(y) and segment.nose_outer[1] > abs(y):
                     this_segment = segment
                     break

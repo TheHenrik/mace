@@ -38,27 +38,16 @@ keywords = ["modell aircraft",
 
 [project.optional-dependencies]
 dev = [
-  'black',
-  'isort',
   'pytest',
-  'flake8'
 ]
 
 test = [
-  'black',
-  'isort',
   'pytest',
-  'flake8'
 ]
 
 [project.urls]
 "Repository" = "https://github.com/TheHenrik/mace"
 
-[project.gui-scripts]
-mace-gui = "mace:hello_world"
-
-[tool.isort]
-profile = "black"
 
 [tool.pytest.ini_options]
 console_output_style = "progress"
