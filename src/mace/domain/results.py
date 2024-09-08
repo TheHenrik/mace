@@ -145,7 +145,7 @@ class FlightConditions:
 
 
 class Data:
-    def as_csv_line(self, delimitter = ";", header = False) -> str:
+    def as_csv_line(self, delimitter=";", header=False) -> str:
         line = f"{delimitter}".join(map(str, self.__dict__.values())) + "\n"
         if header:
             line = f"{delimitter}".join(map(str, self.__dict__.keys())) + "\n" + line

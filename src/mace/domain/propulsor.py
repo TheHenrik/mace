@@ -30,7 +30,6 @@ if __name__ == "__main__":
     prop.battery_capacity = 2.5
 
     import os
-    from pathlib import Path
 
     tool_path = root()
     prop_surrogate_path = os.path.join(

@@ -1,11 +1,8 @@
-import math
-import time
 
 import numpy as np
 from scipy.optimize import fsolve, minimize_scalar
 
 import mace.aero.generalfunctions as functions
-from mace.aero.generalfunctions import GeneralFunctions
 from mace.aero.implementations.aero import Aerodynamics
 from mace.aero.implementations.airfoil_analyses import Airfoil
 from mace.domain import params
@@ -27,7 +24,7 @@ class Climb:
         self.optimize_flap_angle = True
 
         self.mid_time = 15.0
-        
+
         self.tolerance = 0.1
         self.sensitivity_study_drag_factor = 1.0
 

@@ -108,7 +108,6 @@ class Climb:
         thrust = GeneralFunctions(self.plane).current_thrust
 
         for i, CL in enumerate(CL_list):
-
             # v_iteration_start aus Horizontalflug bestimmen
             if i == 0:
                 V = ((2 * self.mass * self.g) / (CL * self.rho * self.s_ref)) ** 0.5

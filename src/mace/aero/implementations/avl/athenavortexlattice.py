@@ -1,6 +1,5 @@
 import logging
 import os  # operation system
-import stat
 import sys
 from pathlib import Path
 
@@ -21,17 +20,11 @@ class AVL:
         self.plane = plane
         tool_path = root()
         self.avl_path = Path(tool_path, "bin", sys.platform, "avl")
-        self.total_forces_file_name = Path(
-            tool_path, "tmp", f"total_forces{pid}.avl"
-        )
-        self.strip_forces_file_name = Path(
-            tool_path, "tmp", f"strip_forces{pid}.avl"
-        )
+        self.total_forces_file_name = Path(tool_path, "tmp", f"total_forces{pid}.avl")
+        self.strip_forces_file_name = Path(tool_path, "tmp", f"strip_forces{pid}.avl")
         self.input_file_name = Path(tool_path, "tmp", f"input_file_avl{pid}.in")
         self.geometry_file = Path(tool_path, "tmp", f"geometry_file{pid}.avl")
-        self.stability_file_name = Path(
-            tool_path, "tmp", f"stability_file{pid}.avl"
-        )
+        self.stability_file_name = Path(tool_path, "tmp", f"stability_file{pid}.avl")
         self.mass_file = Path(tool_path, "tmp", f"mass_file{pid}.mass")
         self.stability_input_file_name = Path(
             tool_path, "tmp", f"stability_input_file_avl{pid}.in"
@@ -70,7 +63,7 @@ class AVL:
             else:
                 input_file.write(f"MASS {self.mass_file}\n")
             # input_file.write(f'CASE {run_file}\n')
-            input_file.write(f"OPER\n")
+            input_file.write("OPER\n")
             if run_case != 1:  # select run_case
                 input_file.write(f"{run_case}\n")
             if angle_of_attack is not None:  # set angle of attack in degrees
@@ -95,13 +88,13 @@ class AVL:
                 )
 
             input_file.write(
-                f"X\n"
+                "X\n"
             )  # execute runcase, XX executes all runcases but uses last runcase
             if maschine_readable_file:
-                input_file.write(f"MRF\n")  # maschine readable file
-            input_file.write(f"FT\n")  # write total forces
+                input_file.write("MRF\n")  # maschine readable file
+            input_file.write("FT\n")  # write total forces
             input_file.write(f"{self.total_forces_file_name}\n")
-            input_file.write(f"FS\n")  # write strip forces
+            input_file.write("FS\n")  # write strip forces
             input_file.write(f"{self.strip_forces_file_name}\n")
             # input_file.write(f'ST\n')  # write strip forces
             # input_file.write(f'{self.stability_file_name}\n')
@@ -115,7 +108,6 @@ class AVL:
         # runsub.kill_subprocesses(list_of_process_ids)
 
     def read_total_forces_avl_file(self, lines):
-
         # ---Trefftz Plane---
         for line in lines:
             if line.endswith("| Trefftz Plane: CLff, CDff, CYff, e\n"):
@@ -285,7 +277,7 @@ class AVL:
         with open(self.stability_input_file_name, "w") as input_file:
             input_file.write(f"LOAD {self.geometry_file}\n")
             input_file.write(f"MASS {self.mass_file}\n")
-            input_file.write(f"OPER\n")
+            input_file.write("OPER\n")
             input_file.write(f"A C {design_lift_coefficient}\n")
             num_control_surfaces = 0
             if design_flap_angle is not None:  # set flap angle
@@ -302,11 +294,11 @@ class AVL:
                     f"D{num_control_surfaces} D{num_control_surfaces} {design_flap_angle}\n"
                 )
             input_file.write(
-                f"X\n"
+                "X\n"
             )  # execute runcase, XX executes all runcases but uses last runcase
             if machine_readable_file:
-                input_file.write(f"MRF\n")  # maschine readable file
-            input_file.write(f"ST\n")
+                input_file.write("MRF\n")  # maschine readable file
+            input_file.write("ST\n")
             input_file.write(f"{self.stability_file_name}\n")
             input_file.write("\n")
             input_file.write("QUIT\n")
@@ -349,7 +341,10 @@ class AVL:
 
             SM = -Cma / CLa
             l_mu = self.plane.wings["main_wing"].mean_aerodynamic_chord
-            ac = self.plane.wings["main_wing"].neutral_point[0] + self.plane.wings["main_wing"].origin[0]
+            ac = (
+                self.plane.wings["main_wing"].neutral_point[0]
+                + self.plane.wings["main_wing"].origin[0]
+            )
             XCG = XNP - SM * self.plane.wings["main_wing"].mean_aerodynamic_chord
             percentMAC = (XCG - (ac - 0.25 * l_mu)) / l_mu
 

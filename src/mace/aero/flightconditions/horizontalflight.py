@@ -1,4 +1,3 @@
-import time
 
 import numpy as np
 from scipy.interpolate import interp1d
@@ -31,7 +30,7 @@ class HorizontalFlight:
 
         self.batt_time_at_start = 40.0
         self.cruise_time = 90.0
-        
+
         self.xtol = 0.1
 
     def get_drag_force(self, V):
@@ -82,14 +81,10 @@ class HorizontalFlight:
         """
         Returns the maximum velocity in horizontal flight.
         """
-        results = (
-            self.plane.flight_conditions.horizontal_flight.results.thrust_velocity_correlation
-        )
+        results = self.plane.flight_conditions.horizontal_flight.results.thrust_velocity_correlation
         if results is None:
             self.fv_diagramm()
-            results = (
-                self.plane.flight_conditions.horizontal_flight.results.thrust_velocity_correlation
-            )
+            results = self.plane.flight_conditions.horizontal_flight.results.thrust_velocity_correlation
 
         V = results[:, 0]
         D = results[:, 1]
@@ -117,7 +112,9 @@ class HorizontalFlight:
                 c_length = self.plane.reference_values.c_ref
                 re = functions.get_reynolds_number(V, c_length)
                 x_hinge = 1 - self.plane.wings["main_wing"].segments[0].flap_chord_ratio
-                airfoil = Airfoil(self.plane.wings["main_wing"].airfoil, x_hinge=x_hinge)
+                airfoil = Airfoil(
+                    self.plane.wings["main_wing"].airfoil, x_hinge=x_hinge
+                )
                 self.flap_angle = airfoil.check_for_best_flap_setting(re, CL)
             self.Aero.evaluate(CL=CL, V=V, FLAP=self.flap_angle)
             D = self.get_drag_force(V)
@@ -151,14 +148,10 @@ class HorizontalFlight:
         """
         import matplotlib.pyplot as plt
 
-        results = (
-            self.plane.flight_conditions.horizontal_flight.results.thrust_velocity_correlation
-        )
+        results = self.plane.flight_conditions.horizontal_flight.results.thrust_velocity_correlation
         if results is None:
             self.fv_diagramm()
-            results = (
-                self.plane.flight_conditions.horizontal_flight.results.thrust_velocity_correlation
-            )
+            results = self.plane.flight_conditions.horizontal_flight.results.thrust_velocity_correlation
 
         V = results[:, 0]
         D = results[:, 1]

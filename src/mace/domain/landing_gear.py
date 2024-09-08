@@ -11,7 +11,7 @@ class Wheel:
         self.mass: float = 0.0
         self.origin: np.ndarray = np.array([0.0, 0.0, 0.0])
         self.diameter: float = 0.0
-        self.drag_correction: float = 3.
+        self.drag_correction: float = 3.0
 
     def get_drag_coefficient(self, V, S_ref):
         Re_L = V * np.pi / 4 * self.diameter / params.Constants.ny

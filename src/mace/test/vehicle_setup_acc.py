@@ -1,11 +1,9 @@
 import logging
 import os
-from pathlib import Path
 
 import numpy as np
 
-from mace.aero.implementations.avl.athenavortexlattice import AVL
-from mace.domain.fuselage import Fuselage, FuselageSegment
+from mace.domain.fuselage import Fuselage
 from mace.domain.landing_gear import LandingGear, Strut, Wheel
 from mace.domain.vehicle import Vehicle
 from mace.domain.wing import Wing, WingSegment, WingSegmentBuild

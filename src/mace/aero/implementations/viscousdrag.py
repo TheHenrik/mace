@@ -1,7 +1,6 @@
 import logging
 import math
 import os
-from pathlib import Path
 
 import numpy as np
 
@@ -196,10 +195,10 @@ class ViscousDrag:
             if surface > number_of_wing_segments_per_halfspan * 2:
                 pass  # skip to empennage, implemented later
             elif surface % 2 != 0:  # right wing
-                logfile.write(f"right wing\n")
+                logfile.write("right wing\n")
                 list_index = int((surface - 1) / 2)
             elif surface % 2 == 0:  # left wing
-                logfile.write(f"left wing\n")
+                logfile.write("left wing\n")
                 list_index = int(surface / 2)
 
             # hier noch unterscheiden zwischen Naca und nicht Naca
@@ -311,7 +310,7 @@ class ViscousDrag:
                             f"outer_polar sorted (first iteration): {outer_polar}\n"
                         )
                         logfile.write(
-                            f"#############################################################\n"
+                            "#############################################################\n"
                         )
                 else:
                     new_inner_values = xfoilpolars.get_xfoil_polar(
@@ -381,7 +380,7 @@ class ViscousDrag:
                     outer_polar = np.dstack((outer_polar, new_outer_values))
                     logfile.write(f"outer_polar: {outer_polar}\n")
                     logfile.write(
-                        f"####################################################################\n"
+                        "####################################################################\n"
                     )
                     # inner_polar = xfoilpolars.get_xfoil_polar(inner_airfoil, reynolds,
                     #                                          alfa_start=alfa_start[0], alfa_end=alfa_end[0],
@@ -515,9 +514,9 @@ class ViscousDrag:
                     f"cd_local_to_global = {cd_local_to_global}\n"
                 )
 
-                viscous_drag[
-                    surface_original - 1
-                ] += cd_local_to_global  # noch mit surface Dopplung schauen
+                viscous_drag[surface_original - 1] += (
+                    cd_local_to_global  # noch mit surface Dopplung schauen
+                )
             overall_viscous_drag += viscous_drag[surface_original - 1]
         logfile.close()
         self.plane.aero_coeffs.drag_coeff.cd_viscous = overall_viscous_drag

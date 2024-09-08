@@ -1,12 +1,9 @@
 import logging
-import os
-from pathlib import Path
 
 import numpy as np
 
-from mace.aero.implementations.avl.athenavortexlattice import AVL
 from mace.domain.battery import Battery
-from mace.domain.fuselage import Fuselage, FuselageSegment
+from mace.domain.fuselage import Fuselage
 from mace.domain.landing_gear import LandingGear, Strut, Wheel
 from mace.domain.propeller import Propeller
 from mace.domain.vehicle import Vehicle
@@ -15,14 +12,13 @@ from mace.domain.wing import Wing, WingSegment, WingSegmentBuild
 
 def vehicle_setup(
     payload=4.25,
-    wing_area=0.65, #ACC17=1.22, ACC22=0.61
-    aspect_ratio=10., #ACC17=12.52, ACC22=9.6
-    airfoil="LAK24_v3", #acc22
-    num_fowler_segments=0, #ACC17=0, ACC22=4
+    wing_area=0.65,  # ACC17=1.22, ACC22=0.61
+    aspect_ratio=10.0,  # ACC17=12.52, ACC22=9.6
+    airfoil="LAK24_v3",  # acc22
+    num_fowler_segments=0,  # ACC17=0, ACC22=4
     battery_capacity=2.4,
     propeller="freudenthaler14x8",
 ) -> Vehicle:
-
     vehicle = Vehicle()
     vehicle.payload = payload
     vehicle.mass = 2.0
@@ -242,7 +238,7 @@ def vehicle_setup(
     # HORIZONTAL STABILIZER
     horizontal_stabilizer = Wing()
     horizontal_stabilizer.tag = "horizontal_stabilizer"
-    horizontal_stabilizer.origin = [0.85 / 2 + 0.55, 0, 0.0] # + 0.3
+    horizontal_stabilizer.origin = [0.85 / 2 + 0.55, 0, 0.0]  # + 0.3
     horizontal_stabilizer.airfoil = "ht14"
 
     # Resize Wing
@@ -255,7 +251,7 @@ def vehicle_setup(
     S_vt = v_vt * S_ref * b_ref / l_ht
 
     S_vtail = S_ht + S_vt
-    V_tail_angle = np.arctan((S_vt/S_ht)**0.5) / np.pi * 180
+    V_tail_angle = np.arctan((S_vt / S_ht) ** 0.5) / np.pi * 180
 
     # Segment
     segment = WingSegment()
@@ -278,7 +274,9 @@ def vehicle_setup(
     horizontal_stabilizer.aspect_ratio = 7.0
     horizontal_stabilizer.reference_area = S_vtail
 
-    horizontal_stabilizer.build(resize_x_offset_from_hinge_angle=True, resize_areas=True)
+    horizontal_stabilizer.build(
+        resize_x_offset_from_hinge_angle=True, resize_areas=True
+    )
 
     vehicle.add_wing("horizontal_stabilizer", horizontal_stabilizer)
     ####################################################################################################################
@@ -328,16 +326,14 @@ def vehicle_setup(
     # Nose wheel
     wheel1 = Wheel()
     wheel1.diameter = 0.1
-    wheel1.drag_correction = 3.
-    wheel1.origin = np.array(
-        [- 0.1, 0.0, -(Height - wheel1.diameter / 2.0)]
-    )
+    wheel1.drag_correction = 3.0
+    wheel1.origin = np.array([-0.1, 0.0, -(Height - wheel1.diameter / 2.0)])
     landing_gear.add_wheel(wheel1)
 
     # Main wheels
     wheel2 = Wheel()
     wheel2.diameter = 0.14
-    wheel2.drag_correction = 3.
+    wheel2.drag_correction = 3.0
     wheel2.origin = np.array(
         [
             vehicle.center_of_gravity[0] + 0.1,
@@ -350,7 +346,7 @@ def vehicle_setup(
     # Main wheels
     wheel3 = Wheel()
     wheel3.diameter = wheel2.diameter
-    wheel3.drag_correction = 3.
+    wheel3.drag_correction = 3.0
     wheel3.origin = np.array(
         [vehicle.center_of_gravity[0] + 0.1, -wheel2.origin[1], wheel2.origin[2]]
     )
@@ -361,7 +357,9 @@ def vehicle_setup(
     strut = Strut()
     strut.mass = 0.08
     strut.origin = np.array([vehicle.center_of_gravity[0] + 0.1, 0, wheel2.origin[2]])
-    strut.effective_drag_length = (wheel2.origin[1]**2 + wheel2.origin[2]**2)**0.5 * 2 + abs(wheel1.origin[2])
+    strut.effective_drag_length = (
+        wheel2.origin[1] ** 2 + wheel2.origin[2] ** 2
+    ) ** 0.5 * 2 + abs(wheel1.origin[2])
     strut.length_specific_cd = 0.003
     landing_gear.add_strut(strut)
 
@@ -436,20 +434,20 @@ def vehicle_setup(
     vehicle.results.fuselage_length = vehicle.fuselages["fuselage"].length
     vehicle.results.fuselage_diameter = vehicle.fuselages["fuselage"].diameter
 
-    #vehicle.results.cargo_bay_length = vehicle.fuselages["cargo_bay"].length
-    #vehicle.results.cargo_bay_wetted_area = vehicle.fuselages["cargo_bay"].area
+    # vehicle.results.cargo_bay_length = vehicle.fuselages["cargo_bay"].length
+    # vehicle.results.cargo_bay_wetted_area = vehicle.fuselages["cargo_bay"].area
 
     vehicle.results.mass_total = vehicle.mass
     vehicle.results.mass_empty = vehicle.mass - vehicle.payload
     vehicle.results.mass_payload = vehicle.payload
     vehicle.results.mass_battery = vehicle.battery.get_mass()
     vehicle.results.mass_fuselage = vehicle.fuselages["fuselage"].mass
-#    vehicle.results.mass_cargo_bay = vehicle.fuselages["cargo_bay"].mass
+    #    vehicle.results.mass_cargo_bay = vehicle.fuselages["cargo_bay"].mass
     vehicle.results.mass_wing = vehicle.wings["main_wing"].mass
     vehicle.results.mass_horizontal_stabilizer = vehicle.wings[
         "horizontal_stabilizer"
     ].mass
-#    vehicle.results.mass_pylon = vehicle.wings["pylon"].mass
+    #    vehicle.results.mass_pylon = vehicle.wings["pylon"].mass
     vehicle.results.mass_landing_gear = vehicle.landing_gear.mass
     vehicle.results.mass_misc = 0
     for misc in vehicle.miscs:

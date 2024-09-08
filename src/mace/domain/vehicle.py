@@ -11,8 +11,8 @@ from mace.aero.implementations.avl import (
 )
 from mace.aero.implementations.avl.athenavortexlattice import AVL
 from mace.domain.battery import Battery
-from mace.domain.fuselage import Fuselage, FuselageSegment
-from mace.domain.landing_gear import LandingGear, Wheel
+from mace.domain.fuselage import Fuselage
+from mace.domain.landing_gear import LandingGear
 from mace.domain.propeller import Propeller
 from mace.domain.results import (
     AeroCoeffs,
@@ -28,8 +28,9 @@ from mace.domain.results import (
     HorizontalFlight,
     HorizontalFlightResults,
 )
-from mace.domain.wing import Wing, WingSegment
+from mace.domain.wing import Wing
 from mace.utils.mesh import get_profil_thickness
+
 
 class Vehicle:
     wings: dict[str, Wing] = None
@@ -376,11 +377,17 @@ class Vehicle:
 
             for wing in self.wings.values():
                 for i, segment in enumerate(wing.segments):
-                    box_height = max(box_height, segment.inner_chord, segment.outer_chord)
+                    box_height = max(
+                        box_height, segment.inner_chord, segment.outer_chord
+                    )
                     if i == 0:
                         airfoil_thickness_to_chord = get_profil_thickness(wing.airfoil)
-                        box_width += segment.inner_chord * airfoil_thickness_to_chord * wing.number_of_parts
-                    #box_width += segment.inner_chord * airfoil_thickness_to_chord
+                        box_width += (
+                            segment.inner_chord
+                            * airfoil_thickness_to_chord
+                            * wing.number_of_parts
+                        )
+                    # box_width += segment.inner_chord * airfoil_thickness_to_chord
             pass
 
             for fuse in self.fuselages.values():
@@ -393,16 +400,15 @@ class Vehicle:
                         box_height = max(box_height, segment.height)
                         fuse_other_dimension = max(fuse_other_dimension, segment.width)
                 box_width += fuse_other_dimension
-            
+
             box_length = 1.4 - box_width - box_height
             for wing in self.wings.values():
                 max_length = max(max_length, wing.span / wing.number_of_parts)
                 wing.number_of_parts = int(np.ceil(wing.span / box_length))
 
-
-        logging.debug(f"Box height: %.2f m" % box_height)
-        logging.debug(f"Box width: %.2f m" % box_width)
-        logging.debug(f"Box length: %.2f m" % box_length)
+        logging.debug("Box height: %.2f m" % box_height)
+        logging.debug("Box width: %.2f m" % box_width)
+        logging.debug("Box length: %.2f m" % box_length)
         logging.debug("\n")
 
         return box_height, box_width, box_length
@@ -419,7 +425,7 @@ class Vehicle:
             data.append(
                 [name, "", "", f"{Colour.BLUE}{wing.mass*1000:.0f}{Colour.END}"]
             )
-            if not wing.wing_binder is None:
+            if wing.wing_binder is not None:
                 data.append(
                     [
                         "",

@@ -171,21 +171,21 @@ class GeometryFile:
 
         if self.plane.name is not None:
             geometry_file.write(f"{self.plane.name}\n")
-        geometry_file.write(f"# Mach\n")
+        geometry_file.write("# Mach\n")
         geometry_file.write(f"{self.plane.reference_values.mach}\n")
-        geometry_file.write(f"#IYsym\tIZsym\tZsym\n")
+        geometry_file.write("#IYsym\tIZsym\tZsym\n")
         geometry_file.write(
             f"{self.plane.reference_values.iy_sym:<10}"
             f"{self.plane.reference_values.iz_sym:<10}"
             f"{self.plane.reference_values.z_sym:<10}\n\n"
         )  # iYsym has to be 0 for YDUPLICATE
-        geometry_file.write(f"#Sref\tCref\tBref\n")
+        geometry_file.write("#Sref\tCref\tBref\n")
         geometry_file.write(
             f"{self.plane.reference_values.s_ref:<10}"
             f"{self.plane.reference_values.c_ref:<10}"
             f"{self.plane.reference_values.b_ref:<10}\n"
         )
-        geometry_file.write(f"#Xref\tYref\tZref\n")
+        geometry_file.write("#Xref\tYref\tZref\n")
         geometry_file.write(
             f"{self.plane.reference_values.x_ref:<10}"
             f"{self.plane.reference_values.y_ref:<10}"
@@ -418,9 +418,9 @@ class GeometryFile:
         CDCL is specified).
         """
 
-        geometry_file.write(f"\t\t#++++++++++++++++++++\n")
-        geometry_file.write(f"\t\t\t#CONTROL\n")
-        geometry_file.write(f"\t\t\t#Cname\tCgain\tXhinge\tHingeVec\t \t \tSgnDup\n")
+        geometry_file.write("\t\t#++++++++++++++++++++\n")
+        geometry_file.write("\t\t\t#CONTROL\n")
+        geometry_file.write("\t\t\t#Cname\tCgain\tXhinge\tHingeVec\t \t \tSgnDup\n")
         geometry_file.write(
             f"\t\t\t{element.c_name}\t{element.c_gain}\t{element.x_hinge}\t"
             f"{element.hinge_vec[0]}\t{element.hinge_vec[1]}\t{element.hinge_vec[2]}\t"
@@ -603,8 +603,8 @@ class GeometryFile:
 
         chord_outer = 0
         for index in range(len(element.segments)):
-            geometry_file.write(f"SECTION\n")
-            geometry_file.write(f"#Xle\tYle\tZle\tChord\tAinc\tNspanwise\tSspace\n")
+            geometry_file.write("SECTION\n")
+            geometry_file.write("#Xle\tYle\tZle\tChord\tAinc\tNspanwise\tSspace\n")
             chord_inner = self.get_chord(element.segments[index])[0]
             chord_outer = self.get_chord(element.segments[index])[1]
             geometry_file.write(
@@ -618,19 +618,19 @@ class GeometryFile:
                 geometry_file.write(f"{  element.segments[index].n_spanwise}")
             if element.segments[index].s_space is not None:
                 geometry_file.write(f"{  element.segments[index].s_space}")
-            geometry_file.write(f"\n\n")
+            geometry_file.write("\n\n")
 
             if isinstance(element.segments[index].inner_airfoil.type, type(pl.Naca())):
                 # geometry_file.write(f'NACA\n')
                 # geometry_file.write(f'{element.segments[index].inner_airfoil.type.number_of_naca:0>4}\n\n')
-                geometry_file.write(f"AFIL  0.0  1.0\n")
+                geometry_file.write("AFIL  0.0  1.0\n")
                 geometry_file.write(
                     f"{element.segments[index].inner_airfoil.type.filepath}\n\n"
                 )
             if isinstance(
                 element.segments[index].inner_airfoil.type, type(pl.AirfoilFile())
             ):
-                geometry_file.write(f"AFIL  0.0  1.0\n")
+                geometry_file.write("AFIL  0.0  1.0\n")
                 geometry_file.write(
                     f"{element.segments[index].inner_airfoil.type.filepath}\n\n"
                 )
@@ -641,8 +641,8 @@ class GeometryFile:
                 )
 
         index = len(element.segments) - 1
-        geometry_file.write(f"SECTION\n")
-        geometry_file.write(f"#Xle\tYle\tZle\tChord\tAinc\tNspanwise\tSspace\n")
+        geometry_file.write("SECTION\n")
+        geometry_file.write("#Xle\tYle\tZle\tChord\tAinc\tNspanwise\tSspace\n")
         geometry_file.write(
             f"{element.segments[index].nose_outer[0]}  "
             f"{element.segments[index].nose_outer[1]}  "
@@ -654,14 +654,14 @@ class GeometryFile:
         if isinstance(element.segments[index].inner_airfoil.type, type(pl.Naca())):
             # geometry_file.write(f'NACA\n')
             # geometry_file.write(f'{element.segments[index].outer_airfoil.type.number_of_naca:0>4}\n\n')
-            geometry_file.write(f"AFIL  0.0  1.0\n")
+            geometry_file.write("AFIL  0.0  1.0\n")
             geometry_file.write(
                 f"{element.segments[index].inner_airfoil.type.filepath}\n\n"
             )
         if isinstance(
             element.segments[index].inner_airfoil.type, type(pl.AirfoilFile())
         ):
-            geometry_file.write(f"AFIL  0.0  1.0\n")
+            geometry_file.write("AFIL  0.0  1.0\n")
             geometry_file.write(
                 f"{element.segments[index].outer_airfoil.type.filepath}\n\n"
             )
@@ -880,26 +880,26 @@ class GeometryFile:
         # surface_name e.g wing or empennage
         for element in [self.plane.wing]:  # [... , self.plane.empennage]
             if element.isactive:
-                geometry_file.write(f"SURFACE\n")
+                geometry_file.write("SURFACE\n")
                 geometry_file.write(f"{element.name}\n")  # for example "Main Wing"
                 # geometry_file.write(f'#Nchordwise\tCspace\tNspanwise\tSspace\n')
                 geometry_file.write(
                     f"{element.n_chordwise}  {element.c_space}  "
                     f"{element.n_spanwise}  {element.s_space}\n\n"
                 )
-                geometry_file.write(f"Component\n")
+                geometry_file.write("Component\n")
                 geometry_file.write(f"{element.l_comp}\n\n")  # component value/index
-                geometry_file.write(f"YDUPLICATE\n")
-                geometry_file.write(f"0.0\n\n")
+                geometry_file.write("YDUPLICATE\n")
+                geometry_file.write("0.0\n\n")
                 # geometry_file.write(f'SCALE\n') # macht Probleme
                 # geometry_file.write(f'{element.x_scale}\t{element.y_scale}\t{element.z_scale}\n\n')
-                geometry_file.write(f"TRANSLATE\n")
+                geometry_file.write("TRANSLATE\n")
                 geometry_file.write(
                     f"{element.x_translate}\t{element.y_translate}\t{element.z_translate}\n\n"
                 )
-                geometry_file.write(f"ANGLE\n")
+                geometry_file.write("ANGLE\n")
                 geometry_file.write(f"{element.twist_angle:.5f}\n\n")
-                geometry_file.write(f"#--------------------\n")
+                geometry_file.write("#--------------------\n")
 
                 GeometryFile.build_geo_surface_section(self, geometry_file, element)
 
@@ -916,7 +916,7 @@ class GeometryFile:
 
         with open(file_path, "w") as geometry_file:
             GeometryFile.build_geo_header(self, geometry_file)
-            geometry_file.write(f"\n#======================\n")
+            geometry_file.write("\n#======================\n")
             for surface in range(number_of_surfaces):
                 GeometryFile.build_geo_surface(self, geometry_file)
 
@@ -1215,13 +1215,13 @@ class MassFile:
         shifted by delta(x) = 0.2.  Data lines 3-5 revert back to the defaults.
         """
         mass_file.write(
-            f"#  mass   x     y     z    [ Ixx     Iyy    Izz     Ixy   Ixz   Iyz ]\n"
+            "#  mass   x     y     z    [ Ixx     Iyy    Izz     Ixy   Ixz   Iyz ]\n"
         )
         mass_file.write(
-            f"*   1.    1.    1.    1.     1.     1.      1.      1.    1.    1.\n"
+            "*   1.    1.    1.    1.     1.     1.      1.      1.    1.    1.\n"
         )
         mass_file.write(
-            f"+   0.    0.    0.    0.     0.     0.      0.      0.    0.    0.\n"
+            "+   0.    0.    0.    0.     0.     0.      0.      0.    0.    0.\n"
         )
         # for component in self.plane:  # self.plane.components is list of components
         # print(hasattr(self.plane, "mass"))

@@ -76,30 +76,30 @@ def get_xfoil_polar(
 
         # Set flaps
         if flap_angle != 0:
-            input_file.write(f"NORM\n")
-            input_file.write(f"GDES\n")
-            input_file.write(f"FLAP\n")
+            input_file.write("NORM\n")
+            input_file.write("GDES\n")
+            input_file.write("FLAP\n")
             input_file.write(f"{round(x_hinge, 3)}\n")
             input_file.write(f"{round(z_hinge, 3)}\n")
             input_file.write(f"{round(flap_angle, 3)}\n")
-            input_file.write(f"X\n")
-            input_file.write(f"\n")
+            input_file.write("X\n")
+            input_file.write("\n")
 
         #        input_file.write(f'PANE\n')
-        input_file.write(f"OPER\n")
+        input_file.write("OPER\n")
         input_file.write(f"Visc {reynoldsnumber}\n")
         if mach != 0:
             input_file.write(f"Mach {mach}\n")
         if n_crit != 9 or x_transition_top != 100 or x_transition_bottom != 100:
-            input_file.write(f"VPAR\n")
+            input_file.write("VPAR\n")
             if n_crit != 9:
                 input_file.write(f"N {n_crit}\n")
             if x_transition_top != 100 or x_transition_bottom != 100:
                 input_file.write(
                     f"XTR {x_transition_top/100} {x_transition_bottom/100}\n"
                 )
-            input_file.write(f"\n")
-        input_file.write(f"PACC\n")
+            input_file.write("\n")
+        input_file.write("PACC\n")
         input_file.write(str(polar_file_path) + "\n\n")
         # input_file.write(f'polar_file.txt\n\n')
         input_file.write(f"ITER {n_iter}\n")
@@ -112,17 +112,19 @@ def get_xfoil_polar(
         elif cl_start is not None and cl_end is not None:
             input_file.write(f"CSeq {cl_start} {cl_end} {cl_step}\n")
         else:
-            logging.error(f"wrong XFOIL inputs")  # Error
+            logging.error("wrong XFOIL inputs")  # Error
 
-        input_file.write(f"\n\n")
-        input_file.write(f"quit \n")
+        input_file.write("\n\n")
+        input_file.write("quit \n")
 
     # ---Run XFOIL---
 
     cmd = f"{xfoil_path} < {input_file_path}"
     runsub.run_subprocess(cmd, timeout=15, killall=True)
 
-    return np.loadtxt(polar_file_path, skiprows=12)  #   alpha    CL        CD       CDp       CM     Top_Xtr  Bot_Xtr
+    return np.loadtxt(
+        polar_file_path, skiprows=12
+    )  #   alpha    CL        CD       CDp       CM     Top_Xtr  Bot_Xtr
 
 
 # ---Test---
@@ -136,5 +138,7 @@ if __name__ == "__main__":
     reynolds = 200000
     n_iter = 80  # wenn keine Konvergenz reduzieren, Ergebnisse scheinen annähernd gleich zu bleiben
 
-    polar_daten = get_xfoil_polar(airfoil_name, reynolds, cl=1., flap_angle=5, x_hinge=0.6)
+    polar_daten = get_xfoil_polar(
+        airfoil_name, reynolds, cl=1.0, flap_angle=5, x_hinge=0.6
+    )
     print(polar_daten)

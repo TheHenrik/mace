@@ -3,7 +3,6 @@ import xml.etree.ElementTree as ET
 
 import numpy as np
 
-from mace import domain
 from mace.domain import plane
 
 

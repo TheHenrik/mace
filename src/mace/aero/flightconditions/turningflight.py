@@ -71,7 +71,6 @@ class TurningFlight:
             return v, r_k, cl, n, phi, self.turning_velocity(v, r_k)
 
         elif v and cl:  # v, ca
-
             n = (cl * self.rho / 2 * v**2 * self.s_ref) / (self.mass * self.g)
             logging.debug(f"n = {n}")
             phi = math.degrees(math.acos(1 / n))

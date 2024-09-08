@@ -150,7 +150,7 @@ class WingSegment:
         )
         self.cog_breakdown["Kern"] *= self.mass_breakdown["Kern"]
 
-        if not self.roving_count is None:
+        if self.roving_count is not None:
             self.mass_breakdown["Holm"] = self.span * (self.roving_count * 0.009 + 0.03)
             self.cog_breakdown["Holm"] = (
                 self.nose_inner
@@ -227,9 +227,7 @@ class Wing:
         self.n_chordwise: int = 10
         self.c_space: int = 1  # = cos
         self.n_spanwise: int = 20
-        self.s_space: int = (
-            -2
-        )  # = -sin, good for straight, elliptical or slightly tapered wings, in other cases cos (1)
+        self.s_space: int = -2  # = -sin, good for straight, elliptical or slightly tapered wings, in other cases cos (1)
 
         # Mass estimation
         self.number_of_parts = 1
@@ -607,7 +605,7 @@ class Wing:
             tmp_mass, tmp_cogs = segment.get_mass()
             masses.append(tmp_mass)
             cogs.append(tmp_cogs)
-        if not self.wing_binder is None:
+        if self.wing_binder is not None:
             for wb in self.wing_binder:
                 masses.append(wb.mass / 2)
                 cogs.append(np.array([0, wb.position, 0]))

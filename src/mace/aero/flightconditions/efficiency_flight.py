@@ -1,9 +1,8 @@
 import logging
 
 import matplotlib.pyplot as plt
-import numpy as np
-from scipy.optimize import fsolve, minimize, minimize_scalar, root_scalar
-from skopt import BayesSearchCV, dummy_minimize, gp_minimize
+from scipy.optimize import minimize_scalar, root_scalar
+from skopt import gp_minimize
 
 import mace.aero.generalfunctions as functions
 from mace.aero.generalfunctions import GeneralFunctions

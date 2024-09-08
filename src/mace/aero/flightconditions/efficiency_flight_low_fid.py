@@ -3,11 +3,9 @@ import time
 import warnings
 
 import numpy as np
-from scipy.optimize import differential_evolution, fsolve, minimize, root_scalar
-from skopt import BayesSearchCV, gp_minimize
+from scipy.optimize import differential_evolution, fsolve, root_scalar
 
 import mace.aero.generalfunctions as functions
-from mace.aero.generalfunctions import GeneralFunctions
 from mace.aero.implementations.aero import Aerodynamics
 from mace.aero.implementations.airfoil_analyses import Airfoil
 from mace.domain import params
@@ -36,6 +34,7 @@ class EfficiencyFlight:
     4. The calculation is based on an energy method, with initial energy, energy gain and loss and final energy after t1, tges
     5. An optimization algorithm is used to find the optimal v1 and t1, which maximizes the score
     """
+
     def __init__(self, Aircraft: Vehicle) -> None:
         """
         :param Aircraft: Vehicle object
@@ -58,7 +57,6 @@ class EfficiencyFlight:
         self.plot_surface = False
         self.batt_time_at_start = 30.0
         self.tolerance = 0.1
-
 
     def T(self, V, t_avg, I):
         """
@@ -83,7 +81,9 @@ class EfficiencyFlight:
                 c_length = self.plane.reference_values.c_ref
                 re = functions.get_reynolds_number(V, c_length)
                 x_hinge = 1 - self.plane.wings["main_wing"].segments[0].flap_chord_ratio
-                airfoil = Airfoil(self.plane.wings["main_wing"].airfoil, x_hinge=x_hinge)
+                airfoil = Airfoil(
+                    self.plane.wings["main_wing"].airfoil, x_hinge=x_hinge
+                )
                 airfoil.print_re_warnings = False
                 self.flap_angle = airfoil.check_for_best_flap_setting(re, CL)
 
@@ -158,9 +158,7 @@ class EfficiencyFlight:
                 logging.debug(
                     "->   h1:", round(min(root[0], 100), 1), "v2:", round(root[1], 1)
                 )
-                print(
-                    "->   h1:", round(min(root[0], 100), 1), "v2:", round(root[1], 1)
-                )
+                print("->   h1:", round(min(root[0], 100), 1), "v2:", round(root[1], 1))
             return root
         else:
             if print_results:
@@ -235,7 +233,6 @@ class EfficiencyFlight:
                 res.efficiency_motor_off_reynolds = re_2
                 res.efficiency_motor_off_flap_angle = flap_angle_2
                 res.efficiency_motor_off_time = self.t_ges - t1
-        
 
                 t_avg = self.batt_time_at_start + t1 / 2
                 (
@@ -310,6 +307,7 @@ class EfficiencyFlight:
 
         This function returns the maximum velocity for the given aircraft and current
         """
+
         def func(v):
             return self.T(v, self.batt_time_at_start, I) - self.get_drag_force(v)
 

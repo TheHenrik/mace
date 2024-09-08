@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 
 import numpy as np
 import scipy.interpolate as interp
@@ -40,22 +39,23 @@ if __name__ == "__main__":
     )
 
     import matplotlib.pyplot as plt
-    x = np.linspace(0.0,40.0, 100)
+
+    x = np.linspace(0.0, 40.0, 100)
     y = np.zeros_like(x)
     for i, _ in enumerate(x):
         y[i] = prop.evaluate_thrust(x[i])
     plt.plot(x, y)
-    plt.scatter(thrust_array[:,0], thrust_array[:,1])
+    plt.scatter(thrust_array[:, 0], thrust_array[:, 1])
 
     propeller_tag = "vm14x10"
     prop = Propeller(propeller_tag)
     thrust_array = np.loadtxt(
         prop.surrogate_path, skiprows=1, delimiter=prop.surrogate_delimiter
     )
-    x = np.linspace(0.0,40.0, 100)
+    x = np.linspace(0.0, 40.0, 100)
     y = np.zeros_like(x)
     for i, _ in enumerate(x):
         y[i] = prop.evaluate_thrust(x[i])
     plt.plot(x, y)
-    plt.scatter(thrust_array[:,0], thrust_array[:,1])
+    plt.scatter(thrust_array[:, 0], thrust_array[:, 1])
     plt.show()

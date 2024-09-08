@@ -17,12 +17,13 @@ dependencies=[
     'numpy',
     'scipy',
     'scikit-optimize',
-    'tabulate', 
-    'matplotlib', 
+    'tabulate',
+    'matplotlib',
     'tqdm',
-    'psutil'
+    'psutil',
     'bs4',
     'requests',
+    "ruff>=0.6.4",
 ]
 
 classifiers = [

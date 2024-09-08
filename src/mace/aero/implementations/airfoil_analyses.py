@@ -1,6 +1,5 @@
 import logging
 import os
-from pathlib import Path
 
 import numpy as np
 
@@ -509,10 +508,10 @@ class Airfoil:
         )
 
         CD = np.interp(re, [lower_re, upper_re], [CDv_lower, CDv_upper])
-        
+
         if self.sensitivity_study_factor != 1.0:
             CD = CD * self.sensitivity_study_factor
-            
+
         return CD
 
     def get_cl_max(self, re: float) -> float:
@@ -595,7 +594,6 @@ class Airfoil:
 
 
 if __name__ == "__main__":
-
     airf = Airfoil("acc22", flap_angle=12.0, x_hinge=0.6)
     # airf.flap_angle_list = np.array([0, 6])
     airf.must_rebuild_surrogate = True

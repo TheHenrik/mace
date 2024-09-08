@@ -60,7 +60,7 @@ def write_class(f, clas, classes):
         for reference in reg:
             if reference in class_names:
                 edges.append(reference)
-    f.write(f"}}\n")
+    f.write("}\n")
 
     if inspect.isabstract(clas) or clas.__name__.startswith("Abstract"):
         f.write(f"abstract class {name}\n")
@@ -84,7 +84,7 @@ def is_valid_class(clas):
 
 def write_uml_file(filename, classes):
     with open(filename, "w") as f:
-        f.write(f"@startuml\n")
+        f.write("@startuml\n")
         f.write("skinparam useBetaStyle true\n")
         f.write("skinparam linetype ortho\n")
         f.write(STYLE)
@@ -92,7 +92,7 @@ def write_uml_file(filename, classes):
         for clas in classes:
             write_class(f, clas, classes)
 
-        f.write(f"@enduml")
+        f.write("@enduml")
     os.system(f"java -jar doc/uml/gen/plantuml.jar {filename}")
 
 

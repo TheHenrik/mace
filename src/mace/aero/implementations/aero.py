@@ -1,6 +1,5 @@
 from mace.aero.implementations.avl import athenavortexlattice
 from mace.aero.implementations.viscous_drag import ViscousDrag
-from mace.domain import Plane
 from mace.domain.vehicle import Vehicle
 
 
