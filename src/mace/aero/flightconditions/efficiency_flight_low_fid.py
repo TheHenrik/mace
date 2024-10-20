@@ -134,7 +134,8 @@ class EfficiencyFlight:
         t_avg = self.batt_time_at_start + t1 / 2
 
         def func(x):
-            h1 = min(x[0], 100)
+            h1 = x[0]
+            # h1 = min(x[0], 100)
             v2 = max(x[1], 0)
 
             eq1 = (
@@ -155,11 +156,8 @@ class EfficiencyFlight:
         root = fsolve(func, [60, 13], xtol=1e-4, maxfev=1000)
         if np.all(np.isclose(func(root), [0.0, 0.0], atol=1e-1)):
             if print_results:
-                logging.debug(
-                    "->   h1:", round(min(root[0], 100), 1), "v2:", round(root[1], 1)
-                )
                 print(
-                    "->   h1:", round(min(root[0], 100), 1), "v2:", round(root[1], 1)
+                    "->   h1:", round(root[0], 1), "v2:", round(root[1], 1)
                 )
             return root
         else:
@@ -190,7 +188,7 @@ class EfficiencyFlight:
 
             tmin = self.get_t1_min(v1, v0, I, h0)
             if tmin < 0:
-                return 0
+                tmin = 0
             tmax = self.t_ges
             t1 = tmin + t_scale * (tmax - tmin)
 
@@ -206,7 +204,7 @@ class EfficiencyFlight:
             if print_results:
                 logging.debug("\n")
                 logging.debug("v1: ", round(v1, 2), "t1: ", round(t1, 2), "I: ", I)
-                self.equation_system(E0, v1, t1, I, print_results=True)
+                self.equation_system(E0, v1, t1, I, print_results=False)
                 logging.debug("points: ", round(points, 5))
                 logging.debug("\n")
 
@@ -274,7 +272,7 @@ class EfficiencyFlight:
 
             tmin = self.get_t1_min(v1, v0, I, h0)
             if tmin < 0:
-                return 0
+                tmin = 0
             tmax = self.t_ges
             t1 = tmin + t_scale * (tmax - tmin)
 

@@ -36,12 +36,14 @@ def plot_function(
     x_data = df[x_name].to_numpy()
     y_data = df[y_name].to_numpy()
     z_data = df[z_name].to_numpy()
+    z2_data = df['take_off_length'].to_numpy()
 
     x_dimension = np.unique(x_data)
     y_dimension = np.unique(y_data)
 
     X, Y = np.meshgrid(x_dimension, y_dimension)
     Z = np.empty([len(y_dimension), len(x_dimension)])
+    Z2 = np.empty([len(y_dimension), len(x_dimension)])
 
     for i, y in enumerate(y_dimension):
         for j, x in enumerate(x_dimension):
@@ -52,8 +54,10 @@ def plot_function(
                 )
             elif len(index[0]) == 0:
                 Z[i][j] = np.nan
+                Z2[i][j] = np.nan
             else:
                 Z[i][j] = z_data[index[0][0]]
+                Z2[i][j] = z2_data[index[0][0]]
 
     print(np.rint(Z))
 
@@ -75,24 +79,31 @@ def plot_function(
         # create the figure to plot
         if interpol is True:
             interp = RegularGridInterpolator((x_dimension, y_dimension), Z.T, method="pchip")
+            interp2 = RegularGridInterpolator((x_dimension, y_dimension), Z2.T, method="pchip")
 
-            x_int_vec = np.linspace(min(x_data), max(x_data), 100)
-            y_int_vec = np.linspace(min(y_data), max(y_data), 100)
+            x_int_vec = np.linspace(min(x_data), max(x_data), 200)
+            y_int_vec = np.linspace(min(y_data), max(y_data), 200)
             X, Y = np.meshgrid(x_int_vec, y_int_vec)
             Z = np.empty([len(x_int_vec), len(y_int_vec)])
+            Z2 = np.empty([len(x_int_vec), len(y_int_vec)])
+
             for i, x in enumerate(x_int_vec):
                 for j, y in enumerate(y_int_vec):
                     Z[j, i] = interp([x, y]).T
+                    Z2[j, i] = interp2([x, y]).T
                     # Zd[j, i] = interpn((machs, altitudes), Z.T, [ma, alt], method="linear")
 
+        Z[Z2 < 40] *= 1.05
+        Z[Z2 > 60] *= 0
         fig = plt.figure(z_name)
         ax = plt.subplot(1, 1, 1)
-        CS = ax.contourf(X, Y, Z, cmap=cmap, levels=20)
-        C = ax.contour(X, Y, Z, colors="black", linewidths=0.5, levels=20)
-        #ax.clabel(CS, inline=1, fontsize=10, colors='b')
-        plt.colorbar(CS, label='Competition Score')
-        ax.set_xlabel(x_name)
-        ax.set_ylabel(y_name)
+        CS = ax.contourf(X, Y, Z, cmap=cmap, levels=np.arange(600, 1000, 20))
+        C = ax.contour(X, Y, Z, colors="black", linewidths=0.5, levels=np.arange(600, 1000, 20))
+        TOF = ax.contour(X, Y, Z2, colors="red", linewidths=2, levels=[40, 60])
+        ax.clabel(TOF, inline=1, fontsize=12, colors='red')
+        plt.colorbar(CS, label='Score')
+        ax.set_xlabel(r'$m_{payload}$')
+        ax.set_ylabel(r'$S_{ref}$')
         #plt.savefig(dir_path + "/" + file_name + "_" + z_name + ".png")
     else:
         # create the figure to plot

@@ -14,13 +14,13 @@ from mace.domain.wing import Wing, WingSegment, WingSegmentBuild
 
 
 def vehicle_setup(
-    payload=4.08,
+    payload=2.88,
     wing_area=0.65, #ACC17=1.22, ACC22=0.61
     aspect_ratio=10, #ACC17=12.52, ACC22=9.6
     airfoil="acc24", #acc22
     num_fowler_segments=0, #ACC17=0, ACC22=4
-    battery_capacity=3.,
-    propeller="freudenthaler14x8",
+    battery_capacity=2.4,
+    propeller="aeronaut14x8",
     main_wing_x=0.18,
     battery_origin_x=-0.1,
     front_wheel_percent_mac=0.2,
@@ -374,7 +374,7 @@ def vehicle_setup(
     vehicle.add_misc("Screws+Cables+Accessories", 0.090, np.array([0.5, 0, 0]))  # Assumption
     vehicle.add_misc("ReceiverBattery", 0.030, np.array([0.5, 0, 0]))  # Assumption
 
-    #vehicle.add_misc("Additional Mass", 0.7, np.array([0.5, 0, 0]))
+    vehicle.add_misc("Additional Mass", 0.65, np.array([0.5, 0, 0]))
 
     ####################################################################################################################
 

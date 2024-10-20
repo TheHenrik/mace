@@ -78,8 +78,8 @@ if __name__ == "__main__":
     print(model2.get_mass())
     import matplotlib.pyplot as plt
 
-    T_ref = 20.082
-    u_ref = 11.35
+    T_ref = 18.9
+    u_ref = 12
 
     t = np.linspace(0, 220.0, 100)
     u = np.zeros_like(t)
@@ -98,18 +98,16 @@ if __name__ == "__main__":
     F2 = T_ref * u2 / u_ref
 
     #plt.plot(t, F, label=str(model1.capacity) + 'Ah')
-    plt.plot(t, F2, label=str(model2.capacity) + 'Ah')
-    plt.legend()
+    plt.plot(t, F2, label="calculated thrust " + str(model2.capacity) + 'Ah')
     plt.grid('on')
     plt.xlabel('t [s]')
     plt.ylabel('F [N]')
     #plt.axis([0, 250, 0, 22])
-    plt.show()
     #plt.plot(t, u, label="calculated 3000mAh", color="blue")
 
     tool_path = root()
     reference_data_path_1 = os.path.join(
-        tool_path, "data", "battery_surrogates", "thrust_measurement_3000mAh.csv"
+        tool_path, "data", "battery_surrogates", "thrust_measurement_2400mAh.csv"
     )
     reference_data_1 = np.loadtxt(reference_data_path_1, delimiter=",", skiprows=1)
 
@@ -128,8 +126,10 @@ if __name__ == "__main__":
     # )
     # reference_data_4 = np.loadtxt(reference_data_path_4, delimiter=",", skiprows=1)
     #
-    plt.scatter(reference_data_1[:, 0], reference_data_1[:, 1], label="measured thrust 3000mAh", color="blue")
+    plt.scatter(reference_data_1[:, 0], reference_data_1[:, 1], label="measured thrust 2400mAh", color="blue")
     #
+    plt.legend()
+
     # # plt.plot(
     # #     reference_data_4[:, 0],
     # #     reference_data_4[:, 1],

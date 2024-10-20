@@ -19,8 +19,8 @@ class HorizontalFlight:
         self.s_ref = self.plane.reference_values.s_ref
         self.g = params.Constants.g
         self.rho = params.Constants.rho
-        self.cl_start = 0.01
-        self.cl_end = 1.0
+        self.cl_start = 1e-3
+        self.cl_end = 0.8
         self.cl_step = 0.05
 
         self.flap_angle = 0.0

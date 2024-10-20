@@ -72,6 +72,7 @@ def analysis(
     num_fowler_segments,
     battery_capacity,
     propeller,
+    wind_speed
 ):
     # Define Analysis
     climb_time = 30.0
@@ -108,7 +109,7 @@ def analysis(
     takeoff_analysis.flap_angle = 12.0
     takeoff_analysis.t_step = 0.2
     takeoff_analysis.cl_safety_factor = 1.3
-    takeoff_analysis.v_wind = 2.2  # 3.08 average in Aachen
+    takeoff_analysis.v_wind = wind_speed  # 3.08 average in Aachen
     takeoff_analysis.v_start_counter = 1.333
     takeoff_analysis.show_plot = False
     takeoff_analysis.cl_max_factor = 1.0
@@ -159,7 +160,7 @@ def analysis(
     logging.info(f"Finished Task Cruise")
 
     # Calculate Score
-    if take_off_length <= 40.0:
+    if take_off_length <= 35.0:
         take_off_factor = 1.05
     elif take_off_length <= 60.0:
         take_off_factor = 1.0
@@ -182,11 +183,13 @@ def analysis(
     penalty_current = 0.0
     penalty_round = 0.0
 
-    score_round = (
+    score_round_no_take_off_factor = (
         (score_payload + score_efficiency + score_distance) / 3.0
         + b_loading
         - penalty_current
-    ) * take_off_factor - penalty_round
+    )
+
+    score_round = score_round_no_take_off_factor * take_off_factor
 
     results = Aircraft.results
     results.score_factor_take_off = take_off_factor
@@ -201,6 +204,7 @@ def analysis(
     results.b_loading = b_loading
     results.penalty_current = penalty_current
     results.penalty_round = penalty_round
+    results.score_round_no_take_off_factor = score_round_no_take_off_factor
     results.score_round = score_round
 
     return results.as_csv_line(header=True, delimitter=",")
@@ -241,17 +245,18 @@ def main():
             continue
 
         for number in input_number:
-            payload = [4.25-0.17]
-            aspect_ratio = [10.]
-            wing_area = [0.65]
-            airfoil = ["acc24"]
+            payload = np.linspace(1, 6, 10)
+            aspect_ratio = [10]
+            wing_area = np.linspace(0.3, 1.2, 10)
+            airfoil = ["acc22"]
             battery_capacity = [2.4]
             propeller = ["aeronaut14x8"]
             num_fowler_segments = [0]
+            wind_speed = [2.2]
 
             first, second = divmod(number, 9)
             battery_capacity = [battery_capacity[first]]
-            num_fowler_segments = [num_fowler_segments[second]]
+            airfoil = [airfoil[second]]
 
             path = Path(root(), f"results_sweep_{number}.csv")
             logging.info("Finished Input")
@@ -265,6 +270,7 @@ def main():
                 num_fowler_segments,
                 battery_capacity,
                 propeller,
+                wind_speed
             )
             print("Durchlauf erfolgreich beendet. Lade die Datei hoch in den Google Drive.")
 

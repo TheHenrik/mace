@@ -392,7 +392,7 @@ def vehicle_setup(
     # vehicle.wings["main_wing"].part_wing_into(4, vehicle.mass, override=True)
     vehicle.print_mass_table()
     vehicle.get_reference_values()
-    CLa, Cma, Cnb, XNP, SM = vehicle.get_stability_derivatives()
+#    CLa, Cma, Cnb, XNP, SM = vehicle.get_stability_derivatives()
     box_height, box_width, box_length = vehicle.transport_box_dimensions()
 
     logging.debug(f"Vehicle Mass: {vehicle.mass:.3f}")
@@ -455,12 +455,12 @@ def vehicle_setup(
     for misc in vehicle.miscs:
         vehicle.results.mass_misc += misc.mass
 
-    vehicle.results.x_center_of_gravity = vehicle.center_of_gravity[0]
-    vehicle.results.c_m_alpha = Cma
-    vehicle.results.c_l_alpha = CLa
-    vehicle.results.c_n_beta = Cnb
-    vehicle.results.x_neutral_point = XNP
-    vehicle.results.static_margin = SM
+    # vehicle.results.x_center_of_gravity = vehicle.center_of_gravity[0]
+    # vehicle.results.c_m_alpha = Cma
+    # vehicle.results.c_l_alpha = CLa
+    # vehicle.results.c_n_beta = Cnb
+    # vehicle.results.x_neutral_point = XNP
+    # vehicle.results.static_margin = SM
 
     vehicle.results.transport_box_height = box_height
     vehicle.results.transport_box_width = box_width
