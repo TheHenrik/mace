@@ -4,7 +4,7 @@ import pstats
 import time
 
 
-def performance_time(repetitions, func, *args, output="toConsole", **kwargs):
+def performance_time(repetitions: int, func: callable, *args, output: str = None, **kwargs):
     start = time.perf_counter()
     for _ in range(repetitions):
         func(*args, **kwargs)

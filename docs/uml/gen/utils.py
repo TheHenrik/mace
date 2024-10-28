@@ -19,7 +19,7 @@ STYLE = """
 
 def is_class_variable(var, value):
     return (
-        type(value) != "function"
+        type(value) is callable
         and not inspect.isclass(value)
         and not var.startswith("__")
         and not var.endswith("__")

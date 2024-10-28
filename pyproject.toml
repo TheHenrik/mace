@@ -7,14 +7,14 @@ name = "mace"
 version = "0.0.1"
 authors = [
   { name="Tjalf Stadel", email="tjalf13+mace@gmail.com" },
-  { name="Jannik Frank", email="jannik.frank@Akamodell.de" },
+  { name="Jannik Frank", email="jannik.frank@akamodell.de" },
 ]
 description = "A package for evaluating and analysing modell Aircraft"
 readme = "README.md"
 license = {file = "LICENSE.txt"}
 requires-python = ">=3.11"
 dependencies=[
-    'numpy',
+    "numpy",
     'scipy',
     'scikit-optimize',
     'tabulate',
@@ -52,3 +52,19 @@ test = [
 [tool.pytest.ini_options]
 console_output_style = "progress"
 addopts = "--pyargs mace.test"
+
+[tool.ruff]
+exclude = [
+  "docs/uml",
+]
+
+line-length = 88
+indent-width = 4
+
+[tool.ruff.lint]
+ignore = ["E741"]
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["E402"]
+"**/{tests,docs,tools}/*" = ["E402"]

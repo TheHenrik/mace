@@ -3,6 +3,8 @@ from pathlib import Path
 
 
 def root() -> Path:
+    """ Returns the file path
+    """
     if getattr(sys, "frozen", False):
         application_path = Path(Path(sys.executable).resolve().parent, "_internal")
     elif __file__:

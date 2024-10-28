@@ -112,7 +112,7 @@ class EfficiencyFlight:
             V_vertical, V_horizontal = self.func(V, 0)
             return -V_vertical - target_V_vertical
 
-        if self.minimum_V_vertical == None:
+        if self.minimum_V_vertical is None:
             res = minimize_scalar(minimize_func, bounds=(5, 50), options={"xatol": 0.1})
             self.v_at_minimum_V_vertical = res.x
             self.minimum_V_vertical = res.fun
@@ -168,7 +168,7 @@ class EfficiencyFlight:
             points_factor = (333.33 - penalty_points) / 333.33
             points *= points_factor
 
-        if points != 0 and self.plots == True:
+        if points != 0 and self.plots:
             plt.plot((0, s1), (h0, h1), "k")
             plt.plot((s1, s2), (h1, h2), "k")
             plt.plot((s2, s3), (h2, h3), "k")

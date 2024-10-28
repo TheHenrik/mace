@@ -8,10 +8,30 @@ from mace.utils.file_path import root
 
 
 def tri_area(first: np.ndarray, second: np.ndarray, third: np.ndarray) -> float:
+    """ Calculates the signed area created by three vectors
+
+    Args:
+        first (np.ndarray): Vector
+        second (np.ndarray): Vector
+        third (np.ndarray): Vector
+
+    Returns:
+        float: Area
+    """
     return np.sum(np.linalg.norm(np.cross(second - first, third - first), axis=1)) / 2
 
 
 def tri_volume(first: np.ndarray, second: np.ndarray, third: np.ndarray) -> float:
+    """ Calculates the signed volume of the span of three vectors.
+
+    Args:
+        first (np.ndarray): Vector
+        second (np.ndarray): Vector
+        third (np.ndarray): Vector
+
+    Returns:
+        float: Volume
+    """
     return np.sum(np.cross(first, second) * third) / 6
 
 
@@ -50,6 +70,14 @@ def gen_profile(
 
 
 def get_profil(airfoil: str) -> np.ndarray:
+    """Returns the profile with the given name.uv
+
+    Args:
+        airfoil (str): Namme of the file of the profile.
+
+    Returns:
+        np.ndarray: Array of the profile coordinates.
+    """
     file_location = Path(f"{root()}/data/airfoils/{airfoil}.dat")
     with open(file_location, "rt") as f:
         data = re.findall(r"([01]\.\d+) +([0\-]{1,2}\.\d+)", f.read())
