@@ -456,7 +456,7 @@ class Airfoil:
         """
         This function calls either the build_single_flap_surrogate or the build_optimized_flap_surrogate function
         """
-        if self.use_opt_flap_setting == False:
+        if not self.use_opt_flap_setting:
             self.build_single_flap_surrogate()
         else:
             self.build_optimized_flap_surrogate()

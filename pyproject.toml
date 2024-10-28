@@ -62,7 +62,7 @@ line-length = 88
 indent-width = 4
 
 [tool.ruff.lint]
-ignore = ["E741"]
+ignore = ["E741", "F841"]
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [tool.ruff.lint.per-file-ignores]

@@ -546,7 +546,7 @@ class AvlOutputs:
 
 
 @dataclass()
-class Avl:
+class Avl:  # noqa: F811
     inputs: AvlInputs = None
     outputs: AvlOutputs = None
 

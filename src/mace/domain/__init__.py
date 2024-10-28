@@ -10,3 +10,5 @@ from mace.domain.plane import (
     Wing,
     WingSegment,
 )
+
+__all__ = [Airfoil, AirfoilFile, EmpennageType, Fuselage, FuselageProfile, Plane, ReferenceValues, TEmpennage, Wing, WingSegment]

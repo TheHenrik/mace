@@ -29,7 +29,7 @@ class Aerodynamics:
         self.plane.aero_coeffs.velocity = V
         self.plane.aero_coeffs.flap_angle = FLAP
 
-        if ALPHA != None:
+        if ALPHA is not None:
             self.plane.aero_coeffs.angle_of_attack = ALPHA
             self.AVL.run_avl(angle_of_attack=ALPHA, flap_angle=FLAP)
         else:

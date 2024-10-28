@@ -330,7 +330,7 @@ class Wing:
         single_side_aerodynamic_center[0] = (
             single_side_aerodynamic_center[0] - self.mean_aerodynamic_chord * 0.25
         )
-        if self.symmetric == True:
+        if self.symmetric:
             aerodynamic_center[1] = 0
         aerodynamic_center[0] = single_side_aerodynamic_center[0]
         self.neutral_point = aerodynamic_center
@@ -461,7 +461,7 @@ class Wing:
                 2
             ] - segment.inner_chord * np.sin(segment.inner_twist * rad)
 
-            if self.vertical == False:
+            if not self.vertical:
                 y += segment.span
             else:
                 z += segment.span
@@ -569,7 +569,7 @@ class Wing:
             )
             x_te_coords.append(segment.outer_x_offset + segment.outer_chord)
 
-        if self.symmetric == True and self.vertical == False:
+        if self.symmetric and not self.vertical:
             x_le_coords_other_wing = np.flip(x_le_coords)
             x_te_coords_other_wing = np.flip(x_te_coords)
             x_hinge_coords_other_wing = np.flip(x_hinge_coords)
