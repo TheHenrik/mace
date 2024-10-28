@@ -5,32 +5,6 @@
 
 MACE is a tool written by the Akamodell Stuttgart for evaluating and calculating self build and designed model aircraft for private use and competitions like [ACC](https://en.wikipedia.org/wiki/Air_Cargo_Challenge).
 
-## How to install
-
-If you want to install this project, run:
-
-```powershell
-pip install "git+https://github.com/TheHenrik/mace.git"
-```
-
-or if you want to edit the package, clone the repository and run:
-
-```powershell
-pip install -e .
-```
-
- But consider installing all optional dependencies:
-
- ```powershell
- pip install -e .[dev]
- ```
-
-
-If you want to uninstall, run:
-
-```powershell
-pip uninstall mace
-```
 
 ## Documentation
 
@@ -38,4 +12,7 @@ To be included, as well as docstrings.
 
 ## Creator
 
-This package is created for the [Akamodell Stuttgart](http://www.akamodell.de/) by [Tjalf Stadel](https://github.com/TheHenrik) and Gregor Zwickl as our Bachelor Thesis and is supervised by the [IFB](https://www.ifb.uni-stuttgart.de/).
+This package is developed by the [Akamodell Stuttgart](http://www.akamodell.de/).
+
+
+Maintainer of the project are [Jannik Frank](https://github.com/JannikFra) and [Tjalf Stadel](https://github.com/TheHenrik) 
