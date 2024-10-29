@@ -9,8 +9,8 @@ nav:
   - Home: index.md
   - About: about.md
   - Reference:
-    - Size: reference/test.md
-    - Name: reference.md
+    - Utils: reference/utils.md
+    - Test: reference/test.md
   - License: license.md
 
 theme: material
