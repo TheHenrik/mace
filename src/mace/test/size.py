@@ -3,9 +3,19 @@ from gc import get_referents
 from types import FunctionType, ModuleType
 
 
-def getsize(obj):
+def getsize(obj: any) -> int:
+    """ Calculates the size of a given python object
+
+    Args:
+        obj (any): Python Object
+
+    Raises:
+        TypeError: Can't find the size of function and method type
+
+    Returns:
+        int: Size in Bytes
+    """
     BLACKLIST = type, ModuleType, FunctionType
-    """sum size of object & members."""
     if isinstance(obj, BLACKLIST):
         raise TypeError("getsize() does not take argument of type: " + str(type(obj)))
     seen_ids = set()

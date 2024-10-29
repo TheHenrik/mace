@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "mace"
@@ -23,11 +23,8 @@ dependencies=[
     'psutil',
     'bs4',
     'requests',
-    "ruff>=0.6.4",
-    "mkdocs>=1.6.1",
-    "mkdocstrings[python]>=0.26.2",
-    "mkdocs-material>=9.5.42",
 ]
+
 
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -41,7 +38,10 @@ keywords = ["modell aircraft",
 
 [project.optional-dependencies]
 dev = [
-  'pytest',
+  "ruff>=0.6.4",
+  "mkdocs>=1.6.1",
+  "mkdocstrings[python]>=0.26.2",
+  "mkdocs-material>=9.5.42",
 ]
 
 test = [
@@ -50,6 +50,11 @@ test = [
 
 [project.urls]
 "Repository" = "https://github.com/TheHenrik/mace"
+"Documentation" = "https://google.com"
+
+
+[project.scripts]
+test = "mace.cli:test2"
 
 
 [tool.pytest.ini_options]

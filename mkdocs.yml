@@ -1,5 +1,16 @@
-site_name: MkLorum
+site_name: MACE
+
+plugins:
+  - mkdocstrings
+  - search
+
+
 nav:
   - Home: index.md
   - About: about.md
-theme: readthedocs
+  - Reference:
+    - Utils: reference/utils.md
+    - Test: reference/test.md
+  - License: license.md
+
+theme: material
