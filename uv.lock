@@ -312,13 +312,9 @@ source = { editable = "." }
 dependencies = [
     { name = "bs4" },
     { name = "matplotlib" },
-    { name = "mkdocs" },
-    { name = "mkdocs-material" },
-    { name = "mkdocstrings", extra = ["python"] },
     { name = "numpy" },
     { name = "psutil" },
     { name = "requests" },
-    { name = "ruff" },
     { name = "scikit-optimize" },
     { name = "scipy" },
     { name = "tabulate" },
@@ -327,25 +323,37 @@ dependencies = [
 
 [package.optional-dependencies]
 dev = [
+    { name = "mkdocs" },
+    { name = "mkdocs-material" },
+    { name = "mkdocstrings", extra = ["python"] },
     { name = "pytest" },
+    { name = "ruff" },
 ]
 test = [
+    { name = "mkdocs" },
+    { name = "mkdocs-material" },
+    { name = "mkdocstrings", extra = ["python"] },
     { name = "pytest" },
+    { name = "ruff" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "bs4" },
     { name = "matplotlib" },
-    { name = "mkdocs", specifier = ">=1.6.1" },
-    { name = "mkdocs-material", specifier = ">=9.5.42" },
-    { name = "mkdocstrings", extras = ["python"], specifier = ">=0.26.2" },
+    { name = "mkdocs", marker = "extra == 'dev'", specifier = ">=1.6.1" },
+    { name = "mkdocs", marker = "extra == 'test'", specifier = ">=1.6.1" },
+    { name = "mkdocs-material", marker = "extra == 'dev'", specifier = ">=9.5.42" },
+    { name = "mkdocs-material", marker = "extra == 'test'", specifier = ">=9.5.42" },
+    { name = "mkdocstrings", extras = ["python"], marker = "extra == 'dev'", specifier = ">=0.26.2" },
+    { name = "mkdocstrings", extras = ["python"], marker = "extra == 'test'", specifier = ">=0.26.2" },
     { name = "numpy" },
     { name = "psutil" },
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "pytest", marker = "extra == 'test'" },
     { name = "requests" },
-    { name = "ruff", specifier = ">=0.6.4" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.6.4" },
+    { name = "ruff", marker = "extra == 'test'", specifier = ">=0.6.4" },
     { name = "scikit-optimize" },
     { name = "scipy" },
     { name = "tabulate" },
