@@ -54,7 +54,7 @@ test = [
 
 
 [project.scripts]
-test = "test:main"
+test = "mace.cli:test2"
 
 
 [tool.pytest.ini_options]
