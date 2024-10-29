@@ -39,13 +39,16 @@ keywords = ["modell aircraft",
 [project.optional-dependencies]
 dev = [
   "ruff>=0.6.4",
-  "mkdocs>=1.6.1",
-  "mkdocstrings[python]>=0.26.2",
-  "mkdocs-material>=9.5.42",
 ]
 
 test = [
   'pytest',
+]
+
+docs = [
+  "mkdocs>=1.6.1",
+  "mkdocstrings[python]>=0.26.2",
+  "mkdocs-material>=9.5.42",
 ]
 
 [project.urls]
