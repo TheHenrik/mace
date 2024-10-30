@@ -9,4 +9,4 @@ build:
     - asdf install uv latest
     - asdf global uv latest
     - uv sync --only-group docs --frozen
-    - NO_COLOR=1 uv run mkdocs build --strict --site-dir $READTHEDOCS_OUTPUT/html
+    - uv run mkdocs build --strict --color never --site-dir $READTHEDOCS_OUTPUT/html

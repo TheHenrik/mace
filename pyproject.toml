@@ -27,6 +27,7 @@ dependencies=[
 
 
 classifiers = [
+    "Development Status :: 3 - Alpha",
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
 ]
@@ -51,20 +52,21 @@ docs = [
   "mkdocs-material>=9.5.42",
 ]
 
-[project.urls]
-"Repository" = "https://github.com/TheHenrik/mace"
-"Documentation" = "https://google.com"
-
-
-[project.scripts]
-test = "mace.cli:test2"
-
 [dependency-groups]
 docs = [
   "mkdocs>=1.6.1",
   "mkdocstrings[python]>=0.26.2",
   "mkdocs-material>=9.5.42",
 ]
+
+[project.urls]
+"Repository" = "https://github.com/TheHenrik/mace"
+"Documentation" = "https://pymace.readthedocs.io/en/latest/"
+
+
+[project.scripts]
+test = "mace.cli:test2"
+
 
 [tool.pytest.ini_options]
 console_output_style = "progress"
