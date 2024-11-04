@@ -97,7 +97,7 @@ def write_uml_file(filename, classes):
 
 
 if __name__ == "__main__":
-    from mace import domain
+    from pymace import domain
 
     classes = []
     for attr, value in domain.__dict__.items():
