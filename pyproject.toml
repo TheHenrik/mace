@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "mace"
+name = "pymace"
 version = "0.0.1"
 authors = [
   { name="Tjalf Stadel", email="tjalf13+mace@gmail.com" },
