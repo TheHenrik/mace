@@ -764,6 +764,67 @@ wheels = [
 ]
 
 [[package]]
+name = "pymace"
+version = "0.0.1"
+source = { editable = "." }
+dependencies = [
+    { name = "bs4" },
+    { name = "matplotlib" },
+    { name = "numpy" },
+    { name = "psutil" },
+    { name = "requests" },
+    { name = "scikit-optimize" },
+    { name = "scipy" },
+    { name = "tabulate" },
+    { name = "tqdm" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "ruff" },
+]
+docs = [
+    { name = "mkdocs" },
+    { name = "mkdocs-material" },
+    { name = "mkdocstrings", extra = ["python"] },
+]
+test = [
+    { name = "pytest" },
+]
+
+[package.dev-dependencies]
+docs = [
+    { name = "mkdocs" },
+    { name = "mkdocs-material" },
+    { name = "mkdocstrings", extra = ["python"] },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "bs4" },
+    { name = "matplotlib" },
+    { name = "mkdocs", marker = "extra == 'docs'", specifier = ">=1.6.1" },
+    { name = "mkdocs-material", marker = "extra == 'docs'", specifier = ">=9.5.42" },
+    { name = "mkdocstrings", extras = ["python"], marker = "extra == 'docs'", specifier = ">=0.26.2" },
+    { name = "numpy" },
+    { name = "psutil" },
+    { name = "pytest", marker = "extra == 'test'" },
+    { name = "requests" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.6.4" },
+    { name = "scikit-optimize" },
+    { name = "scipy" },
+    { name = "tabulate" },
+    { name = "tqdm" },
+]
+
+[package.metadata.requires-dev]
+docs = [
+    { name = "mkdocs", specifier = ">=1.6.1" },
+    { name = "mkdocs-material", specifier = ">=9.5.42" },
+    { name = "mkdocstrings", extras = ["python"], specifier = ">=0.26.2" },
+]
+
+[[package]]
 name = "pymdown-extensions"
 version = "10.11.2"
 source = { registry = "https://pypi.org/simple" }

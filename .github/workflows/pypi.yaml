@@ -2,8 +2,11 @@ name: Publish Python distribution to PyPI and TestPyPI
 
 on:
   pull_request:
-      branches:
-        [main, release]
+    branches:
+      release
+  push:
+    branches:
+      main
 
 jobs:
   build:
@@ -35,6 +38,7 @@ jobs:
     name: Publish to PyPi
     needs:
     - build
+    if: github.ref == 'refs/heads/release'
     runs-on: ubuntu-latest
     environment:
       name: pypi
