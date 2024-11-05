@@ -28,6 +28,7 @@ dependencies=[
 
 classifiers = [
     "Development Status :: 3 - Alpha",
+    "Development Status :: 3 - Alpha",
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
 ]
@@ -66,6 +67,7 @@ docs = [
 
 [project.scripts]
 test = "mace.cli:test2"
+
 
 
 [tool.pytest.ini_options]
