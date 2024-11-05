@@ -7,7 +7,7 @@
 
 MACE is a tool written by the Akamodell Stuttgart for evaluating and calculating self build and designed model aircraft for private use and competitions like [ACC](https://en.wikipedia.org/wiki/Air_Cargo_Challenge).
 
-It is currently under heavy construction. Don't expect anything to work. Functions will be removed, added and completly changed.
+It is currently under heavy construction. Don't expect anything to work. Functions may be removed, added and completly changed.
 
 
 ## Documentation
