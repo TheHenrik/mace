@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pymace"
-version = "0.0.1"
+version = "0.0.2"
 authors = [
   { name="Tjalf Stadel", email="tjalf13+mace@gmail.com" },
   { name="Jannik Frank", email="jannik.frank@akamodell.de" },

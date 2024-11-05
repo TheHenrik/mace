@@ -8,6 +8,7 @@ plugins:
 nav:
   - Home: index.md
   - About: about.md
+  - Getting Started: start.md
   - Reference:
     - Utils: reference/utils.md
     - Test: reference/test.md

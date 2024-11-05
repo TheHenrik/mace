@@ -306,67 +306,6 @@ wheels = [
 ]
 
 [[package]]
-name = "mace"
-version = "0.0.1"
-source = { editable = "." }
-dependencies = [
-    { name = "bs4" },
-    { name = "matplotlib" },
-    { name = "numpy" },
-    { name = "psutil" },
-    { name = "requests" },
-    { name = "scikit-optimize" },
-    { name = "scipy" },
-    { name = "tabulate" },
-    { name = "tqdm" },
-]
-
-[package.optional-dependencies]
-dev = [
-    { name = "ruff" },
-]
-docs = [
-    { name = "mkdocs" },
-    { name = "mkdocs-material" },
-    { name = "mkdocstrings", extra = ["python"] },
-]
-test = [
-    { name = "pytest" },
-]
-
-[package.dev-dependencies]
-docs = [
-    { name = "mkdocs" },
-    { name = "mkdocs-material" },
-    { name = "mkdocstrings", extra = ["python"] },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "bs4" },
-    { name = "matplotlib" },
-    { name = "mkdocs", marker = "extra == 'docs'", specifier = ">=1.6.1" },
-    { name = "mkdocs-material", marker = "extra == 'docs'", specifier = ">=9.5.42" },
-    { name = "mkdocstrings", extras = ["python"], marker = "extra == 'docs'", specifier = ">=0.26.2" },
-    { name = "numpy" },
-    { name = "psutil" },
-    { name = "pytest", marker = "extra == 'test'" },
-    { name = "requests" },
-    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.6.4" },
-    { name = "scikit-optimize" },
-    { name = "scipy" },
-    { name = "tabulate" },
-    { name = "tqdm" },
-]
-
-[package.metadata.requires-dev]
-docs = [
-    { name = "mkdocs", specifier = ">=1.6.1" },
-    { name = "mkdocs-material", specifier = ">=9.5.42" },
-    { name = "mkdocstrings", extras = ["python"], specifier = ">=0.26.2" },
-]
-
-[[package]]
 name = "markdown"
 version = "3.7"
 source = { registry = "https://pypi.org/simple" }
@@ -761,6 +700,67 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/8e/62/8336eff65bcbc8e4cb5d05b55faf041285951b6e80f33e2bff2024788f31/pygments-2.18.0.tar.gz", hash = "sha256:786ff802f32e91311bff3889f6e9a86e81505fe99f2735bb6d60ae0c5004f199", size = 4891905 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f7/3f/01c8b82017c199075f8f788d0d906b9ffbbc5a47dc9918a945e13d5a2bda/pygments-2.18.0-py3-none-any.whl", hash = "sha256:b8e6aca0523f3ab76fee51799c488e38782ac06eafcf95e7ba832985c8e7b13a", size = 1205513 },
+]
+
+[[package]]
+name = "pymace"
+version = "0.0.1"
+source = { editable = "." }
+dependencies = [
+    { name = "bs4" },
+    { name = "matplotlib" },
+    { name = "numpy" },
+    { name = "psutil" },
+    { name = "requests" },
+    { name = "scikit-optimize" },
+    { name = "scipy" },
+    { name = "tabulate" },
+    { name = "tqdm" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "ruff" },
+]
+docs = [
+    { name = "mkdocs" },
+    { name = "mkdocs-material" },
+    { name = "mkdocstrings", extra = ["python"] },
+]
+test = [
+    { name = "pytest" },
+]
+
+[package.dev-dependencies]
+docs = [
+    { name = "mkdocs" },
+    { name = "mkdocs-material" },
+    { name = "mkdocstrings", extra = ["python"] },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "bs4" },
+    { name = "matplotlib" },
+    { name = "mkdocs", marker = "extra == 'docs'", specifier = ">=1.6.1" },
+    { name = "mkdocs-material", marker = "extra == 'docs'", specifier = ">=9.5.42" },
+    { name = "mkdocstrings", extras = ["python"], marker = "extra == 'docs'", specifier = ">=0.26.2" },
+    { name = "numpy" },
+    { name = "psutil" },
+    { name = "pytest", marker = "extra == 'test'" },
+    { name = "requests" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.6.4" },
+    { name = "scikit-optimize" },
+    { name = "scipy" },
+    { name = "tabulate" },
+    { name = "tqdm" },
+]
+
+[package.metadata.requires-dev]
+docs = [
+    { name = "mkdocs", specifier = ">=1.6.1" },
+    { name = "mkdocs-material", specifier = ">=9.5.42" },
+    { name = "mkdocstrings", extras = ["python"], specifier = ">=0.26.2" },
 ]
 
 [[package]]
