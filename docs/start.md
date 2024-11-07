@@ -38,3 +38,7 @@ def main():
 if __name__ == "__main__":
     main()
 ```
+
+# Intergrating into another project
+
+If you already have your dedicated project, all you need to do is add the top level folders bin/, data/ and tmp/. Than add the binarys from avl and xfoil for your operating system in /bin/os_nmae/avl or bin/os_name/xfoil. Possible names are darwin (MacOs), win32 (Windows), and linux (Linux). 
