@@ -9,6 +9,9 @@ MACE is a tool written by the Akamodell Stuttgart for evaluating and calculating
 
 It is currently under heavy construction. Don't expect anything to work. Functions may be removed, added and completly changed.
 
+## Getting Stared
+
+For more information on how to set up pymace, please visit [Readthedocs](https://pymace.readthedocs.io/en/start/)
 
 ## Documentation
 
