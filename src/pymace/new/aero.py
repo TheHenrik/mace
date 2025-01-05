@@ -1,8 +1,11 @@
-def avlxfoil():
+from pymace.new.domain import Plane
+
+def avlxfoil(plane: Plane) -> None:
+
     pass
 
 
-def ml():
+def ml(plane: Plane) -> None:
     pass
 
 
@@ -12,3 +15,7 @@ class Aero:
             setattr(self, key, value)
         self.avlxfoil = avlxfoil
         self.ml = ml
+
+    def __call__(self, plane: Plane, *args, methode="ml", **kwargs):
+        ret_val = self.__dict__[methode](plane, *args, **kwargs)
+        return ret_val

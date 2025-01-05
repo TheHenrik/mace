@@ -22,8 +22,7 @@ class Plane:
         elif pth.suffix is None:
             return super(Plane, cls).__new__(cls)
         else:
-            raise ValueError(f"Unsupported file extension: {pth.suffix}")
-        
+            raise ValueError(f"Unsupported file extension: {pth.suffix}")      
         
     def __init__(self, pth: Path, aero: Aero):
         self.aero = aero
@@ -35,18 +34,25 @@ class Plane:
         Own additional methods can be added or existing ones can be overwritten.
         """
 
-    def structure(self): ...
-    def propeller(self): ...
-    def export(self): ...
+    def structure(self) -> None: ...
+
+    def propeller(self) -> None: ...
+
+    def export(self, pth: str) -> None: ...
+
     def import_(cls, pth: Path):
         instance = super(Plane, cls).__new__(cls)
         instance.__init__(pth, Aero())
         return instance
 
     def evaluate(self): ...
+
     def mutate(self): ...
+
     def mission(self): ...
+
     def save(self): ...
+
     def load(cls, pth: Path):
         instance = super(Plane, cls).__new__(cls)
         instance.__init__(pth, Aero())
