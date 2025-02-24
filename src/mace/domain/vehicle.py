@@ -270,11 +270,12 @@ class Vehicle:
         plt.tick_params(which="major", labelsize=6)
 
         # Titel hinzufügen
-        plt.title(self.tag, fontsize=10)
+        #plt.title(self.tag, fontsize=10)
 
         # plt.ion()
 
         # Anzeigen des Plots
+        plt.savefig("vehicle.pdf", format="pdf", bbox_inches="tight")
         plt.show()
 
     def get_stability_derivatives(self):
@@ -293,7 +294,7 @@ class Vehicle:
 
         return CLa, Cma, Cnb, XNP, SM, percentMAC
 
-    def build(self):
+    def build(self, length = None):
         """
         Variables:
             1. Horizontal tailplane volume coefficient
@@ -309,12 +310,14 @@ class Vehicle:
             5. CG -> Landing gear position
             6. CG -> Cargo Bay position
         """
-        _, _, lenght = self.transport_box_dimensions()
+        if length == None:
+            _, _, lenght = self.transport_box_dimensions()
+            
         for _ in range(4):
             self.get_mass()
             self.calc_load()
             self.wings["main_wing"].part_wing_into(
-                self.mass, max_lenght=lenght, override=True
+                self.mass, max_lenght=length, override=True
             )
         self.results.binder_count = len(self.wings["main_wing"].wing_binder)
         self.results.binder_mass = sum(
@@ -343,8 +346,11 @@ class Vehicle:
 
         mass["payload"] = self.payload
         weighted_cog["payload"] = self.center_of_gravity_payload * self.payload
-
-        mass["battery"] = self.battery.get_mass()
+        
+        if self.battery.mass == None:
+            mass["battery"] = self.battery.get_mass()
+        else:
+            mass["battery"] = self.battery.mass
         weighted_cog["battery"] = self.battery.origin * mass["battery"]
 
         self.mass = sum(mass.values())
@@ -449,6 +455,14 @@ class Vehicle:
             ["Payload", "", "", f"{Colour.BLUE}{self.payload*1000:.0f}{Colour.END}"]
         )
 
+        data.append(
+            ["Battery", "", "", f"{Colour.BLUE}{self.battery.mass * 1000:.0f}{Colour.END}"]
+        )
+
+        data.append(
+            ["Landing Gear", "", "", f"{Colour.BLUE}{self.landing_gear.mass * 1000:.0f}{Colour.END}"]
+        )
+
         data.append(SEPARATING_LINE)
         data.append(
             [
@@ -459,7 +473,7 @@ class Vehicle:
             ]
         )
         logging.debug(tabulate(data, header, fmt))
-        # print(tabulate(data, header, fmt))
+        print(tabulate(data, header, fmt))
 
     def evaluate_thrust(self, V, t, I=30.0):
         U, SOC = self.battery.get_voltage(I, t)

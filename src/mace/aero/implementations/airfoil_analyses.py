@@ -596,7 +596,7 @@ class Airfoil:
 
 if __name__ == "__main__":
 
-    airf = Airfoil("acc22", flap_angle=12.0, x_hinge=0.6)
+    airf = Airfoil("NACA4410")
     # airf.flap_angle_list = np.array([0, 6])
     airf.must_rebuild_surrogate = True
     # airf.re_list = np.array([100000, 200000])

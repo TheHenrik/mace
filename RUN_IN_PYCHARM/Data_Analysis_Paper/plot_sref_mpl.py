@@ -8,7 +8,7 @@ from scipy.interpolate import RegularGridInterpolator
 
 # Beispiel: Wing loading x Wing Area
 
-dir_path = "paper_sweep2_sref_mpl.csv"
+dir_path = "paper_sweep5_sref_mpl.csv"
 plot_type = "contourf"  # options: 2d, meshgrid, trisurf, contourf, line
 x_name = "mass_payload"
 y_name = "wing_area"  # in 2d this is separate lines
@@ -26,6 +26,31 @@ constant_parameters = {  # "num_fowler_segments": 4,
     # "propeller": "freudenthaler14x8",
     # "main_wing_airfoil": "LAK24_v1",
 }
+
+from matplotlib import font_manager, rcParams
+font_path = "/Users/jannik/Library/Fonts/NewCMMath-Book.otf"
+font_prop = font_manager.FontProperties(fname=font_path, size=15)
+font_prop_large = font_manager.FontProperties(fname=font_path, size=18)
+
+from matplotlib import cm
+viridis = cm.get_cmap(cmap)
+# Erzeuge eine aufhellende Modifikation des Farbschemas
+# Hier skalieren wir die Farbwerte, um das Farbschema heller zu machen
+def lighten_cmap(cmap, gamma=1.8, alpha=1.3):
+    """Wendet eine Gamma-Korrektur auf die Farben eines Colormaps an."""
+    # Hole die RGB-Werte des Colormaps
+    new_colors = cmap(np.linspace(0, 1, 256))
+
+    # Wende die Gamma-Korrektur an (korrigiert nur die RGB-Werte, nicht die Alpha-Werte)
+    new_colors[:, :3] = np.clip(alpha * new_colors[:, :3] ** gamma, 0, 1)
+
+    # Erstelle einen neuen Colormap mit den korrigierten Farben
+    return cm.colors.ListedColormap(new_colors)
+
+
+
+# Verwende die aufhellende Version von 'viridis'
+lightened_map = lighten_cmap(viridis)
 
 
 def plot_function(
@@ -95,16 +120,51 @@ def plot_function(
 
         Z[Z2 < 40] *= 1.05
         Z[Z2 > 60] *= 0
+        print('Maximales Scoring: ', np.max(Z))
         fig = plt.figure(z_name)
         ax = plt.subplot(1, 1, 1)
-        CS = ax.contourf(X, Y, Z, cmap=cmap, levels=np.arange(600, 1000, 20))
-        C = ax.contour(X, Y, Z, colors="black", linewidths=0.5, levels=np.arange(600, 1000, 20))
-        TOF = ax.contour(X, Y, Z2, colors="red", linewidths=2, levels=[40, 60])
-        ax.clabel(TOF, inline=1, fontsize=12, colors='red')
-        plt.colorbar(CS, label='Score')
-        ax.set_xlabel(r'$m_{payload}$')
-        ax.set_ylabel(r'$S_{ref}$')
-        #plt.savefig(dir_path + "/" + file_name + "_" + z_name + ".png")
+        CS = ax.contourf(X, Y, Z, cmap=lightened_map, levels=np.arange(600, 1000, 20)) # 600, 1000, 10
+        C = ax.contour(X, Y, Z, colors="black", linewidths=0.5, levels=np.arange(600, 1000, 20)) # 610, 990, 29
+        TOF = ax.contour(X, Y, Z2, colors="red", linestyles='dashed', markers='o', markersize=2, linewidths=2, levels=[40, 60], label="Take-off length", fontproperties=font_prop)
+        clabels = ax.clabel(TOF, inline=1, fontsize=15, colors='red')
+
+        # Durchlaufe alle Konturlinien und füge Marker hinzu
+        for collection in TOF.collections:
+            for path in collection.get_paths():
+                # Extrahiere die Kontur-Punkte und füge Marker hinzu
+                path_data = path.vertices
+                for i in range(20, len(path_data), 50):  # alle 10 Punkte
+                    ax.scatter(path_data[i, 0], path_data[i, 1], edgecolor='red', facecolor='none', marker='<', s=100)
+
+        for label in clabels:
+            label.set_fontproperties(font_prop_large)
+            label.set_bbox(dict(facecolor='white', edgecolor='none', boxstyle='round,pad=0.1', alpha=0.8))
+
+        cbar = fig.colorbar(CS)
+        cbar.ax.tick_params(labelsize=12)
+
+        for label in cbar.ax.get_yticklabels():
+            label.set_fontproperties(font_prop)
+        cbar.set_label('Score', fontproperties=font_prop)
+
+        # Schriftgröße der xticks anpassen
+        plt.xticks(fontsize=12, fontproperties=font_prop)
+
+        # Schriftgröße der yticks anpassen
+        plt.yticks(fontsize=12, fontproperties=font_prop)
+
+        from matplotlib.lines import Line2D
+
+
+        # Leeres Linienobjekt für die Legende
+        extra_legend = Line2D([0], [0], color='red', lw=2, label='Take Off Length [m]', linestyle='dashed', marker='^',markeredgecolor='red', markerfacecolor='none', markersize=10)
+
+        # Plot anzeigen und Legende hinzufügen
+        plt.legend(handles=[extra_legend], loc='upper left', fontsize=12, prop=font_prop, facecolor='white', edgecolor='black', framealpha = 0.9)
+
+        ax.set_xlabel(r'$m_{payload}$', fontsize=15)
+        ax.set_ylabel(r'$S_{ref}$', fontsize=15)
+        plt.savefig(dir_path + "/" + file_name + "_" + z_name + ".pdf", format='pdf', bbox_inches='tight', pad_inches=0.1)
     else:
         # create the figure to plot
         if interpol is True:
@@ -161,7 +221,7 @@ for key, value in constant_parameters.items():
     else:
         df = df[np.isclose(df[key], value, rtol=1e-03)]
 
-df = df[df["wing_area"] > 0.3]
+df = df[df["wing_area"] > 0.35]
 #df = df[df["score_round"] > 0.0]
 #df = df[df["wing_loading"] < 9.6]
 

@@ -8,10 +8,10 @@ from mace.aero.implementations.airfoil_analyses import Airfoil
 from mace.utils.file_path import root
 
 if __name__ == "__main__":
-    airfoil_name = "ag40"
-    re_list = [3e5, 6e5]
-    cl_list = np.linspace(-0.5, 1.5, 60)
-    flap_angle = 6
+    airfoil_name = "acc22"
+    re_list = [5e5]
+    cl_list = np.linspace(-1, 1.5, 10)
+    flap_angle = 0
 
     airfoil = Airfoil(airfoil_name, flap_angle=flap_angle)
     airfoil.x_hinge = 0.75

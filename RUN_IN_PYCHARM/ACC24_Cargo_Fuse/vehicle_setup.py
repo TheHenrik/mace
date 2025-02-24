@@ -269,7 +269,7 @@ def vehicle_setup(
     # Nose wheel
     wheel1 = Wheel()
     wheel1.diameter = 0.07
-    wheel1.drag_correction = 0.  # 3.
+    wheel1.drag_correction = 3.  # 3.
     wheel1.origin = np.array(
         [1.33, 0.0, -0.085]
     )
@@ -314,7 +314,7 @@ def vehicle_setup(
     # Main wheels
     wheel2 = Wheel()
     wheel2.diameter = main_wheel_diameter
-    wheel2.drag_correction = 0.  # 3.
+    wheel2.drag_correction = 3.  # 3.
     wheel2.origin = np.array(
         [
             main_wheel_origin_x,
@@ -330,7 +330,7 @@ def vehicle_setup(
     # Main wheels
     wheel3 = Wheel()
     wheel3.diameter = main_wheel_diameter
-    wheel3.drag_correction = 0.  # 3.
+    wheel3.drag_correction = 3.  # 3.
     wheel3.origin = np.array(
         [
             main_wheel_origin_x,
@@ -350,7 +350,7 @@ def vehicle_setup(
     strut.mass = 0.08
     strut.origin = np.array([vehicle.center_of_gravity[0] + 0.1, 0, wheel2.origin[2]])
     strut.effective_drag_length = (wheel2.origin[1] ** 2 + wheel2.origin[2] ** 2) ** 0.5 * 2 + abs(wheel1.origin[2])
-    strut.length_specific_cd = 0.000  # 0.003
+    strut.length_specific_cd = 0.003#0.003  # 0.003
     landing_gear.add_strut(strut)
 
     landing_gear.finalize()
@@ -388,7 +388,7 @@ def vehicle_setup(
     logging.debug(f"Vehicle Mass: {vehicle.mass:.3f}")
     # PLOT
     if __name__ == "__main__":
-        vehicle.plot_vehicle(azim=230, elev=30)
+        vehicle.plot_vehicle(azim=225, elev=30)
 
     # Return results
     vehicle.results.span = vehicle.reference_values.b_ref

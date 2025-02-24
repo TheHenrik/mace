@@ -248,7 +248,7 @@ def main():
             payload = np.linspace(1, 6, 10)
             aspect_ratio = [10]
             wing_area = np.linspace(0.3, 1.2, 10)
-            airfoil = ["acc22"]
+            airfoil = ["acc24"]
             battery_capacity = [2.4]
             propeller = ["aeronaut14x8"]
             num_fowler_segments = [0]

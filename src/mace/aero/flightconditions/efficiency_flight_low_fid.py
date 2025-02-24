@@ -55,6 +55,8 @@ class EfficiencyFlight:
         self.v_max = 100.0
         self.is_drag_surrogate_build = False
         self.drag_surrogate: np.ndarray = None
+        self.is_drag_surrogate_build2 = False
+        self.drag_surrogate2: np.ndarray = None
         self.plot_surface = False
         self.batt_time_at_start = 30.0
         self.tolerance = 0.1
@@ -87,6 +89,33 @@ class EfficiencyFlight:
                 airfoil.print_re_warnings = False
                 self.flap_angle = airfoil.check_for_best_flap_setting(re, CL)
 
+            self.Aero.XFOIL.sensitivity_study_drag_factor = 1.
+            self.Aero.evaluate(V=V, CL=CL, FLAP=self.flap_angle)
+            drag_coefficient = self.plane.aero_coeffs.drag_coeff.cd_tot
+            drag_force = rho / 2 * V**2 * self.s_ref * drag_coefficient
+        else:
+            drag_force = 100.0
+            # print('V to low, returning default drag value')
+        return drag_force
+
+    def get_drag_force2(self, V):
+        """
+        :param V: Velocity [m/s]
+
+        This function returns the drag force, while the flap angle is optimized for the current operating point
+        """
+        if V > self.v_min:
+            CL = self.mass * g / (0.5 * rho * V**2 * self.s_ref)
+
+            if self.optimize_flap_angle:
+                c_length = self.plane.reference_values.c_ref
+                re = functions.get_reynolds_number(V, c_length)
+                x_hinge = 1 - self.plane.wings["main_wing"].segments[0].flap_chord_ratio
+                airfoil = Airfoil(self.plane.wings["main_wing"].airfoil, x_hinge=x_hinge)
+                airfoil.print_re_warnings = False
+                self.flap_angle = airfoil.check_for_best_flap_setting(re, CL)
+
+            self.Aero.XFOIL.sensitivity_study_drag_factor = 1.
             self.Aero.evaluate(V=V, CL=CL, FLAP=self.flap_angle)
             drag_coefficient = self.plane.aero_coeffs.drag_coeff.cd_tot
             drag_force = rho / 2 * V**2 * self.s_ref * drag_coefficient
@@ -115,6 +144,26 @@ class EfficiencyFlight:
             )
         return drag_force
 
+    def D2(self, V):
+        """
+        :param V: Velocity [m/s]
+
+        This function returns the drag force from a built surrogate model, to save computation time.
+        If the surrogate model is not built yet, it is built and saved for future use.
+        """
+        vmin = self.v_min
+        vmax = self.v_max
+        v_vec = np.linspace(vmin, vmax, 20)
+        if self.is_drag_surrogate_build2 == False:
+            self.drag_surrogate2 = np.array([self.get_drag_force2(v) for v in v_vec])
+            self.is_drag_surrogate_build2 = True
+            drag_force = np.interp(V, v_vec, self.drag_surrogate)
+        else:
+            drag_force = np.interp(
+                V, v_vec, self.drag_surrogate2, right=100.0, left=100.0
+            )
+        return drag_force
+
     def equation_system(self, E0, v1, t1, I, print_results=False):
         """
         :param E0: Initial energy [J]
@@ -127,6 +176,7 @@ class EfficiencyFlight:
         """
         T = self.T
         D = self.D
+        D2 = self.D2
         m = self.mass
         h2 = self.h_end
         tges = self.t_ges
@@ -147,7 +197,7 @@ class EfficiencyFlight:
             eq2 = (
                 1 / 2 * m * v1**2
                 + m * g * h1
-                - D(v2) * v2 * (tges - t1)
+                - D2(v2) * v2 * (tges - t1)
                 - m * g * h2
                 - 1 / 2 * m * v2**2
             )
@@ -233,7 +283,6 @@ class EfficiencyFlight:
                 res.efficiency_motor_off_reynolds = re_2
                 res.efficiency_motor_off_flap_angle = flap_angle_2
                 res.efficiency_motor_off_time = self.t_ges - t1
-        
 
                 t_avg = self.batt_time_at_start + t1 / 2
                 (
@@ -241,6 +290,9 @@ class EfficiencyFlight:
                     res.efficiency_battery_soc,
                 ) = self.plane.battery.get_voltage(i=30.0, t=t_avg)
 
+            if self.plot_surface:
+                h1 = root[0]
+                return points, v2, h1
             return -points
 
         if self.plot_surface == False:
@@ -285,21 +337,49 @@ class EfficiencyFlight:
 
             v1_vec = np.linspace(0, 1, 100)
             t1_vec = np.linspace(0, 1, 100)
+
+            v1_actual = self.v_min + v1_vec * (self.v_max - self.v_min)
+            tmin = 0
+
+            tmax = self.t_ges
+
+            t1_actual = tmin + t1_vec * (tmax - tmin)
+
             points = np.zeros((len(v1_vec), len(t1_vec)))
+            v2 = np.zeros((len(v1_vec), len(t1_vec)))
+            h1 = np.zeros((len(v1_vec), len(t1_vec)))
             for i, v1 in enumerate(v1_vec):
                 for j, t1 in enumerate(t1_vec):
-                    points[i, j] = -1.0 * objective_function(
+                    points[i, j], v2[i, j], h1[i, j]  = objective_function(
                         [v1, t1], print_results=False
                     )
-            x, y = np.meshgrid(v1_vec, t1_vec)
+
+            points = points.T
+            v2 = v2.T
+            h1 = h1.T
+
+            v1matrix, t1matrix = np.meshgrid(v1_actual, t1_actual)
             fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
-            ax.plot_surface(x, y, points)
+            ax.plot_surface(v1matrix, t1matrix, points)
             ax.set_proj_type("ortho")
-            ax.set_xlabel("t1")
-            ax.set_ylabel("v1")
+            ax.set_xlabel("v1")
+            ax.set_ylabel("t1")
             ax.set_zlabel("points")
             plt.show()
-            np.save("points_+1600.npy", points)
+
+            import pandas as pd
+
+            # Erstelle ein DataFrame aus den Arrays
+            df = pd.DataFrame({
+                'v_1': v1matrix.ravel(),
+                't_1': t1matrix.ravel(),
+                'points': points.ravel(),
+                'v_2': v2.ravel(),
+                'h_1': h1.ravel()
+            })
+
+            # Exportiere das DataFrame in eine CSV-Datei
+            df.to_csv('efficiency_plot.csv', index_label='v1')
 
     def get_v_max(self, I, v0=15.0):
         """
@@ -357,9 +437,10 @@ if __name__ == "__main__":
     from mace.aero.implementations.avl import (
         geometry_and_mass_files_v2 as geometry_and_mass_files,
     )
-    from mace.test.vehicle_setup_acc_v2 import vehicle_setup
+    from mace.test.vehicle_setup_acc_v4 import vehicle_setup
+    from mace.aero.flightconditions.climb_scipy import Climb
 
-    Aircraft = vehicle_setup()
+    Aircraft = vehicle_setup(payload=4.75)
     print(Aircraft.mass)
     Aircraft.mass -= 0.0
     mass_file = geometry_and_mass_files.MassFile(Aircraft)
@@ -368,9 +449,17 @@ if __name__ == "__main__":
     geometry_file.z_sym = 0
     geometry_file.build_geometry_file()
 
+    climb_analysis = Climb(Aircraft)
+    climb_analysis.optimize_flap_angle = True
+    climb_analysis.mid_time = 15
+    climb_height, climb_ias = climb_analysis.get_h_max(
+        delta_t=20
+    )
+    climb_height = min(climb_height, 100.0)
+    print("H Climb: %.1f m, V IAS %.1f m/s" % (climb_height, climb_ias))
+
     efficiency_flight = EfficiencyFlight(Aircraft)
     efficiency_flight.plot_surface = True
-    v0 = 15.1
-    h0 = 2.47 * 19.8
+    v0 = climb_ias
+    h0 = climb_height
     efficiency_flight.optimizer(v0, h0)
-    # print(result)
