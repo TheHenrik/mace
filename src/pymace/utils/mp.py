@@ -5,6 +5,15 @@ from typing import Callable, Iterable
 
 
 def get_pid():
+    """
+    Returns the process ID (PID) of the current process if it is not the main process.
+
+    If the current process is the main process, an empty string is returned.
+    Otherwise, the PID of the current process is returned as a string prefixed with an underscore.
+
+    Returns:
+        str: An empty string if the current process is the main process, otherwise the PID of the current process prefixed with an underscore.
+    """
     if current_process().name == "MainProcess":
         return ""
     else:
@@ -16,7 +25,9 @@ def mp(func: Callable, params: Iterable, processes: int | None = None):
         return p.map(func, params)
 
 
-def fn(x: int) -> int:
+# Just for testing purposes
+
+def _fn(x: int) -> int:
     if current_process().name == "MainProcess":
         pid = ""
     else:
@@ -26,10 +37,10 @@ def fn(x: int) -> int:
     return x * x
 
 
-def main():
-    logging.debug(fn(1))
-    logging.debug(mp(fn, range(6)))
+def _main():
+    logging.debug(_fn(1))
+    logging.debug(mp(_fn, range(6)))
 
 
 if __name__ == "__main__":
-    main()
+    _main()
