@@ -6,8 +6,6 @@ import numpy as np
 from pymace.domain.plane import Plane
 
 # ---Klassen für Eingabe für Berechnungsfunktionen---
-
-
 class Inputdata:
     def __init__(self):
         v0 = None  # Geschwindigkeiten
@@ -56,15 +54,3 @@ class ResTakeoff:
     inputdata: Plane = None
     # Logfile
     logfile: Logfile = None
-
-
-array = np.array(
-    [[2, 11, -25, 33], [6, 17, -21, 37], [4, 14, -23, 39], [9, 13, -28, 32]]
-)
-
-array_sort = np.argsort(array[:, 2])
-array = array[array_sort]
-# array[:, 2].argsort()
-logging.debug(array)
-
-logging.debug(np.linspace(0, 10, 11))

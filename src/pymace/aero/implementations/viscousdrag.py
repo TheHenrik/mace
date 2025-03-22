@@ -7,7 +7,10 @@ import numpy as np
 from pymace.aero import generalfunctions
 from pymace.aero.implementations.avl import athenavortexlattice
 from pymace.aero.implementations.avl.athenavortexlattice import AVL
-from pymace.aero.implementations.avl.geometry_and_mass_files import GeometryFile, MassFile
+from pymace.aero.implementations.avl.geometry_and_mass_files import (
+    GeometryFile,
+    MassFile,
+)
 from pymace.aero.implementations.xfoil import xfoilpolars
 from pymace.domain import Plane, params
 from pymace.domain.parser import PlaneParser

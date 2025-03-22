@@ -70,7 +70,6 @@ test = "mace.cli:test2"
 
 [tool.pytest.ini_options]
 console_output_style = "progress"
-addopts = "--pyargs mace.test"
 
 [tool.ruff]
 exclude = [

@@ -6,7 +6,10 @@ from pathlib import Path
 import numpy as np
 
 from pymace.aero.implementations import runsubprocess as runsub
-from pymace.aero.implementations.avl.geometry_and_mass_files import GeometryFile, MassFile
+from pymace.aero.implementations.avl.geometry_and_mass_files import (
+    GeometryFile,
+    MassFile,
+)
 
 # from mace.domain.vehicle import Vehicle
 from pymace.domain.parser import PlaneParser

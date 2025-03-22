@@ -1,3 +1,5 @@
+import logging
+
 import numpy as np
 
 from pymace.domain.fuselage import Fuselage, FuselageSegment
@@ -5,7 +7,6 @@ from pymace.domain.landing_gear import LandingGear, Wheel
 from pymace.domain.vehicle import Vehicle
 from pymace.domain.wing import Wing, WingSegment
 
-import logging
 
 def vehicle_setup() -> Vehicle:
     vehicle = Vehicle()

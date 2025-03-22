@@ -1,5 +1,6 @@
 from pymace.new.domain import Plane
 
+
 def avlxfoil(plane: Plane) -> None:
 
     pass
