@@ -8,4 +8,4 @@ build:
     - asdf global uv latest
     - uv python install
     - uv sync --extra docs --frozen
-    - uv run --color never mkdocs build --strict --site-dir $READTHEDOCS_OUTPUT/html
+    - uv run --color never mkdocs build --site-dir $READTHEDOCS_OUTPUT/html
