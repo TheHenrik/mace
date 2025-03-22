@@ -36,6 +36,17 @@ def tri_volume(first: np.ndarray, second: np.ndarray, third: np.ndarray) -> floa
 
 
 def tri_point(first: np.ndarray, second: np.ndarray, third: np.ndarray) -> np.ndarray:
+    """
+    Calculate the centroid of a triangle in 3D space.
+
+    Parameters:
+    first (np.ndarray): A 1D array representing the coordinates of the first vertex of the triangle.
+    second (np.ndarray): A 1D array representing the coordinates of the second vertex of the triangle.
+    third (np.ndarray): A 1D array representing the coordinates of the third vertex of the triangle.
+
+    Returns:
+    np.ndarray: A 1D array representing the coordinates of the centroid of the triangle.
+    """
     return (
         np.linalg.norm(np.cross(second - first, third - first), axis=1)
         @ (first + second + third)
@@ -43,6 +54,16 @@ def tri_point(first: np.ndarray, second: np.ndarray, third: np.ndarray) -> np.nd
 
 
 def scale(factors, vecs):
+    """
+    Scales the given vectors by the specified factors.
+
+    Parameters:
+    factors (array-like): A 1D array of scaling factors.
+    vecs (array-like): A 1D or 2D array of vectors to be scaled.
+
+    Returns:
+    numpy.ndarray: A 2D array where each vector from `vecs` is scaled by the corresponding factor from `factors`.
+    """
     return (factors * np.repeat(vecs[np.newaxis], len(factors), axis=0).T).T
 
 
@@ -87,11 +108,37 @@ def get_profil(airfoil: str) -> np.ndarray:
 
 @cache
 def get_profil_thickness(airfoil: str) -> float:
+    """
+    Calculate the maximum thickness of an airfoil profile.
+
+    This function retrieves the airfoil profile data and computes the maximum
+    thickness by finding the maximum difference between the upper and lower
+    surfaces of the airfoil.
+
+    Args:
+        airfoil (str): The name or identifier of the airfoil.
+
+    Returns:
+        float: The maximum thickness of the airfoil profile.
+    """
     profil = get_profil(airfoil)
     return max(profil[i][1] - profil[-i][1] for i in range(len(profil) // 2))
 
 
 def mesh(profil_innen, profil_außen):
+    """
+    Calculate the area, volume, and centroid of a mesh defined by inner and outer airfoils.
+
+    Args:
+        profil_innen (list or np.ndarray): The inner profile points of the mesh.
+        profil_außen (list or np.ndarray): The outer profile points of the mesh.
+
+    Returns:
+        tuple: A tuple containing:
+            - area (float): The total area of the mesh.
+            - volume (float): The total volume of the mesh.
+            - p (np.ndarray): The centroid of the mesh as a 3D point.
+    """
     area = 0
     volume = 0
     assert len(profil_innen) == len(profil_außen)

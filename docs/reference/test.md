@@ -1,7 +1,6 @@
 # Test
 
-::: mace.test
-::: mace.test.perftest
-::: mace.test.size
-::: mace.test.test_mass
-::: mace.test.vehicle_setup
+::: pymace.test
+::: pymace.test.perftest
+::: pymace.test.size
+::: pymace.test.vehicle_setup
