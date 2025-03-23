@@ -1,10 +1,12 @@
 import logging
 
-
 from pymace.aero.generalfunctions import get_reynolds_number
 from pymace.aero.implementations.airfoil_analyses import Airfoil
 from pymace.aero.implementations.avl.athenavortexlattice import AVL
-from pymace.aero.implementations.avl.geometry_and_mass_files import GeometryFile, MassFile
+from pymace.aero.implementations.avl.geometry_and_mass_files import (
+    GeometryFile,
+    MassFile,
+)
 from pymace.domain import params
 from pymace.domain.parser import PlaneParser
 from pymace.domain.vehicle import Vehicle

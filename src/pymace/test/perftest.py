@@ -24,14 +24,14 @@ def performance_time(repetitions: int, func: callable, *args, output: str = None
     end = time.perf_counter()
     if output == "toConsole":
         took = end - start
-        logging.debug(f"took {took:.3f} s, ", end="")
-        logging.debug(f"{repetitions/took:.3f} it/s, ", end="")
+        logging.debug(f"took {took:.3f} s, ")
+        logging.debug(f"{repetitions/took:.3f} it/s, ")
         logging.debug(f"{took/repetitions*1e3:.3f} ms/it")
         return
     return (end - start) / repetitions
 
 
-def performance_report(func, *args, **kwargs):
+def performance_report(func, *args, save_path = "need_profiling.prof", **kwargs):
     """
     Profiles the performance of a given function and saves the profiling report to a file.
 
@@ -50,4 +50,4 @@ def performance_report(func, *args, **kwargs):
         func(*args, **kwargs)
     stats = pstats.Stats(pr)
     stats.sort_stats(pstats.SortKey.TIME)
-    stats.dump_stats(filename="need_profiling.prof")
+    stats.dump_stats(filename=save_path)

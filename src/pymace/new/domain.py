@@ -1,12 +1,10 @@
 from functools import partial
 from pathlib import Path
 
+from pymace.new.aero import Aero
+from pymace.new.analysis import Analysis
 from pymace.new.geometries import Geometrie
 from pymace.new.properties import Properties
-from pymace.new.analysis import Analysis
-from pymace.new.aero import Aero
-
-
 
 
 class Plane:

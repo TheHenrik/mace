@@ -1,6 +1,5 @@
 import logging
 
-
 from pymace.aero.generalfunctions import GeneralFunctions, get_reynolds_number
 from pymace.aero.implementations.aero import Aerodynamics
 from pymace.aero.implementations.airfoil_analyses import Airfoil
