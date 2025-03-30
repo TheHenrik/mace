@@ -12,6 +12,8 @@ nav:
   - Reference:
     - Utils: reference/utils.md
     - Test: reference/test.md
+  - Tutorials:
+    - Intro: tutorials/intro.md
   - License: license.md
 
 theme: material
