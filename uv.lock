@@ -1,4 +1,5 @@
 version = 1
+revision = 1
 requires-python = ">=3.11"
 
 [[package]]
@@ -704,7 +705,7 @@ wheels = [
 
 [[package]]
 name = "pymace"
-version = "0.0.2"
+version = "0.0.3"
 source = { editable = "." }
 dependencies = [
     { name = "bs4" },
@@ -755,6 +756,7 @@ requires-dist = [
     { name = "tabulate" },
     { name = "tqdm" },
 ]
+provides-extras = ["dev", "test", "docs"]
 
 [package.metadata.requires-dev]
 docs = [
